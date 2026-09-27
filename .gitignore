@@ -1,0 +1,30 @@
+# Secrets: never commit real credentials
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Generated at runtime (reports, overlays, uploads, imagery cache, model files)
+runs/
+uploads/
+models/
+data/
+.gradio/
+
+# Web client
+web/node_modules/
+web/dist/
+*.tsbuildinfo
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
