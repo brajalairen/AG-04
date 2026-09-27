@@ -8,11 +8,13 @@ torch/transformers are imported lazily so the rest of the app (and the tests) ne
 
 import re
 import threading
+from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
 from PIL import Image, ImageDraw
 
+from satquery.settings import REPO_ROOT
 from satquery.specialists.vlm import VLMResult
 
 PROMPTS = {
@@ -24,6 +26,29 @@ PROMPTS = {
     "change": "Find changes in the two images.",
 }
 BINS = 1000
+
+
+def resolve_adapter(adapter: str) -> str:
+    """Where to load a LoRA adapter from. A relative path is tried from the working directory, then from the
+    repository root, so the default adapter loads whichever directory the app starts in. An absolute path or a
+    Hugging Face repo id is returned unchanged."""
+    path = Path(adapter)
+    if path.is_absolute() or path.exists():
+        return adapter
+    in_repo = REPO_ROOT / path
+    return str(in_repo) if in_repo.exists() else adapter
+
+
+def import_peft():
+    """peft, or a clear instruction when it is missing (it is only needed when an adapter is set)."""
+    try:
+        from peft import PeftModel
+    except ImportError as exc:
+        raise RuntimeError(
+            "The Falcon LoRA adapter needs the 'peft' package. Install the app with its adaptation extra "
+            '(pip install -e ".[server,models,copernicus,adaptation]"), or set SATQUERY_FALCON_ADAPTER to an '
+            "empty value to run the base model.") from exc
+    return PeftModel
 
 
 def dequantize(values: list[int], width: int, height: int) -> list[float]:
@@ -112,9 +137,13 @@ class FalconVLM:
             self.processor = AutoProcessor.from_pretrained(local_path, trust_remote_code=True)
         if self.adapter:
             # peft is imported lazily, like torch: the app and its tests never need it unless an adapter is set.
-            from peft import PeftModel
-
-            model = PeftModel.from_pretrained(model, self.adapter)
+            PeftModel = import_peft()
+            try:
+                model = PeftModel.from_pretrained(model, resolve_adapter(self.adapter))
+            except (OSError, ValueError) as exc:
+                raise RuntimeError(
+                    f"Could not load the LoRA adapter '{self.adapter}': it was not found in the repository or on the "
+                    "Hugging Face Hub. Set SATQUERY_FALCON_ADAPTER to an empty value to run the base model.") from exc
         self.model = model.to(self.device).eval()
         return self
 

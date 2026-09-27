@@ -11,6 +11,9 @@ from functools import lru_cache
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+# The LoRA adapter the team trained on BigEarthNet.txt (experiments/adaptation/). Relative to REPO_ROOT, so every
+# execution trace names it the same way on any machine. SATQUERY_FALCON_ADAPTER= (empty) selects the base model.
+DEFAULT_ADAPTER = "adapters/falcon-bigearthnet-vqa-lora"
 
 
 @lru_cache(maxsize=1)
@@ -27,7 +30,7 @@ def _load_env_file() -> None:
 class Settings:
     vlm_backend: str = "fake"  # "falcon" (real model) or "fake" (deterministic, for tests/dev)
     falcon_model_id: str = "mehmetbayik/Falcon-Single-Instruction-Large"  # provenance: docs/decisions.md D-021
-    falcon_adapter: str = ""  # LoRA adapter path or HF repo id; empty means the unadapted base model (D-027)
+    falcon_adapter: str = DEFAULT_ADAPTER  # LoRA adapter path or HF repo id; empty means the unadapted base model
     device: str = "auto"  # "auto", "cuda" or "cpu"
     num_beams: int = 3
     max_new_tokens: int = 1024

@@ -11,7 +11,8 @@ visual evidence pinned to the map, a confidence value with its method, and a ful
 ## Features
 
 - **Natural-language questions:** question answering, scene description and grounding ("highlight the water body")
-  by a remote-sensing vision-language model (Falcon, 0.7B parameters).
+  by a remote-sensing vision-language model (Falcon, 0.7B parameters), loaded with a LoRA adapter the team
+  fine-tuned on BigEarthNet.txt yes/no questions (see [Fine-Tuning / Model Adaptation](#fine-tuning--model-adaptation)).
 - **Map-based area selection:** place search, then a rectangle, circle or polygon drawn on the map.
 - **Sentinel-1 / Sentinel-2 analysis:** imagery for the drawn area is retrieved live from the Copernicus Data Space
   Ecosystem. Water questions are answered from optical imagery first (NDWI); when the selected area itself is too
@@ -34,7 +35,7 @@ visual evidence pinned to the map, a confidence value with its method, and a ful
 |---|---|
 | Frontend | React, TypeScript, Vite, Tailwind CSS, MapLibre GL, Terra Draw, Zustand |
 | Backend | Python, FastAPI, Uvicorn, Pydantic, httpx |
-| AI / ML | PyTorch, Hugging Face Transformers, Falcon remote-sensing VLM (0.7B) |
+| AI / ML | PyTorch, Hugging Face Transformers, PEFT (LoRA), Falcon remote-sensing VLM (0.7B) with the team's BigEarthNet.txt LoRA adapter |
 | Geospatial | Rasterio (GDAL), NumPy, SciPy, Pillow |
 | Data & APIs | Copernicus Data Space Ecosystem (Sentinel Hub Catalog and Process APIs), Open-Meteo, OpenStreetMap Nominatim, BigEarthNet sample patches |
 | Testing | pytest, Vitest |
@@ -65,7 +66,7 @@ cd satquery-ai
 uv venv --python 3.12 .venv
 # Optional, NVIDIA GPU only: install the CUDA build of PyTorch first
 uv pip install --python .venv torch==2.8.0 --index-url https://download.pytorch.org/whl/cu128
-uv pip install --python .venv -e ".[server,models,copernicus]"
+uv pip install --python .venv -e ".[server,models,copernicus,adaptation]"
 
 # 2. Web client
 cd web
@@ -75,8 +76,12 @@ cd ..
 ```
 
 **Using pip instead of uv:** create the environment with Python 3.12 (`py -3.12 -m venv .venv`), then run
-`.venv\Scripts\python -m pip install -e ".[server,models,copernicus]"` (for a GPU, first
+`.venv\Scripts\python -m pip install -e ".[server,models,copernicus,adaptation]"` (for a GPU, first
 `.venv\Scripts\python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cu128`).
+
+**About the `adaptation` extra:** it installs PEFT 0.17.1 and Accelerate 1.10.1, which the fine-tuned adapter needs,
+alongside the pinned Transformers 4.49.0 (the Falcon model's code does not work with Transformers 4.50 or newer).
+Install them through this extra as shown; a separate `pip install peft` can upgrade Transformers and break the model.
 
 ## Environment Variables
 
@@ -95,6 +100,7 @@ Then edit `.env`:
 | `COPERNICUS_CLIENT_SECRET` | For live imagery | OAuth client secret for the same client |
 | `SATQUERY_VLM_BACKEND` | Yes | `falcon` for the real model; `fake` gives placeholder answers (tests and UI work only) |
 | `SATQUERY_DEVICE` | No | `auto` (default), `cuda` or `cpu` |
+| `SATQUERY_FALCON_ADAPTER` | No | Defaults to the included LoRA adapter, `adapters/falcon-bigearthnet-vqa-lora`; set it to an empty value to run the base model |
 
 **Getting Copernicus credentials:** create a free account at
 [dataspace.copernicus.eu](https://dataspace.copernicus.eu), open the Sentinel Hub dashboard, go to
@@ -151,6 +157,59 @@ cd web; npm test; cd ..
 8. **Inspect the result.** **Details** opens the execution trace: the routing decision, every tool with its
    parameters, the input checks, and the HTML/JSON reports.
 
+## Fine-Tuning / Model Adaptation
+
+The vision-language model runs with a **LoRA adapter trained by the SatQuery AI team** on
+[BigEarthNet.txt](https://huggingface.co/datasets/BIFOLD-BigEarthNetv2-0/BigEarthNet.txt), loaded by default as in
+our live demo. Every execution trace names it: the model reads
+`mehmetbayik/Falcon-Single-Instruction-Large + adapters/falcon-bigearthnet-vqa-lora`.
+
+**What the fine-tuning covers:** yes/no visual question answering about **Sentinel-2** image patches (presence,
+count, area and adjacency of land-cover classes). It does not train the model for weather, SAR, change detection,
+captioning, grounding or any other SatQuery AI capability; those run as they did before, and a regression check on
+the demo scenarios found no degradation in captioning, grounding or change detection.
+
+| | |
+|---|---|
+| Base model | `mehmetbayik/Falcon-Single-Instruction-Large` (837 M parameters) |
+| Method | LoRA (PEFT): rank 8, alpha 16, dropout 0.05, on the 96 decoder attention projections; vision tower frozen |
+| Trainable parameters | 1,572,864 (0.188% of the model) |
+| Data | BigEarthNet.txt yes/no rows with BigEarthNet v2.0 Sentinel-2 patches: 7,360 train / 1,064 validation / 1,794 test rows, splits disjoint by patch, answers balanced 50% yes |
+| Training | 1 epoch (920 steps), learning rate 2e-4 with cosine decay, effective batch 8, seed 7; 27.4 minutes on an RTX 4050 Laptop GPU |
+
+**Result on the full held-out test set** (1,794 rows from 500 patches never seen in training; exact-match, same code
+and settings before and after):
+
+| | Base model | With adapter | Change |
+|---|---|---|---|
+| **Overall** | 49.72% | **66.33%** | **+16.61 pp** |
+| adjacency (n=325) | 56.31% | 67.38% | +11.07 pp |
+| area (n=483) | 46.38% | 61.90% | +15.52 pp |
+| count (n=482) | 43.15% | 64.11% | +20.96 pp |
+| presence (n=504) | 54.96% | 72.02% | +17.06 pp |
+
+The test set is balanced, so always giving the same answer would score 50%.
+
+**Limitations:** Sentinel-2 only (120 x 120 px patches at 10 m); yes/no questions only; land-cover class balance was
+not controlled when selecting patches; exact-match on short answers is a narrow metric.
+
+**Evidence and reproduction:**
+
+- `adapters/falcon-bigearthnet-vqa-lora/`: the adapter (6.3 MB, SHA-256
+  `b7b1388f6c60918877c587e28707c994b64a0798a9ccf9f5c4d9fb0a31336100`), its training config, loss log and model card.
+- `experiments/adaptation/`: dataset, training, evaluation and report code, with the recorded results in
+  `results/` (dataset manifest, evaluations before and after, overfit check, regression check, report).
+- `experiments/adaptation/test_split/`: the 1,794-row test split with its 500 rendered patches
+  (CDLA-Permissive-1.0), so the evaluation can be re-run without downloading BigEarthNet:
+
+```powershell
+.venv\Scripts\python experiments\adaptation\evaluate.py --data experiments\adaptation\test_split --split test `
+    --adapter adapters\falcon-bigearthnet-vqa-lora --out eval_after.json
+```
+
+Add `--device cpu --dtype fp32` without a CUDA GPU, `--limit 100` for a quick check, and omit `--adapter` for the
+base model. Retraining needs BigEarthNet.txt and BigEarthNet v2.0; see `experiments/adaptation/README.md`.
+
 ## Notes and Limitations
 
 - Heuristic components (spectral-index and SAR thresholds, the change map, the optical/SAR agreement) are labelled as
@@ -159,7 +218,9 @@ cd web; npm test; cd ..
   guidance. Only short-range forecasts are supported (today to 16 days).
 - Radar change over time is not supported yet; before/after analysis uses Sentinel-2.
 - A drawn area for live retrieval is limited to 400 km².
-- The vision-language model can load an optional LoRA adapter (`SATQUERY_FALCON_ADAPTER`); none is included here.
+- The fine-tuned adapter covers Sentinel-2 yes/no questions only (see
+  [Fine-Tuning / Model Adaptation](#fine-tuning--model-adaptation)); no claim is made for other sensors, such as
+  Cartosat or RISAT, or other question types.
 
 ## Data and Licences
 
@@ -170,7 +231,10 @@ cd web; npm test; cd ..
   project and is not affiliated with or endorsed by Copernicus or the European Commission.
 - Weather: Open-Meteo.com, CC BY 4.0 (attributed in every weather answer).
 - Model: `mehmetbayik/Falcon-Single-Instruction-Large` on Hugging Face, downloaded at run time and subject to its own
-  licence.
+  licence. The LoRA adapter in `adapters/` is the team's own work and is used together with that base model.
+- Fine-tuning test split in `experiments/adaptation/test_split/`: a modified subset of BigEarthNet.txt and
+  BigEarthNet v2.0, published under CDLA-Permissive-1.0 with the required notices, citations and licence text in its
+  README. Contains modified Copernicus Sentinel data.
 - Basemaps: OpenFreeMap / OpenStreetMap contributors, and Esri World Imagery.
 
 ## Team

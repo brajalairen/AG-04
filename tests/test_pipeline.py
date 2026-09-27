@@ -254,12 +254,20 @@ def test_a_long_caption_request_is_not_limited(settings, write_tiff, optical_sce
     assert response.status == "ok" and response.task == "caption"
 
 
-def test_falcon_adapter_setting_defaults_to_the_unadapted_base_model(monkeypatch):
-    """Unset SATQUERY_FALCON_ADAPTER must leave model_id and the download target untouched (D-027)."""
+def test_falcon_adapter_defaults_to_the_included_adapter(monkeypatch):
+    """Unset, SATQUERY_FALCON_ADAPTER selects the adapter shipped in the repository, as the live demo runs it."""
+    from satquery.settings import DEFAULT_ADAPTER, load_settings
+
+    monkeypatch.delenv("SATQUERY_FALCON_ADAPTER", raising=False)
+    assert load_settings().falcon_adapter == DEFAULT_ADAPTER == "adapters/falcon-bigearthnet-vqa-lora"
+
+
+def test_an_empty_adapter_setting_selects_the_unadapted_base_model(monkeypatch):
+    """SATQUERY_FALCON_ADAPTER= (empty) must leave model_id and the download target untouched."""
     from satquery.settings import load_settings
     from satquery.specialists.falcon import FalconVLM
 
-    monkeypatch.delenv("SATQUERY_FALCON_ADAPTER", raising=False)
+    monkeypatch.setenv("SATQUERY_FALCON_ADAPTER", "")
     assert load_settings().falcon_adapter == ""
 
     vlm = FalconVLM("base/model")
