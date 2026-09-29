@@ -132,6 +132,10 @@ uv pip install --python .venv -e ".[dev]"
 cd web; npm test; cd ..
 ```
 
+For a test-only environment in a fresh clone, `uv sync --dev` then `uv run pytest` also works, with versions pinned
+by `uv.lock`. Do not run `uv sync` in the environment from Installation: it removes packages outside the test set,
+such as PyTorch.
+
 **Gradio interface (fallback):** `uv pip install --python .venv -e ".[ui]"`, then `.venv\Scripts\python app.py`.
 
 ## Demo Workflow
