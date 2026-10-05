@@ -651,7 +651,7 @@ def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = ana
                         "about a single date with radar.")
                 return fetch_sar(provider, request, current)
             # One scene can never answer a question about change over time, so such a question gets
-            # two real acquisitions of the same area. Never one scene used twice (CLAUDE.md section 7).
+            # two real acquisitions of the same area. Never one scene used twice.
             if needs_multiple_dates(request.query):
                 return fetch_pair(provider, request, bands, current)
 

@@ -4,7 +4,7 @@ Loads the model exactly as satquery/specialists/falcon.py does (same flash_attn 
 same snapshot_download -> from_pretrained -> .to(device).eval() path), so what is trained here
 is what the app runs.
 
-Self-contained by design, like experiments/model_feasibility/: the app does not import this.
+Self-contained by design: the app does not import this.
 """
 
 import json

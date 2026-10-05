@@ -95,7 +95,7 @@ export function AICommandBar() {
         </div>
       )}
 
-      {/* No explanation box for a selected area: the idle map stays clean (docs/demo-ui-notes.md). Data
+      {/* No explanation box for a selected area: the idle map stays clean. Data
           sources and retrieval details live in Help, Details and the result's provenance. */}
 
       {areaShapeUnsupported && !error && (

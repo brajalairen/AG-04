@@ -29,7 +29,7 @@ def _load_env_file() -> None:
 @dataclass(frozen=True)
 class Settings:
     vlm_backend: str = "fake"  # "falcon" (real model) or "fake" (deterministic, for tests/dev)
-    falcon_model_id: str = "mehmetbayik/Falcon-Single-Instruction-Large"  # provenance: docs/decisions.md D-021
+    falcon_model_id: str = "mehmetbayik/Falcon-Single-Instruction-Large"  # provenance: decision D-021
     falcon_adapter: str = DEFAULT_ADAPTER  # LoRA adapter path or HF repo id; empty means the unadapted base model
     device: str = "auto"  # "auto", "cuda" or "cpu"
     num_beams: int = 3

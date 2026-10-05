@@ -9,8 +9,8 @@ also be uploaded by hand to try the upload workflow.
   {
     "label": "Cross-modal: water and built-up",
     "images": [
-      {"path": "bigearthnet_patch1/s2_bgrn.tif", "modality": "optical"},
-      {"path": "bigearthnet_patch1/s1_vv_vh.tif", "modality": "sar"}
+      {"path": "bigearthnet_coast_finland/s2_bgrn.tif", "modality": "optical"},
+      {"path": "bigearthnet_coast_finland/s1_vv_vh.tif", "modality": "sar"}
     ],
     "query": "Use the optical and SAR images together to identify built-up and water-covered regions."
   }

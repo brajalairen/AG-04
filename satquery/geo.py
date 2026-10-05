@@ -1,9 +1,9 @@
 """Pixel to geographic conversion for map display. Pure raster code: no ML, no agent imports.
 
 Only images that carry both a CRS and an affine transform can be placed on a map. Everything
-here returns None when georeferencing is missing, and never guesses a location (CLAUDE.md §7).
+here returns None when georeferencing is missing, and never guesses a location.
 
-Coordinate spaces are kept distinct by name (CLAUDE.md §8):
+Coordinate spaces are kept distinct by name:
 - `pixel`: column/row of the loaded (possibly decimated) grid
 - `crs`: the image's own projected or geographic coordinates
 - `wgs84`: longitude/latitude in EPSG:4326, what the web map consumes

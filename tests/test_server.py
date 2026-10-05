@@ -158,7 +158,7 @@ def test_drawn_area_restricts_the_analysis(client, write_tiff, area_scene):
 
 
 def test_area_that_misses_the_image_falls_back_and_says_so(client, write_tiff, scene):
-    """A selected area must never be silently ignored (CLAUDE.md §7)."""
+    """A selected area must never be silently ignored."""
     upload = _upload(client, write_tiff("utm.tif", scene, band_names=["blue", "green", "red", "nir"]))
     body = client.post("/api/analyze", json={"query": "Describe this image.",
                                              "images": [{"upload_id": upload["id"]}],
