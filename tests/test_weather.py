@@ -79,6 +79,20 @@ class FakeClient:
         return self.answer
 
 
+class FrozenDate(date):
+    """`date` whose today() is TODAY: the router checks a named date against the server's calendar."""
+
+    @classmethod
+    def today(cls):
+        return TODAY
+
+
+@pytest.fixture(autouse=True)
+def server_today(monkeypatch):
+    """Pin the server's calendar to TODAY, so no test here depends on the day it runs."""
+    monkeypatch.setattr("satquery.agent.forecast.date", FrozenDate)
+
+
 @pytest.fixture
 def http(monkeypatch):
     """Point every OpenMeteoWeather at a scripted answer; returns the recording client."""
