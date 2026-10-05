@@ -59,7 +59,7 @@ The commands below are for Windows PowerShell; on Linux/macOS use `.venv/bin/pyt
 `.venv\Scripts\python`.
 
 ```powershell
-git clone <repository-url> satquery-ai
+git clone https://github.com/brajalairen/SatQuery-AI.git satquery-ai
 cd satquery-ai
 
 # 1. Python environment (with uv; see "Using pip instead" below)
