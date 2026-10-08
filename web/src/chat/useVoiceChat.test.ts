@@ -2,11 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { chunks, speakable } from "./speakable";
 import { useChatStore, type ChatMessage } from "./useChatStore";
 import {
-  BLOCKED, isEcho, liveRecognisers, PAUSED, UNSUPPORTED, useVoiceChat,
+  BLOCKED, ENDPOINT_MS, isEcho, LISTEN_IDLE_MS, liveRecognisers, PAUSED, questionPart, SPEECH_WATCHDOG_MS,
+  UNSTABLE, UNSUPPORTED, userWords, useVoiceChat, voiceTrace,
 } from "./useVoiceChat";
 
-/** SpeechRecognition as Chrome behaves: results accumulate within a session; stop() delivers what is pending and
- *  then ends; abort() ends at once (onend still fires if a handler is attached). */
+/** SpeechRecognition as measured in Chrome: one continuous session; results accumulate (an interim result is
+ *  replaced, a final one stays); abort() reports "aborted" and then ends, asynchronously. */
 class FakeRecognition {
   static instances: FakeRecognition[] = [];
   lang = "";
@@ -25,28 +26,27 @@ class FakeRecognition {
     this.started = true;
   }
   stop() {
-    this.end();
+    queueMicrotask(() => this.end());
   }
   abort() {
-    this.end();
+    queueMicrotask(() => {
+      this.onerror?.({ error: "aborted" });
+      this.end();
+    });
   }
   end() {
     if (this.ended) return;
     this.ended = true;
     this.onend?.();
   }
-  /** Words heard: an interim result, or a final one. Interim text replaces the previous interim result. */
+  /** What the microphone hears: updates the unfinished result, or adds one. */
   say(text: string, final = false) {
+    if (this.ended) return;
     const last = this.results[this.results.length - 1];
     const result = Object.assign([{ transcript: text }], { isFinal: final });
     if (last && !last.isFinal) this.results[this.results.length - 1] = result;
     else this.results.push(result);
     this.onresult?.({ results: this.results });
-  }
-  /** A one-shot utterance: final result, then the end of the session. */
-  hear(text: string) {
-    this.say(text, true);
-    this.end();
   }
   fail(error: string) {
     this.onerror?.({ error });
@@ -65,255 +65,327 @@ class FakeUtterance {
 /** speechSynthesis as Chrome behaves: a queue; cancel() errors every queued utterance with "interrupted". */
 const synth = {
   queue: [] as FakeUtterance[],
-  spokenAll: [] as string[],
+  all: [] as FakeUtterance[],
+  get speaking() {
+    return synth.queue.length > 0;
+  },
+  get pending() {
+    return synth.queue.length > 1;
+  },
   speak: vi.fn((u: FakeUtterance) => {
     synth.queue.push(u);
-    synth.spokenAll.push(u.text);
+    synth.all.push(u);
   }),
-  cancel: vi.fn(() => {
-    const cancelled = synth.queue.splice(0);
-    cancelled.forEach((u) => u.onerror?.({ error: "interrupted" }));
-  }),
+  cancel: vi.fn(() => synth.queue.splice(0).forEach((u) => u.onerror?.({ error: "interrupted" }))),
+  resume: vi.fn(),
   getVoices: () => [{ lang: "en-IN" }],
-  /** The utterance at the head of the queue finishes playing. */
-  finishOne() {
+  finishOne(fireEnd = true) {
     const u = synth.queue.shift();
-    u?.onend?.();
+    if (fireEnd) u?.onend?.();
   },
-  finishAll() {
-    while (synth.queue.length) synth.finishOne();
+  finishAll(fireEnd = true) {
+    while (synth.queue.length) synth.finishOne(fireEnd);
   },
 };
 
 const send = vi.fn();
-const latest = () => FakeRecognition.instances[FakeRecognition.instances.length - 1]!;
+const mic = () => FakeRecognition.instances[FakeRecognition.instances.length - 1]!;
 const voice = () => useVoiceChat.getState();
-// A long answer of plain sentences: all of it is spoken, in many utterances (bullet reasons would be shortened).
-const LONG = Array.from({ length: 12 }, (_, i) =>
-  `Finding ${i + 1}: the rice blast weather window covered ${i + 2} of the last seven days in this farmland.`).join("\n");
+const settle = () => vi.advanceTimersByTimeAsync(10);
+const spokenSince = (n: number) => synth.all.slice(n).map((u) => u.text).join(" ");
+
+// A long answer: every sentence is spoken, in many utterances.
+const LONG = Array.from({ length: 14 }, (_, i) =>
+  `Finding ${i + 1}: Bishnupur currently has a high risk because the rice blast window covered ${i + 2} days.`).join("\n");
 const RANKING = "#1 Bishnupur farmland near Nambol: HIGH, 71/100 (confidence low).\nPLACEHOLDER thresholds: prototype scores.";
 
 function reply(text: string): ChatMessage {
   return { id: `r${send.mock.calls.length}`, role: "assistant", kind: "answer", text, via: "voice" };
 }
 
-/** Start Voice Chat, ask a question, and wait until its answer is being spoken. */
+/** The user says a whole sentence and pauses. */
+async function userSays(text: string) {
+  mic().say(text, true);
+  await vi.advanceTimersByTimeAsync(ENDPOINT_MS + 10);
+}
+
+/** Start (if needed), ask, and get to the point where the answer is being spoken. */
 async function askAndSpeak(question: string, answer: string) {
   send.mockResolvedValueOnce(reply(answer));
   if (voice().status === "idle") voice().start();
-  latest().hear(question);
-  await vi.waitFor(() => expect(voice().status).toBe("speaking"));
-  synth.cancel.mockClear(); // speak() clears any earlier speech first; count only cancellations from here on
+  await userSays(question);
+  expect(voice().status).toBe("speaking");
+  synth.cancel.mockClear();
+}
+
+function refusedTransitions() {
+  return voiceTrace().filter((e) => e.event.startsWith("refused"));
 }
 
 beforeEach(() => {
+  vi.useFakeTimers();
   FakeRecognition.instances = [];
   synth.queue = [];
-  synth.spokenAll = [];
+  synth.all = [];
   synth.speak.mockClear();
   synth.cancel.mockClear();
   send.mockReset();
   vi.stubGlobal("webkitSpeechRecognition", FakeRecognition);
   vi.stubGlobal("speechSynthesis", synth);
   vi.stubGlobal("SpeechSynthesisUtterance", FakeUtterance);
-  useChatStore.setState({ open: false, send });
+  useChatStore.setState({ open: false, pending: false, send });
   useVoiceChat.setState({ status: "idle", hearing: "", notice: null });
 });
 
-afterEach(() => {
+afterEach(async () => {
   voice().stop();
-  vi.unstubAllGlobals();
+  await vi.advanceTimersByTimeAsync(2000);
   vi.useRealTimers();
+  vi.unstubAllGlobals();
 });
 
-describe("echo filter", () => {
+describe("words heard while the app speaks", () => {
   const spoken = "Number 1 Jiribam farmland near Kamaranga: HIGH, 71 out of 100 (confidence low). PLACEHOLDER thresholds.";
-  it("recognises the app's own voice, even partly misheard", () => {
+  it("removes the app's own words, run by run, and keeps the user's", () => {
     expect(isEcho("jiribam farmland near kamaranga", spoken)).toBe(true);
-    expect(isEcho("number one jiribam farmland near", spoken)).toBe(true);
     expect(isEcho("71 out of 100 confidence low", spoken)).toBe(true);
+    expect(userWords("jiribam farmland near what about thoubal", [spoken])).toBe("what about thoubal");
+    expect(userWords("why is jiribam high", [spoken])).toBe("why is jiribam high");
+    expect(userWords("farmland", [spoken])).toBe(""); // a lone word of the answer is echo
+    expect(userWords("stop", [spoken])).toBe("stop");
   });
-  it("hears the user, even when they repeat words of the answer", () => {
-    expect(isEcho("stop", spoken)).toBe(false);
-    expect(isEcho("what about thoubal", spoken)).toBe(false);
-    expect(isEcho("why is jiribam high", spoken)).toBe(false);
+  it("finds the question in what was said", () => {
+    expect(questionPart("Okay, what about Thoubal?")).toBe("what about Thoubal?");
+    expect(questionPart("Stop. Wait.")).toBe("");
   });
 });
 
-describe("Voice Chat", () => {
-  it("one click starts listening in English and opens the conversation", () => {
-    voice().start();
-    expect(voice().status).toBe("listening");
-    expect(latest()).toMatchObject({ started: true, lang: "en-IN", continuous: false });
-    expect(useChatStore.getState().open).toBe(true);
-  });
-
-  it("A: a whole answer is spoken, then it listens again by itself", async () => {
+describe("Voice Chat lifecycle", () => {
+  it("normal turn: one continuous session, the answer spoken in full, then listening again by itself", async () => {
     await askAndSpeak("Which areas are at high risk?", RANKING);
     expect(send).toHaveBeenCalledWith("Which areas are at high risk?", "voice");
-    expect(synth.spokenAll.join(" ")).toContain("71 out of 100");
-    expect(synth.spokenAll.join(" ")).toContain("PLACEHOLDER thresholds");
-    expect(latest()).toMatchObject({ continuous: true, interimResults: true, started: true }); // barge-in listener
-    expect(liveRecognisers()).toBe(1);
-
+    expect(useChatStore.getState().open).toBe(true);
+    expect(spokenSince(0)).toContain("71 out of 100");
+    expect(spokenSince(0)).toContain("PLACEHOLDER thresholds");
     synth.finishAll();
     expect(voice().status).toBe("listening");
-    expect(latest()).toMatchObject({ continuous: false, started: true }); // a fresh turn, no click needed
-    expect(liveRecognisers()).toBe(1);
+    expect(FakeRecognition.instances).toHaveLength(1); // the microphone was never stopped and restarted
+    expect(mic()).toMatchObject({ continuous: true, interimResults: true, started: true, ended: false });
+    expect(refusedTransitions()).toEqual([]);
   });
 
-  it("B: speaking is cancelled at the user's first words, before their sentence is finished", async () => {
-    await askAndSpeak("Which areas are at high risk?", LONG);
-    synth.finishOne(); // a second or so of the answer
-    const bargeIn = latest();
-    bargeIn.say("stop"); // interim: the sentence is not over
+  it("a pause inside a sentence does not cut it: 'Okay, ... what about Thoubal?'", async () => {
+    voice().start();
+    send.mockResolvedValueOnce(reply("Thoubal: MODERATE, 36/100."));
+    mic().say("okay", true);
+    await vi.advanceTimersByTimeAsync(500);
+    mic().say("what about thoubal", true);
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + 10);
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(send).toHaveBeenCalledWith("what about thoubal", "voice");
+  });
 
+  it.each([
+    ["at the beginning", 0],
+    ["after about 3 seconds", 1],
+    ["halfway through", 3],
+    ["near the end", -1],
+  ])("interrupting %s stops speech at the user's first words, and only their question is asked", async (_, played) => {
+    await askAndSpeak("Which areas are at high risk?", LONG);
+    const toPlay = played < 0 ? synth.queue.length - 1 : played;
+    for (let i = 0; i < toPlay; i += 1) synth.finishOne();
+    expect(voice().status).toBe("speaking");
+    const before = synth.all.length;
+
+    mic().say("what about"); // interim, first words: a candidate
+    expect(synth.cancel).not.toHaveBeenCalled();
+    mic().say("what about thoubal"); // confirmed by the next result: interrupt now, before the sentence ends
     expect(synth.cancel).toHaveBeenCalledTimes(1);
     expect(synth.queue).toHaveLength(0);
     expect(voice().status).toBe("listening");
-    expect(voice().hearing).toBe("stop");
-    expect(send).toHaveBeenCalledTimes(1); // nothing sent until the user finishes
-    expect(FakeRecognition.instances).toHaveLength(2); // the cancelled answer's callbacks started nothing
-  });
-
-  it("C and D: interrupting mid-answer captures the whole new question and answers it instead", async () => {
-    await askAndSpeak("Which areas are at high risk?", LONG);
-    for (let i = 0; i < 3; i += 1) synth.finishOne(); // halfway through
-    const bargeIn = latest();
-    const spokenBefore = synth.spokenAll.length;
+    expect(voice().hearing).toBe("what about thoubal");
 
     send.mockResolvedValueOnce(reply("Thoubal farmland near Chaobok: MODERATE, 36/100."));
-    bargeIn.say("stop what about");
-    expect(synth.cancel).toHaveBeenCalled();
-    bargeIn.say("stop what about thoubal", true); // final: the utterance is complete
-
-    await vi.waitFor(() => expect(voice().status).toBe("speaking"));
-    expect(send).toHaveBeenLastCalledWith("what about thoubal", "voice"); // the question, without the "stop"
-    const newSpeech = synth.spokenAll.slice(spokenBefore).join(" ");
-    expect(newSpeech).toContain("Thoubal");
-    expect(newSpeech).not.toContain("Finding"); // nothing more of the old answer
+    mic().say("what about thoubal", true);
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + 10);
+    expect(send).toHaveBeenLastCalledWith("what about thoubal", "voice");
+    expect(voice().status).toBe("speaking");
+    expect(spokenSince(before)).toContain("Thoubal");
+    expect(spokenSince(before)).not.toContain("Finding"); // the old answer never resumes
+    expect(FakeRecognition.instances).toHaveLength(1);
+    expect(refusedTransitions()).toEqual([]);
   });
 
-  it("'Stop. What about Bishnupur?' asks the question; a bare 'Stop.' asks nothing and listens again", async () => {
+  it("'stop' interrupts at once, and alone asks nothing", async () => {
     await askAndSpeak("Which areas are at high risk?", LONG);
-    send.mockResolvedValueOnce(reply("Bishnupur: LOW, 29/100."));
-    latest().say("Stop. What about Bishnupur?", true);
-    await vi.waitFor(() => expect(send).toHaveBeenLastCalledWith("What about Bishnupur?", "voice"));
-
-    await vi.waitFor(() => expect(voice().status).toBe("speaking"));
-    latest().say("stop", true);
-    expect(synth.queue).toHaveLength(0); // stopped at once
+    mic().say("stop");
+    expect(synth.queue).toHaveLength(0);
     expect(voice().status).toBe("listening");
-    expect(send).toHaveBeenCalledTimes(2); // "stop" alone was not sent as a question
-    expect(latest()).toMatchObject({ continuous: false, started: true });
+    mic().say("stop", true);
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + 10);
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(voice().status).toBe("listening");
   });
 
-  it("E: repeated interruptions keep one listener, one answer playing, and a working loop", async () => {
+  it("a phrase mixing the app's voice and the user's is cut down to the user's words", async () => {
     await askAndSpeak("Which areas are at high risk?", LONG);
-    for (const question of ["what about thoubal", "and kakching please", "why is bishnupur high"]) {
+    send.mockResolvedValueOnce(reply("Thoubal: MODERATE."));
+    mic().say("bishnupur currently has a high risk what about thoubal", true); // final: interrupts at once
+    expect(voice().status).toBe("listening");
+    mic().say("because the rice blast window", true); // the cancelled answer's last echo, arriving late
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + 10);
+    expect(send).toHaveBeenLastCalledWith("what about thoubal", "voice");
+  });
+
+  it("the app's own voice never interrupts it", async () => {
+    await askAndSpeak("Which areas are at high risk?", RANKING);
+    mic().say("number 1 bishnupur farmland near");
+    mic().say("number 1 bishnupur farmland near nambol high 71 out of 100", true);
+    mic().say("farmland"); // one word of the answer
+    mic().say("prototype scores", true);
+    mic().say("barn yard"); // two misheard words, once: not confirmed
+    mic().say("placeholder thresholds", true); // and gone again
+    expect(synth.cancel).not.toHaveBeenCalled();
+    expect(voice().status).toBe("speaking");
+    synth.finishAll();
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + 10);
+    expect(voice().status).toBe("listening");
+    expect(send).toHaveBeenCalledTimes(1); // no echo was ever sent as a question
+  });
+
+  it("rapid repeated interruptions: one session, only the newest answer, no stuck state", async () => {
+    await askAndSpeak("Which area has the highest risk?", LONG);
+    for (const question of ["what about thoubal", "and kakching please", "why is bishnupur high", "what about jiribam"]) {
       const answer = `${question}: LOW, 20/100. ${LONG}`;
       send.mockResolvedValueOnce(reply(answer));
-      latest().say(question, true);
-      await vi.waitFor(() => expect(send).toHaveBeenLastCalledWith(question, "voice"));
-      await vi.waitFor(() => expect(voice().status).toBe("speaking"));
+      synth.finishOne();
+      mic().say(question, true);
+      expect(voice().status).toBe("listening");
+      await vi.advanceTimersByTimeAsync(ENDPOINT_MS + 10);
+      expect(send).toHaveBeenLastCalledWith(question, "voice");
+      expect(voice().status).toBe("speaking");
+      expect(synth.queue.map((u) => u.text)).toEqual(chunks(speakable(answer))); // nothing of an older answer
       expect(liveRecognisers()).toBe(1);
-      expect(synth.queue.map((u) => u.text)).toEqual(chunks(speakable(answer))); // only the new answer is queued
     }
-    expect(send).toHaveBeenCalledTimes(4);
+    expect(FakeRecognition.instances).toHaveLength(1);
     synth.finishAll();
     expect(voice().status).toBe("listening");
-    expect(liveRecognisers()).toBe(1);
+    expect(refusedTransitions()).toEqual([]);
   });
 
-  it("F: Stop while speaking ends speech and listening, and nothing restarts afterwards", async () => {
+  it("a cancelled answer's end event, fired late, changes nothing", async () => {
     await askAndSpeak("Which areas are at high risk?", LONG);
-    const bargeIn = latest();
-    const count = FakeRecognition.instances.length;
-    voice().stop();
+    const oldLast = synth.queue[synth.queue.length - 1]!;
+    const oldEnd = oldLast.onend;
+    send.mockResolvedValueOnce(reply(`Thoubal: MODERATE. ${LONG}`));
+    await userSays("what about thoubal");
+    expect(voice().status).toBe("speaking");
+    oldEnd?.(); // the browser reports the old answer's end after all
+    expect(voice().status).toBe("speaking");
+    expect(oldLast.onend).toBeNull(); // detached before cancelling
+  });
 
-    expect(synth.cancel).toHaveBeenCalled();
+  it("speech that ends without an end event is noticed, and listening resumes", async () => {
+    await askAndSpeak("Which areas are at high risk?", RANKING);
+    synth.finishAll(false); // the browser drops the end event
+    await vi.advanceTimersByTimeAsync(SPEECH_WATCHDOG_MS + 300);
+    expect(voice().status).toBe("listening");
+  });
+
+  it("Stop while speaking ends speech and the microphone, and nothing restarts", async () => {
+    await askAndSpeak("Which areas are at high risk?", LONG);
+    const session = mic();
+    voice().stop();
     expect(synth.queue).toHaveLength(0);
     expect(voice().status).toBe("idle");
+    await settle();
+    expect(session.ended).toBe(true);
     expect(liveRecognisers()).toBe(0);
-    bargeIn.say("hello there", true); // a late result from the stopped listener
-    bargeIn.end();
-    expect(FakeRecognition.instances).toHaveLength(count);
+    session.say("hello there", true); // late events of the stopped session
+    await vi.advanceTimersByTimeAsync(LISTEN_IDLE_MS + 5000);
+    expect(FakeRecognition.instances).toHaveLength(1);
     expect(send).toHaveBeenCalledTimes(1);
     expect(voice().status).toBe("idle");
   });
 
-  it("F: an answer that arrives after Stop is never spoken", async () => {
+  it("an answer arriving after Stop is never spoken", async () => {
     let deliver: (m: ChatMessage) => void = () => {};
     send.mockReturnValueOnce(new Promise<ChatMessage>((resolve) => (deliver = resolve)));
     voice().start();
-    latest().hear("Which areas are at high risk?");
+    await userSays("Which areas are at high risk?");
     expect(voice().status).toBe("processing");
     voice().stop();
     deliver(reply(RANKING));
-    await Promise.resolve();
-    await Promise.resolve();
+    await settle();
     expect(synth.speak).not.toHaveBeenCalled();
     expect(voice().status).toBe("idle");
   });
 
-  it("G: leaving the conversation while speaking ends Voice Chat", async () => {
+  it("switching to Conversation while speaking stops everything; Voice Chat then restarts cleanly", async () => {
     await askAndSpeak("Which areas are at high risk?", LONG);
     useChatStore.getState().setOpen(false);
     expect(voice().status).toBe("idle");
     expect(synth.queue).toHaveLength(0);
+    await settle();
     expect(liveRecognisers()).toBe(0);
-  });
 
-  it("H: the app's own voice never interrupts it", async () => {
-    await askAndSpeak("Which areas are at high risk?", RANKING);
-    const bargeIn = latest();
-    bargeIn.say("number 1 bishnupur farmland near");
-    bargeIn.say("number 1 bishnupur farmland near nambol high 71 out of 100", true);
-    bargeIn.say("farm"); // one misheard word is not enough either
-    expect(synth.cancel).not.toHaveBeenCalled();
-    expect(voice().status).toBe("speaking");
-    expect(voice().hearing).toBe("");
-
-    synth.finishAll();
+    voice().start(); // straight back
+    await settle();
     expect(voice().status).toBe("listening");
-    expect(send).toHaveBeenCalledTimes(1); // the echo was never sent as a question
-  });
-
-  it("keeps listening for an interruption when the browser ends the listener on silence", async () => {
-    await askAndSpeak("Which areas are at high risk?", LONG);
-    const first = latest();
-    first.fail("no-speech");
-    expect(latest()).not.toBe(first);
-    expect(latest()).toMatchObject({ continuous: true, started: true });
-    expect(voice().status).toBe("speaking");
+    expect(FakeRecognition.instances).toHaveLength(2);
     expect(liveRecognisers()).toBe(1);
+    send.mockResolvedValueOnce(reply(RANKING));
+    await userSays("Which areas are at high risk?");
+    expect(voice().status).toBe("speaking");
   });
 
-  it("an interrupted utterance that never ends is closed after a bounded time", async () => {
-    await askAndSpeak("Which areas are at high risk?", LONG);
-    vi.useFakeTimers();
-    send.mockResolvedValueOnce(reply("Thoubal: MODERATE, 36/100."));
-    latest().say("what about thoubal"); // interim only, and the browser never finalises it
-    expect(voice().status).toBe("listening");
-    vi.advanceTimersByTime(8000);
-    vi.useRealTimers();
-    await vi.waitFor(() => expect(send).toHaveBeenLastCalledWith("what about thoubal", "voice"));
-  });
-
-  it("pauses after two turns without speech", () => {
+  it("if the user goes on talking while the answer is fetched, the whole utterance is asked", async () => {
+    let deliverFirst: (m: ChatMessage) => void = () => {};
+    send.mockReturnValueOnce(new Promise<ChatMessage>((resolve) => (deliverFirst = resolve)));
     voice().start();
-    latest().fail("no-speech");
+    await userSays("what about");
+    expect(voice().status).toBe("processing");
+    useChatStore.setState({ pending: true }); // the first question is still being answered
+    mic().say("thoubal in the valley", true);
     expect(voice().status).toBe("listening");
-    latest().fail("no-speech");
-    expect(voice()).toMatchObject({ status: "idle", notice: PAUSED });
-    expect(send).not.toHaveBeenCalled();
+    send.mockResolvedValueOnce(reply("Thoubal: MODERATE."));
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + 10);
+    expect(send).toHaveBeenCalledTimes(1); // waits for the first to finish
+    useChatStore.setState({ pending: false });
+    deliverFirst(reply("Which list do you mean?"));
+    await vi.advanceTimersByTimeAsync(200);
+    expect(send).toHaveBeenLastCalledWith("what about thoubal in the valley", "voice");
+    expect(spokenSince(0)).not.toContain("Which list"); // the stale answer is not spoken
+  });
+
+  it("a session the browser ends on silence is replaced, keeping the words heard so far", async () => {
+    voice().start();
+    mic().say("what about");
+    const first = mic();
+    first.fail("no-speech");
+    expect(FakeRecognition.instances).toHaveLength(2);
+    send.mockResolvedValueOnce(reply("Thoubal: MODERATE."));
+    await userSays("thoubal");
+    expect(send).toHaveBeenCalledWith("what about thoubal", "voice");
+  });
+
+  it("stops with an error when the microphone keeps disconnecting", async () => {
+    voice().start();
+    for (let i = 0; i < 8 && voice().status !== "error"; i += 1) mic().fail("network");
+    expect(voice()).toMatchObject({ status: "error", notice: UNSTABLE });
   });
 
   it("stops with an error when the microphone is blocked", () => {
     voice().start();
-    latest().fail("not-allowed");
+    mic().fail("not-allowed");
     expect(voice()).toMatchObject({ status: "error", notice: BLOCKED });
-    expect(liveRecognisers()).toBe(0);
+  });
+
+  it("pauses after listening for a while without speech", async () => {
+    voice().start();
+    await vi.advanceTimersByTimeAsync(LISTEN_IDLE_MS + 10);
+    expect(voice()).toMatchObject({ status: "idle", notice: PAUSED });
+    expect(send).not.toHaveBeenCalled();
   });
 
   it("explains instead of starting when the browser cannot do it", () => {
