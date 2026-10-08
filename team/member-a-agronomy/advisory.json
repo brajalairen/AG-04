@@ -1,0 +1,119 @@
+{
+  "status": "DRAFT",
+  "note": "General, non-chemical guidance only, each item taken from the cited source (close paraphrase; quoted where marked). No pesticide or fungicide names or doses, and no contact numbers or e-mail addresses: chemical control is left to the Department of Agriculture / KVK. DRAFT until an agronomist (Department of Agriculture or KVK) checks it and fills verified_by/verified_on. Dashboard signals are risk indicators, not a diagnosis.",
+  "verified_by": null,
+  "verified_on": null,
+  "general": [
+    {
+      "kind": "use_of_dashboard",
+      "text": "A high risk level means weather, satellite and report indicators suggest conditions that favour a pest or disease. It does not confirm that the pest or disease is present. When indicators rise, inspect the field and consult the local Department of Agriculture office or KVK before taking any control measure.",
+      "source": "AG-04 project policy (decision support only; the final assessment rests with the Department of Agriculture). Not an external scientific source."
+    }
+  ],
+  "pests": [
+    {
+      "pest_id": "rice_blast",
+      "name": "Rice blast (leaf / neck)",
+      "crop": "rice",
+      "items": [
+        {
+          "kind": "symptoms",
+          "text": "Leaf lesions start as white to grey-green spots with dark green borders. Older lesions are elliptical or spindle-shaped, with whitish to grey centres and red-brown or dead borders, and can merge to kill whole leaves. Blast can affect the crop at all growth stages, including seedlings.",
+          "source": "IRRI Rice Knowledge Bank / Rice Doctor fact sheet: Blast (Leaf and Collar)",
+          "url": "http://www.knowledgebank.irri.org/training/fact-sheets/pest-management/diseases/item/blast-leaf-collar"
+        },
+        {
+          "kind": "symptoms",
+          "text": "Neck lesions are greyish brown and can girdle the neck so the panicle falls over. If the neck is infected before the milky stage, no grain is formed; later infection gives poor-quality grain. Neck and node blast can cause white panicles similar to stem borer damage; with blast, tugging the stem does not pull it out.",
+          "source": "IRRI Rice Knowledge Bank / Rice Doctor fact sheet: Blast (Node and Neck)",
+          "url": "https://keyserver.lucidcentral.org/key-server/data/0e090d01-0209-460e-810c-0d060708030c/media/Html/Blast_(Node_and_Neck).htm"
+        },
+        {
+          "kind": "look_alike",
+          "text": "Blast lesions are often confused with brown spot. Leaf blast lesions are usually elongated and pointed at each end; brown spot lesions tend to be rounder, brown, with a yellow halo.",
+          "source": "IRRI Rice Knowledge Bank / Rice Doctor fact sheet: Blast (Leaf and Collar)",
+          "url": "http://www.knowledgebank.irri.org/training/fact-sheets/pest-management/diseases/item/blast-leaf-collar"
+        },
+        {
+          "kind": "weather_link",
+          "text": "\"Rice blast is favored by low temperatures (22-28°C), high relative humidity (>95%), dew deposits, leaf wetness for more than 10 hours, application of high nitrogen and aerobic soils.\"",
+          "source": "DPPQ&S (Government of India) advisory on blast disease on rice, 22.07.2022",
+          "url": "https://ppqs.gov.in/sites/default/files/rice_blast_advisory.pdf"
+        },
+        {
+          "kind": "prevention",
+          "text": "Keep the field clean: remove infected seeds, panicles and plant debris after harvest, and remove and destroy diseased plant parts. Rotate with non-host crops. Use high-quality, disease-free certified seed. Keep a proper water level: blast is more severe where the water in the paddy falls below recommended levels.",
+          "source": "DPPQ&S (Government of India) advisory on blast disease on rice, 22.07.2022",
+          "url": "https://ppqs.gov.in/sites/default/files/rice_blast_advisory.pdf"
+        },
+        {
+          "kind": "prevention",
+          "text": "The primary control option is to plant resistant varieties. Split nitrogen fertiliser into two or more applications: excessive fertiliser can increase blast intensity.",
+          "source": "IRRI Rice Knowledge Bank / Rice Doctor fact sheet: Blast (Leaf and Collar)",
+          "url": "http://www.knowledgebank.irri.org/training/fact-sheets/pest-management/diseases/item/blast-leaf-collar"
+        },
+        {
+          "kind": "chemical_control",
+          "text": "Use fungicides only on the advice of the Department of Agriculture / KVK and only as per the label claim approved by the Registration Committee.",
+          "source": "DPPQ&S (Government of India) advisory on blast disease on rice, 22.07.2022 (\"Fungicides must be used as per label claim approval by the Registration Committee.\")",
+          "url": "https://ppqs.gov.in/sites/default/files/rice_blast_advisory.pdf"
+        },
+        {
+          "kind": "when_to_contact",
+          "text": "Report suspected blast (spindle-shaped leaf lesions, neck lesions, white panicles) to the local Department of Agriculture office or KVK. The advisory asks district, division and block officials to take suitable plant protection measures and to monitor incidence regularly.",
+          "source": "DPPQ&S (Government of India) advisory on blast disease on rice, 22.07.2022",
+          "url": "https://ppqs.gov.in/sites/default/files/rice_blast_advisory.pdf"
+        }
+      ]
+    },
+    {
+      "pest_id": "brown_planthopper",
+      "name": "Brown planthopper",
+      "crop": "rice",
+      "items": [
+        {
+          "kind": "symptoms",
+          "text": "Hopperburn: circular yellow patches appear and soon turn brown as plants dry up; the patches can spread over the whole field. Grain setting is affected. The insects feed near the base of the tillers and excrete honeydew; sooty mould at the plant base helps confirm planthoppers.",
+          "source": "DPPQ&S (Government of India) advisory on Brown Plant Hopper on rice, July 2022; IRRI Rice Knowledge Bank fact sheet: Planthopper",
+          "url": "https://ppqs.gov.in/sites/default/files/rce_bph_advisory.pdf"
+        },
+        {
+          "kind": "weather_link",
+          "text": "Occurs in rainfed and irrigated wetland rice, and in areas with continuous submerged conditions, high shade and humidity. A closed canopy, dense seeding, excessive nitrogen and early-season insecticide spraying also favour it. High relative humidity increases planthopper populations. These sources give no numeric weather threshold.",
+          "source": "IRRI Rice Knowledge Bank fact sheet: Planthopper; NCIPM/DPPQ&S/NIPHM Integrated Pest Management Package for Rice (2014)",
+          "url": "http://www.knowledgebank.irri.org/training/fact-sheets/pest-management/insects/item/planthopper"
+        },
+        {
+          "kind": "monitoring",
+          "text": "At a density of 1 BPH per stem or less there is still time to act if numbers increase. Look for BPH daily in the seedbed and weekly in the field: bend the plant over slightly and tap it near the base to see if planthoppers fall onto the water. There is no need to scout for BPH beyond the milk stage.",
+          "source": "IRRI Rice Knowledge Bank fact sheet: Planthopper",
+          "url": "http://www.knowledgebank.irri.org/training/fact-sheets/pest-management/insects/item/planthopper"
+        },
+        {
+          "kind": "prevention",
+          "text": "Keep main fields and bunds free of weeds that harbour BPH. Plant neighbouring fields within 3 weeks of each other (synchronous planting). When heavy infestations occur, drain the field for at least 3-4 days (alternate wetting and drying). Avoid excess nitrogen and split nitrogen applications. Conserve natural enemies such as spiders, mirid bugs and beetles.",
+          "source": "DPPQ&S (Government of India) advisory on Brown Plant Hopper on rice, July 2022",
+          "url": "https://ppqs.gov.in/sites/default/files/rce_bph_advisory.pdf"
+        },
+        {
+          "kind": "prevention",
+          "text": "Avoid indiscriminate insecticide use, which destroys natural enemies and can cause outbreaks. Use a resistant variety; ask the local agriculture office for an up-to-date list of available varieties.",
+          "source": "IRRI Rice Knowledge Bank fact sheet: Planthopper",
+          "url": "http://www.knowledgebank.irri.org/training/fact-sheets/pest-management/insects/item/planthopper"
+        },
+        {
+          "kind": "chemical_control",
+          "text": "Use pesticides only on the advice of the Department of Agriculture / KVK and only as per the label claim approved by the Registration Committee.",
+          "source": "DPPQ&S (Government of India) advisory on Brown Plant Hopper on rice, July 2022 (\"Pesticide must be used as per label claim approval by the Registration Committee.\")",
+          "url": "https://ppqs.gov.in/sites/default/files/rce_bph_advisory.pdf"
+        },
+        {
+          "kind": "when_to_contact",
+          "text": "If yellowing or browning patches (hopperburn) appear, or many planthoppers are seen at the base of the tillers, contact the local Department of Agriculture office or KVK.",
+          "source": "IRRI Rice Knowledge Bank fact sheet: Planthopper (\"Contact your local agriculture office\"); DPPQ&S BPH advisory, July 2022",
+          "url": "http://www.knowledgebank.irri.org/training/fact-sheets/pest-management/insects/item/planthopper"
+        }
+      ]
+    }
+  ]
+}

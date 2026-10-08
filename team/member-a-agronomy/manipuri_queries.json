@@ -1,0 +1,96 @@
+{
+  "status": "DRAFT",
+  "note": "Latin-script (romanised) Manipuri queries taken VERBATIM from CompiledDataEnglishToMeitei.xlsx; nothing was composed or machine-translated. Each text is the dataset's human translation of english_meaning (row in dataset_ref). DRAFT: verified_by/verified_on stay empty until a fluent speaker confirms each text and its intent mapping. Intents with no suitable dataset sentence (AREA_RISK_QUERY, AREA_SPECIFIC_RISK, PEST_RISK, CROP_HEALTH) are listed in MEMBER_A_README.md for a fluent speaker to write.",
+  "queries": [
+    {
+      "id": "mni-001",
+      "language": "mni",
+      "script": "Latn",
+      "text": "ei kadāidagi hougadage?",
+      "english_meaning": "Where should I begin?",
+      "intent": "INSPECTION_PRIORITY",
+      "area": null,
+      "dataset_ref": {
+        "dataset": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard')",
+        "row": 91825,
+        "meiteiscript": "ꯑꯩ ꯀꯗꯥꯏꯗꯒꯤ ꯍꯧꯒꯗꯒꯦ?",
+        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+      },
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "The same Manipuri sentence is given independently for 'Where do I begin?' (row 58191, a different source document). AG-04's English router already treats 'where should we start' as an inspection cue. Uses ei (I); a 'we' form is not attested."
+    },
+    {
+      "id": "mni-002",
+      "language": "mni",
+      "script": "Latn",
+      "text": "masi karamna khudongthiningngāi oibano?",
+      "english_meaning": "How is it dangerous?",
+      "intent": "AREA_EXPLANATION",
+      "area": null,
+      "dataset_ref": {
+        "dataset": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard')",
+        "row": 100486,
+        "meiteiscript": "ꯃꯁꯤ ꯀꯔꯝꯅ ꯈꯨꯗꯣꯡꯊꯤꯅꯤꯡꯉꯥꯏ ꯑꯣꯏꯕꯅꯣ?",
+        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+      },
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "masi = this; khudongthiningngāi = risk / danger. Proposed use: asked with a monitored area selected on the map, it reads 'How is this (area) at risk?'. General-domain sentence: a fluent speaker should confirm that reading."
+    },
+    {
+      "id": "mni-003",
+      "language": "mni",
+      "script": "Latn",
+      "text": "masi sāphaba mapham ama oibrā?",
+      "english_meaning": "Is this a safe area?",
+      "intent": "AREA_EXPLANATION",
+      "area": null,
+      "dataset_ref": {
+        "dataset": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard')",
+        "row": 15525,
+        "meiteiscript": "ꯃꯁꯤ ꯁꯥꯐꯕ ꯃꯐꯝ ꯑꯃ ꯑꯣꯏꯕ꯭ꯔꯥ?",
+        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+      },
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "mapham = area. Proposed use: asked with a monitored area selected, AG-04 answers with that area's risk and reasons. General-domain sentence ('safe' in a general sense): a fluent speaker should confirm it fits an agricultural-risk question."
+    },
+    {
+      "id": "mni-004",
+      "language": "mni",
+      "script": "Latn",
+      "text": "aying asā karamna touri?",
+      "english_meaning": "How is the weather?",
+      "intent": "WEATHER_RISK",
+      "area": null,
+      "dataset_ref": {
+        "dataset": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard')",
+        "row": 29434,
+        "meiteiscript": "ꯑꯌꯤꯡ ꯑꯁꯥ ꯀꯔꯝꯅ ꯇꯧꯔꯤ?",
+        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+      },
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "aying asā = weather. Maps to the weather answer for a drawn area."
+    },
+    {
+      "id": "mni-005",
+      "language": "mni",
+      "script": "Latn",
+      "text": "hayeng nong chugādrā?",
+      "english_meaning": "Will it rain tomorrow?",
+      "intent": "WEATHER_RISK",
+      "area": null,
+      "dataset_ref": {
+        "dataset": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard')",
+        "row": 29686,
+        "meiteiscript": "ꯍꯌꯦꯡ ꯅꯣꯡ ꯆꯨꯒꯥꯗ꯭ꯔꯥ?",
+        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+      },
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "hayeng = tomorrow; nong = rain. A forecast question; AG-04's weather answer covers the forecast days."
+    }
+  ]
+}
