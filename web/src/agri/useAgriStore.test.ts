@@ -60,6 +60,8 @@ function answer(extra: Partial<AgriQueryResult> = {}): AgriQueryResult {
     thresholds_status: "PLACEHOLDER",
     includes_sample_data: true,
     disclaimer: "Decision support only.",
+    language: "english",
+    common_intent: "AREA_RISK_QUERY",
     ...extra,
   };
 }

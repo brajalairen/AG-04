@@ -125,6 +125,8 @@ class AgriQueryResult(BaseModel):
     thresholds_status: ThresholdStatus
     includes_sample_data: bool
     disclaimer: str
+    language: Literal["english", "latin_manipuri"] = "english"
+    common_intent: str | None = None  # satquery.agent.language.INTENTS; None when the question must be rephrased
 
 
 def summarise(area: MonitoredArea, a: RiskAssessment) -> AreaSummary:
@@ -227,6 +229,6 @@ def agri_router(service: AssessmentService) -> APIRouter:
                                area_ids=found.area_ids, focus_area_id=found.focus_area_id,
                                computed_at=snapshot.computed_at, thresholds_status=status,
                                includes_sample_data=any(a.includes_sample_data for a in snapshot.assessments),
-                               disclaimer=DISCLAIMER)
+                               disclaimer=DISCLAIMER, language=found.language, common_intent=found.common_intent)
 
     return router

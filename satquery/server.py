@@ -28,6 +28,7 @@ from pydantic import BaseModel, Field, model_validator
 from satquery import geo
 from satquery.agent.intents import (find_target, needs_crop_health, needs_multiple_dates, needs_optical_and_sar,
                                     needs_sar_only, route_query)
+from satquery.agent.language import normalize
 from satquery.api import analyze, answer_weather
 from satquery.evidence import save_png
 from satquery.examples import EXAMPLE_QUERIES, EXAMPLES_DIR, load_scenarios
@@ -192,6 +193,8 @@ class RouteResult(BaseModel):
     route: Literal["weather", "imagery", "mixed", "agri"]
     rule: str
     message: str | None = None  # for "mixed": what to do instead
+    language: Literal["english", "latin_manipuri"] = "english"
+    intent: str | None = None  # the common intent (satquery.agent.language.INTENTS) the route answers, if one
 
 
 class WeatherRequest(BaseModel):
@@ -558,14 +561,19 @@ def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = ana
         """Weather, imagery, or an unsupported mix of both: decided from the wording alone, so the client
         can send a weather question to the weather specialist before any imagery is retrieved."""
         # An agricultural risk question ("Which areas are high risk?") is answered by the risk engine,
-        # checked first: it names no imagery and must never reach the VLM for a visual guess.
-        agri_rule = agri_query.is_agri(request.query, agri.areas())
-        if agri_rule:
-            return RouteResult(route="agri", rule=f"{agri_rule} -> crop & pest risk engine")
+        # checked first: it names no imagery and must never reach the VLM for a visual guess. A crop & pest
+        # risk question that matches no intent goes there too, to be asked to rephrase.
+        found = agri_query.decide(request.query, agri.areas())
+        if found:
+            return RouteResult(route="agri", rule=f"{found.rule} -> crop & pest risk engine",
+                               language=found.language, intent=found.common_intent)
         decided, rule = route_query(request.query)
         message = ("This asks for a weather forecast and a satellite analysis at once, which is not supported yet. "
                    "Please ask the weather question and the imagery question separately.") if decided == "mixed" else None
-        return RouteResult(route=decided, rule=rule, message=message)
+        intent = ("WEATHER_RISK" if decided == "weather" else
+                  "CROP_HEALTH" if decided == "imagery" and needs_crop_health(request.query) else None)
+        return RouteResult(route=decided, rule=rule, message=message, language=normalize(request.query).language,
+                           intent=intent)
 
     @app.post("/api/weather", response_model=AnalyzeResult)
     def weather(request: WeatherRequest) -> AnalyzeResult:

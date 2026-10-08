@@ -1,0 +1,2004 @@
+{
+  "status": "DRAFT",
+  "note": "Latin-script Manipuri agricultural terms. Every form is attested in CompiledDataEnglishToMeitei.xlsx; the evidence rows are quoted verbatim. Which word in a sentence matches the English term was read off the sentence pairs (co-occurrence across many rows, then checked row by row); that alignment is what a fluent speaker must confirm before verified_by/verified_on are filled. Terms not attested in the dataset are left out and listed in MEMBER_A_README.md. cue_words are question and reference words (why, how, which, where, first, this, here, high, very, is) with the same evidence; the router (satquery/agent/language.py) reads terms and cue words as concepts to recognise the intent of a Latin Manipuri question. An optional 'concept' field overrides the concept a term's category implies.",
+  "terms": [
+    {
+      "id": "term-crop",
+      "category": "crop",
+      "english": "crop / crops",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "mahei-marong"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 104512, 2203, 13984, 88970",
+      "evidence": [
+        {
+          "row": 104512,
+          "english": "The crops have ripen.",
+          "romanstandard": "mahei-marongsing adu mapung phāre.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 2203,
+          "english": "Crops are grown everyday.",
+          "romanstandard": "mahei-marongsing numit khudinggi houi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 13984,
+          "english": "All crop was ruined in storm",
+          "romanstandard": "mahei-marong pumnamak nonglei-nungsitta mānghankhi",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 88970,
+          "english": "The crop failed due to failure of rain.",
+          "romanstandard": "nong chudabana maram oiduna mahei marong adu māi pākkhide.",
+          "source_document": "wonder.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Plural mahei-marongsing. Also written maheimarong / mahei marong. 81 of the 97 rows whose English contains 'crop(s)' contain this form."
+    },
+    {
+      "id": "term-rice",
+      "category": "crop",
+      "english": "rice (the grain)",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "cheng"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 17464, 36534, 3203",
+      "evidence": [
+        {
+          "row": 17464,
+          "english": "Rice in the husk is known as paddy",
+          "romanstandard": "makuda leiba cheng asi phou hāina khangnei",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 36534,
+          "english": "My father grows rice.",
+          "romanstandard": "eigi pānthouna cheng thāi.",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 3203,
+          "english": "Rice harvest was very poor.",
+          "romanstandard": "cheng lourok/potthok adu yāmna likkhi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Row 17464 gives the distinction: 'Rice in the husk is known as paddy' = 'makuda leiba cheng asi phou hāina khangnei'. Cooked rice is a different word in the dataset (chāk, chagang: rows 2310, 3462); do not use those for the crop."
+    },
+    {
+      "id": "term-paddy",
+      "category": "crop",
+      "english": "paddy / rice plant (rice in the husk)",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "phou"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 17464, 14882, 88831",
+      "evidence": [
+        {
+          "row": 17464,
+          "english": "Rice in the husk is known as paddy",
+          "romanstandard": "makuda leiba cheng asi phou hāina khangnei",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 14882,
+          "english": "Rice is grown in paddy fields",
+          "romanstandard": "phou asi loubuksingda thāi",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 88831,
+          "english": "But paddy crop needs large amounts of water.",
+          "romanstandard": "adubu phougi mahei marongda eesing yāmna mathou tāi.",
+          "source_document": "wonder.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "phougi = of paddy. Row 88831: 'paddy crop' = 'phougi mahei marong'."
+    },
+    {
+      "id": "term-paddy-field",
+      "category": "crop",
+      "english": "paddy field / rice field",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "phougi loubuk"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 29691, 74517",
+      "evidence": [
+        {
+          "row": 29691,
+          "english": "Will you go to the rice field?",
+          "romanstandard": "nang phougi loubukta chatkadrā?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 74517,
+          "english": "we used buffaloes to plough rice fields.",
+          "romanstandard": "eikhoina eeroising asi phougi loubuksing louubada sijinnarammi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "term-field",
+      "category": "crop",
+      "english": "field (farm field)",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "loubuk"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 10936, 61270, 29817, 14882",
+      "evidence": [
+        {
+          "row": 10936,
+          "english": "in the fields.",
+          "romanstandard": "loubuksingda.",
+          "source_document": "Delver_Magic_3.pdf"
+        },
+        {
+          "row": 61270,
+          "english": "They often work in fields .",
+          "romanstandard": "makhoi ayāmba matamda loubuksingda thabak toui.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 29817,
+          "english": "His field is full of corns",
+          "romanstandard": "mahākki loubuk asi chujākna thalli",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 14882,
+          "english": "Rice is grown in paddy fields",
+          "romanstandard": "phou asi loubuksingda thāi",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "86 of the 97 rows containing loubuk have 'field(s)' in the English. lampāk is also translated 'field' (rows 99363, 15333) but in the sense of an open ground; loubuk is the farm-field word."
+    },
+    {
+      "id": "term-farming",
+      "category": "crop",
+      "english": "farming / cultivation",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "louu-singu"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 2513, 2333, 29436, 36269",
+      "evidence": [
+        {
+          "row": 2513,
+          "english": "I give up farming.",
+          "romanstandard": "ei louu-singu thādoki.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 2333,
+          "english": "I am practicing farming.",
+          "romanstandard": "ei louu-singu touri.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 29436,
+          "english": "How is your farming going?",
+          "romanstandard": "nahākki louu-singu asi karamna chatlibano?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 36269,
+          "english": "Raman likes field farming",
+          "romanstandard": "ramanna loubukki louu-singu pāmmi",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Also louu alone. 'farmland' is attested as 'louu-singugi lam' (row 16288)."
+    },
+    {
+      "id": "term-farmer",
+      "category": "crop",
+      "english": "farmer",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "loumi"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 94565, 3545, 96270",
+      "evidence": [
+        {
+          "row": 94565,
+          "english": "I am a farmer",
+          "romanstandard": "ei loumi amani.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 3545,
+          "english": "Balu is a farmer",
+          "romanstandard": "bālu asi loumi amani.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 96270,
+          "english": "The farmers have benefited the most from the rainfall.",
+          "romanstandard": "nong chubadagi loumisingna khwāidagi henna kānnaba phangle.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Plural loumising. 322 of the 339 rows with 'farmer(s)' in the English contain loumi."
+    },
+    {
+      "id": "term-harvest",
+      "category": "crop",
+      "english": "harvest",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "lourok"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 3203, 61325, 14583",
+      "evidence": [
+        {
+          "row": 3203,
+          "english": "Rice harvest was very poor.",
+          "romanstandard": "cheng lourok/potthok adu yāmna likkhi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 61325,
+          "english": "Labour is required for harvesting",
+          "romanstandard": "lourokkidamak sinmi mathou tāi",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 14583,
+          "english": "Everything depends on the harvest.",
+          "romanstandard": "pumnamak lourokki makhā polli.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "The verb 'to harvest' is attested as lok- (lokpa, loklaba): row 64887 'the harvested crops' = 'loklaba maheimarongsing'."
+    },
+    {
+      "id": "term-seed",
+      "category": "crop",
+      "english": "seed",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "maru"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 29427, 92930, 96240",
+      "evidence": [
+        {
+          "row": 29427,
+          "english": "How do you sow seeds?",
+          "romanstandard": "nangna maru karamna thāgadage?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 92930,
+          "english": "Then seeds were sown.",
+          "romanstandard": "adudagi marusing hunkhi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 96240,
+          "english": "Seeds were sown already.",
+          "romanstandard": "marusing hānnana thākhi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Plural marusing. Homograph: maru also means 'important / main' (maruoiba), so maru alone is ambiguous outside a farming context."
+    },
+    {
+      "id": "term-soil",
+      "category": "crop",
+      "english": "soil",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "leihao"
+        },
+        {
+          "script": "Latn",
+          "text": "leipāk"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 104417, 76237, 72284, 49401",
+      "evidence": [
+        {
+          "row": 104417,
+          "english": "The soil is sandy here.",
+          "romanstandard": "mapham asigi leihao asi leingoigi oi .",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 76237,
+          "english": "All life originates with soil",
+          "romanstandard": "punsi pumnamak leihaodagi houraki",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 72284,
+          "english": "land through reforestation and soil conservation.",
+          "romanstandard": "lam asi amuk hanna umang houdokpa amasung leipāk ngāksenbagi khutthāngda phangngi.",
+          "source_document": "THE SANGAI EXPRESS Thoungamba"
+        },
+        {
+          "row": 49401,
+          "english": "Farmers, students briefed on soil health management",
+          "romanstandard": "loumising, maheiroisingda leipakki phibam phajana sennabagi matangda khanghankhi.",
+          "source_document": "Poknampham"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Two words are attested. leihao: soil as material (row 104417 'The soil is sandy here'). leipāk (also leipak): land/soil, used for 'soil conservation' and 'soil health' in news text (rows 72284, 49401); it also means 'land/country'. A fluent speaker should choose the preferred word for agricultural soil."
+    },
+    {
+      "id": "term-plant",
+      "category": "crop",
+      "english": "plant",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "pāmbi"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 43065, 14240, 104410",
+      "evidence": [
+        {
+          "row": 43065,
+          "english": "Plants grow.",
+          "romanstandard": "pāmbi houwe.",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 14240,
+          "english": "Water the plants well",
+          "romanstandard": "pāmbisingda phajana eesing piyu",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 104410,
+          "english": "Have you watered the plants today?",
+          "romanstandard": "nahākna ngasi pāmbisingda eesing pikhrabrā?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Plural pāmbising."
+    },
+    {
+      "id": "term-pest",
+      "category": "pest",
+      "english": "pest",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "tin-kāng"
+        },
+        {
+          "script": "Latn",
+          "text": "pesat"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 92419, 46675, 64400",
+      "evidence": [
+        {
+          "row": 92419,
+          "english": "There were no pest or disease incidences.",
+          "romanstandard": "tin kāng nattraga lāināgi thoudok amatta leikhide.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 46675,
+          "english": "A panel of scientist -judges will test entries for taste as well as infestation by pests and diseases. The winning orange farmer will receive a prize of Rs 2 lakh.",
+          "romanstandard": "saintisat-jajasinggi penel amana mahau amasung tin-kang amasung lainasingna changsinbagi matangda entrising changyeng tougani. maipaklaba komlagi loumi aduna lupa lakha 2gi mana ama phanggani.",
+          "source_document": "Poknampham"
+        },
+        {
+          "row": 64400,
+          "english": "of Integrated Pest ‘Management (IPM) practices.",
+          "romanstandard": "intigareteda pesat ‘menejament (āi.pi.em.) parektisasinggi matāngda.",
+          "source_document": "THE SANGAI EXPRESS MULTIPLE FILESThoungamba"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "tin-kāng (also written tin kāng / tinkāng / tin-kang) is the general 'insect / bug' word; row 92419 uses it for 'pest' and row 46675 for pests of an orange crop. pesat is the English loanword, used in 'Integrated Pest Management' (row 64400). 'Infestation' and 'pest outbreak' are NOT attested (see MEMBER_A_README.md)."
+    },
+    {
+      "id": "term-insect",
+      "category": "pest",
+      "english": "insect",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "tin"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 17513, 17509, 8302, 31824",
+      "evidence": [
+        {
+          "row": 17513,
+          "english": "There are many Blood-sucking insects in the jungle.",
+          "romanstandard": "umang asida ee chukpa tin kayā leiri.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 17509,
+          "english": "there are several dangerous insects in the jungle .",
+          "romanstandard": "umang asida khudongthiningngāi oiba tin kayā ama lei.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 8302,
+          "english": "The giant insect stood above ground, but all six legs remained anchored into the dirt street.",
+          "romanstandard": "achouba tin adu leimāigi mathakta lepkhi, adubu makhong taruk mapung phāna leikhom leiba lambi aduda lengdana leikhi.",
+          "source_document": "Delver_Magic_3.pdf"
+        },
+        {
+          "row": 31824,
+          "english": "Ram generally hates insects",
+          "romanstandard": "rāmna mahousāna tin kāngsingbu nungside",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "tin-kāng is also used for 'insects' (row 31824)."
+    },
+    {
+      "id": "term-disease",
+      "category": "disease",
+      "english": "disease",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "lāinā"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 92603, 97405, 92419, 46675",
+      "evidence": [
+        {
+          "row": 92603,
+          "english": "It also breeds disease.",
+          "romanstandard": "masina lāināsu pokhalli.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 97405,
+          "english": "However no disease was found.",
+          "romanstandard": "adubu lāinā amatta phangkhide.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 92419,
+          "english": "There were no pest or disease incidences.",
+          "romanstandard": "tin kāng nattraga lāināgi thoudok amatta leikhide.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 46675,
+          "english": "A panel of scientist -judges will test entries for taste as well as infestation by pests and diseases. The winning orange farmer will receive a prize of Rs 2 lakh.",
+          "romanstandard": "saintisat-jajasinggi penel amana mahau amasung tin-kang amasung lainasingna changsinbagi matangda entrising changyeng tougani. maipaklaba komlagi loumi aduna lupa lakha 2gi mana ama phanggani.",
+          "source_document": "Poknampham"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Plural lāināsing. Most dataset rows are about human disease; rows 92419 and 46675 use it next to pests in a crop context. 'Crop disease' / 'plant disease' are NOT attested as phrases."
+    },
+    {
+      "id": "term-infection",
+      "category": "disease",
+      "english": "infection",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "eenpheksan"
+        },
+        {
+          "script": "Latn",
+          "text": "inpheksan"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 61223, 84469, 80594",
+      "evidence": [
+        {
+          "row": 61223,
+          "english": "Anemia was followed by upper respiratory tract infection",
+          "romanstandard": "enimiyā matung tārakpada appara respiretori trektta eenpheksan thokkhi",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 84469,
+          "english": "While most are harmless, some species can cause devastating infections.",
+          "romanstandard": "ayāmbadi hāramlesa toudaba oirabasu sapesisa kharana yāmna sāthiba inpheksansing thokhanba yāi.",
+          "source_document": "Thoungamba (THE SANGAI EXPRESS)"
+        },
+        {
+          "row": 80594,
+          "english": "Researchers at AIIMS Delhi are investigating the use of AI to reduce hospital-acquired infections.",
+          "romanstandard": "dilligi e.āi.em.esa.ki thijan humjanbasingna hospitālda louba eenpheksansing hanthahannaba eāi sijinnabagi matāngda thijilli.",
+          "source_document": "en-mni-Mtei Test.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "English loanword. All dataset examples are medical, none agricultural: a speaker should confirm before using it for plant infection."
+    },
+    {
+      "id": "term-rain",
+      "category": "weather",
+      "english": "rain / rainfall",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "nong"
+        },
+        {
+          "script": "Latn",
+          "text": "nong chuba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 43021, 1585, 96270, 14265",
+      "evidence": [
+        {
+          "row": 43021,
+          "english": "It may rain.",
+          "romanstandard": "nong chubā yāi.",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 1585,
+          "english": "It began to rain",
+          "romanstandard": "nong chuba hourakkhi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 96270,
+          "english": "The farmers have benefited the most from the rainfall.",
+          "romanstandard": "nong chubadagi loumisingna khwāidagi henna kānnaba phangle.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 14265,
+          "english": "We need rain for the crops",
+          "romanstandard": "eikhoina mahei-marongsinggidamak nong mathou tāi",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "nong = rain; nong chuba = rain falling (rainfall)."
+    },
+    {
+      "id": "term-weather",
+      "category": "weather",
+      "english": "weather",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "aying asā"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 29434, 91299, 96283",
+      "evidence": [
+        {
+          "row": 29434,
+          "english": "How is the weather?",
+          "romanstandard": "aying asā karamna touri?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 91299,
+          "english": "The weather is hot.",
+          "romanstandard": "aying asā asi sāi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 96283,
+          "english": "The weather is calm.",
+          "romanstandard": "aying asā asi eeng-chiki.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Also written aying-asā / aing-asā."
+    },
+    {
+      "id": "term-temperature",
+      "category": "weather",
+      "english": "temperature",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "aying asā"
+        },
+        {
+          "script": "Latn",
+          "text": "temparechara"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 31456, 15876, 104540, 103481",
+      "evidence": [
+        {
+          "row": 31456,
+          "english": "Temperature",
+          "romanstandard": "aying asa",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 15876,
+          "english": "What is the temperature?",
+          "romanstandard": "aying asā kayāno?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 104540,
+          "english": "The temperature is rising,",
+          "romanstandard": "aying asā hengatlakli,",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 103481,
+          "english": "Do not go out in this temperature",
+          "romanstandard": "masigi temparechara asida mapānda thokkanu",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "aying asā (literally 'cold-hot') is used for both 'weather' and 'temperature' in the dataset; the loanword temparechara is also attested (row 103481)."
+    },
+    {
+      "id": "term-humidity",
+      "category": "weather",
+      "english": "relative humidity",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "riletiba hayumiditi"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 28721, 83635",
+      "evidence": [
+        {
+          "row": 28721,
+          "english": "The relative humidity stood at 82 per cent at 5.30 pm.",
+          "romanstandard": "nungthilgi pung 5.30da riletiba hayumiditi asi chāda 82da leikhi.",
+          "source_document": "The Sangai Express"
+        },
+        {
+          "row": 83635,
+          "english": "Relative humidity stood at 92 percent at 8.30 am. The maximum temperature is expected to hover around Celsius.",
+          "romanstandard": "ayuk pung 8.30 da riletiba hayumiditi asi chāda 92 oikhi. khawāidagi wāngba aing-asāgi chāng asi selsiyasaki akoibada leigani hāina pānari.",
+          "source_document": "Thoungamba (THE SANGAI EXPRESS)"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "English loanword from newspaper weather reports. No native Manipuri word for humidity is attested in the dataset."
+    },
+    {
+      "id": "term-drought",
+      "category": "weather",
+      "english": "drought",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "eekang"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 6128, 75195, 16754",
+      "evidence": [
+        {
+          "row": 6128,
+          "english": "There was a terrible drought.",
+          "romanstandard": "yāmna sāthiba eekang ama thokkhi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 75195,
+          "english": "Flood here drought there",
+          "romanstandard": "mapham asida eesing eechao mapham aduda eekang",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 16754,
+          "english": "Drought will be in the four continents.",
+          "romanstandard": "kantinent marida eekang thokkani.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Also written ikang."
+    },
+    {
+      "id": "term-flood",
+      "category": "weather",
+      "english": "flood",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "eesing eechao"
+        },
+        {
+          "script": "Latn",
+          "text": "ising ichāu"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 101231, 89961, 64803, 75948",
+      "evidence": [
+        {
+          "row": 101231,
+          "english": "My town is flooded.",
+          "romanstandard": "eigi sahara asi eesing eechao thokle.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 89961,
+          "english": "We never had any flood.",
+          "romanstandard": "eikhoida eesing eechao amatta thokkhide.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 64803,
+          "english": "Fisheries distributed 16 tonnesof floating fish feeds to 200 flood affected fish farmers of Manipur today.",
+          "romanstandard": "ngasi ngāphou louusingugi lupna manipuragi ising ichāuna sokhallaba ngā loumi 200da tan 16ki isingda tāuba ngāgi chinjāk yenthokkhi .",
+          "source_document": "THE SANGAI EXPRESS MULTIPLE FILESThoungamba"
+        },
+        {
+          "row": 75948,
+          "english": "Chief Minister visits various flood-affected areas",
+          "romanstandard": "mukhya mantrina eesing eechaona sokhallaba tongān tongānba maphamsingda chatli",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Literally 'water flood'. Both spellings are attested."
+    },
+    {
+      "id": "term-storm",
+      "category": "weather",
+      "english": "storm",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "nonglei-nungsit"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 8457, 91895, 13984",
+      "evidence": [
+        {
+          "row": 8457,
+          "english": "terrible storm.",
+          "romanstandard": "akiba nonglei-nungsit.",
+          "source_document": "Delver_Magic_3.pdf"
+        },
+        {
+          "row": 91895,
+          "english": "The storm was heavy.",
+          "romanstandard": "nonglei-nungsit adu yāmna kankhi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 13984,
+          "english": "All crop was ruined in storm",
+          "romanstandard": "mahei-marong pumnamak nonglei-nungsitta mānghankhi",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Row 13984: 'All crop was ruined in storm'."
+    },
+    {
+      "id": "term-damage",
+      "category": "crop_health",
+      "english": "damage / loss",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "amāng-atā"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 101886, 31864, 48968",
+      "evidence": [
+        {
+          "row": 101886,
+          "english": "The car is damaged",
+          "romanstandard": "kāra adu amāng-atā thokkhre",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 31864,
+          "english": "My cart was damaged",
+          "romanstandard": "eigi kārat adu amāng-atā thokkhi",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 48968,
+          "english": "At almost any time a dwelling can damaged by the winded, or be flooded because of rainfall or snowfall.",
+          "romanstandard": "chaurakna matam amahektada leipham ama nungsitna amang-ata thokhanba yai, nattraga nong chuba nattraga un tabana maram oiduna ising ichau thokhanba yai.",
+          "source_document": "Poknampham"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Noun. Dataset examples are about objects and buildings, not crops. For crops see term-ruined."
+    },
+    {
+      "id": "term-ruined",
+      "category": "crop_health",
+      "english": "be ruined / destroyed (verb stem, used of crops)",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "mānghan"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 13984, 67509, 52641",
+      "evidence": [
+        {
+          "row": 13984,
+          "english": "All crop was ruined in storm",
+          "romanstandard": "mahei-marong pumnamak nonglei-nungsitta mānghankhi",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 67509,
+          "english": "Several acres of standing crops at the Wabagai area were also damaged in the recent hailstorms.",
+          "romanstandard": "handakki len tābagi nongnungsitta wābāgāi maphamda leiriba ekara kayāgi lengduna leiriba maheimarongsingsu mānghantākhankhi.",
+          "source_document": "THE SANGAI EXPRESS MULTIPLE FILESThoungamba"
+        },
+        {
+          "row": 52641,
+          "english": "They will destroy you.",
+          "romanstandard": "makhoina nangbu mānghan tākkani.",
+          "source_document": "A Thousand Splendid Suns by Khaled Hosseini.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Rows 13984 and 67509 use it for crops ruined by storm and hailstorm. A noun phrase for 'damaged crop' is NOT attested."
+    },
+    {
+      "id": "term-soil-health",
+      "category": "crop_health",
+      "english": "soil health",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "leipakki phibam"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 49401, 49407",
+      "evidence": [
+        {
+          "row": 49401,
+          "english": "Farmers, students briefed on soil health management",
+          "romanstandard": "loumising, maheiroisingda leipakki phibam phajana sennabagi matangda khanghankhi.",
+          "source_document": "Poknampham"
+        },
+        {
+          "row": 49407,
+          "english": "and need for maintaining soil health to improve production along with conserving water and environment.",
+          "romanstandard": "amasung ising amasung akoibagi phibam ngak-senbaga loinana potthok hengathannaba leipakki phibam phanaba tangaiphadaba lei.",
+          "source_document": "Poknampham"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "From Poknampham news text (romanised without macrons). phibam = condition/state. 'Crop health', 'healthy crop', 'vegetation', 'vegetation stress', 'crop stress' and 'water stress' are NOT attested."
+    },
+    {
+      "id": "term-risk",
+      "category": "risk",
+      "english": "risk / danger",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "khudongthiningngāi"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 8897, 98175, 103464, 17509",
+      "evidence": [
+        {
+          "row": 8897,
+          "english": "risk.",
+          "romanstandard": "khudongthiningngāi oiba.",
+          "source_document": "Delver_Magic_3.pdf"
+        },
+        {
+          "row": 98175,
+          "english": "His life is at risk.",
+          "romanstandard": "mahākki punsi khudongthiningngāi oire.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 103464,
+          "english": "It is dangerous.",
+          "romanstandard": "masi khudongthiningngāi oi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 17509,
+          "english": "there are several dangerous insects in the jungle .",
+          "romanstandard": "umang asida khudongthiningngāi oiba tin kayā ama lei.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "One word for both 'risk' and 'danger'. 'khudongthiningngāi oiba' = risky / dangerous; 'khudongthiningngāi oire' = is at risk (row 98175). The loanword risak appears in news and finance text."
+    },
+    {
+      "id": "term-low-risk",
+      "category": "risk",
+      "english": "low risk",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "khudongthiningngāi nemba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 80425",
+      "evidence": [
+        {
+          "row": 80425,
+          "english": "WHO sees low risk of Nipah virus spreading beyond India",
+          "romanstandard": "dabalyu.eicha.o.na bhāratki wāngmada nipāha bhāirasa sandokpagi khudongthiningngāi nemba ure",
+          "source_document": "en-mni-Mtei Test.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Single attestation (row 80425). 'High risk' and 'moderate risk' are NOT attested."
+    },
+    {
+      "id": "term-safe",
+      "category": "risk",
+      "concept": "safe",
+      "english": "safe",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "sāphaba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 15525, 75992, 16463",
+      "evidence": [
+        {
+          "row": 15525,
+          "english": "Is this a safe area?",
+          "romanstandard": "masi sāphaba mapham ama oibrā?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 75992,
+          "english": "Its very safe.",
+          "romanstandard": "masi yāmna sāphaba oi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 16463,
+          "english": "I was not safe.",
+          "romanstandard": "ei sāphaba oiramde.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "The opposite of risk: 'Is this a safe area?' = 'masi sāphaba mapham ama oibrā?' (row 15525)."
+    },
+    {
+      "id": "term-warning",
+      "category": "risk",
+      "english": "warning",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "cheksinwā"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 38316, 89822",
+      "evidence": [
+        {
+          "row": 38316,
+          "english": "Verbal warning",
+          "romanstandard": "chinhāi cheksinwā",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 89822,
+          "english": "He warned him.",
+          "romanstandard": "mahākna mahākpu cheksinwā pikhi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "In 151 of the 230 rows with 'warn*' in the English. 'cheksinwā pikhi' = warned. 'Early warning' is NOT attested."
+    },
+    {
+      "id": "term-affected-area",
+      "category": "risk",
+      "english": "affected / affected area",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "sokhallaba"
+        },
+        {
+          "script": "Latn",
+          "text": "sokhallaba mapham"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 101682, 75948, 81520",
+      "evidence": [
+        {
+          "row": 101682,
+          "english": "Apply to the affected area.",
+          "romanstandard": "sokhallaba mapham aduda thao.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 75948,
+          "english": "Chief Minister visits various flood-affected areas",
+          "romanstandard": "mukhya mantrina eesing eechaona sokhallaba tongān tongānba maphamsingda chatli",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 81520,
+          "english": "The entire country is witnessing change in Maoist-affected areas.",
+          "romanstandard": "māoisatsingnā sokhallabā maphamsingdā ahongbā lākpā asi leibāk pumbanā uri .",
+          "source_document": "mni-Mtei-en Test.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Row 75948: 'flood-affected areas' = 'eesing eechaona sokhallaba ... maphamsing'. Row 99907: 'Which crops are affected?' = 'karamba mahei-marongsingda sokhallibano?'."
+    },
+    {
+      "id": "term-inspection",
+      "category": "inspection",
+      "english": "inspection / to inspect",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "yengsinba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 38389, 92412",
+      "evidence": [
+        {
+          "row": 38389,
+          "english": "Visual inspection",
+          "romanstandard": "chattuna yengsinba",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 92412,
+          "english": "The inspection process is long overdue.",
+          "romanstandard": "yengsinbagi thouong asi yāmna thengthakhre .",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Past tense: row 102771 'We inspected the place.' = 'eikhoina mapham adu yengsinkhi.'. The loanword insapeksan is also attested (row 82820). 'Field inspection' is NOT attested."
+    },
+    {
+      "id": "term-priority",
+      "category": "inspection",
+      "english": "priority",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "parāioriti"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 64960, 66779, 18210",
+      "evidence": [
+        {
+          "row": 64960,
+          "english": "In 2025, identifying and combating the proliferation of ‘pay-toplay’ festivals has become a critical priority for the Indian film industry.",
+          "romanstandard": "ing 2025da indiyan philm indasatarigidamakta ‘petupale’ phesatibelsinggi chāukhatlakpa asi khangdokpa amasung māyoknaba asi yāmna maruoiba parāioriti ama oirakle.",
+          "source_document": "THE SANGAI EXPRESS MULTIPLE FILESThoungamba"
+        },
+        {
+          "row": 66779,
+          "english": "The Guardian, a spokesperson for Novo Nordisk said, \"Patient safety is our top priority, and we take any reports about adverse events from the use",
+          "romanstandard": "nobho noradisakki wāngāngloi ama oiriba gāradiyanna hāi, \"anāba adugi sephati asi eikhoigi ahānba parāioritini, amasung sijinnabadagi thokpa akāiba thoudoksinggi matāngda piriba riporat khudingmak eikhoina loui.",
+          "source_document": "THE SANGAI EXPRESS MULTIPLE FILESThoungamba"
+        },
+        {
+          "row": 18210,
+          "english": "The meeting Member Leisemba i deliberated on several issues, and Dikho assured them to look into the matter on priority basis.",
+          "romanstandard": "mipham adugi mihut leisemba eina wapham kayada khannakhi, amasung dikhona makhoida wapham adu paraioriti besisata yengsingani haina thajaba pikhi",
+          "source_document": "The Sangai Express"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Only the English loanword is attested (also spelled paraioriti). Row 66779: 'top priority' = 'ahānba parāioriti' (ahānba = first)."
+    },
+    {
+      "id": "term-area",
+      "category": "place",
+      "concept": "area",
+      "english": "area / place",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "mapham"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 10221, 18208, 102771",
+      "evidence": [
+        {
+          "row": 10221,
+          "english": "area.",
+          "romanstandard": "mapham.",
+          "source_document": "Delver_Magic_3.pdf"
+        },
+        {
+          "row": 18208,
+          "english": "areas.",
+          "romanstandard": "maphamsing",
+          "source_document": "The Sangai Express"
+        },
+        {
+          "row": 102771,
+          "english": "We inspected the place.",
+          "romanstandard": "eikhoina mapham adu yengsinkhi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Plural maphamsing."
+    },
+    {
+      "id": "term-district",
+      "category": "place",
+      "concept": "area",
+      "english": "district",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "jila"
+        },
+        {
+          "script": "Latn",
+          "text": "jilā"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 18258, 47768, 64989, 71188",
+      "evidence": [
+        {
+          "row": 18258,
+          "english": "district.",
+          "romanstandard": "jila",
+          "source_document": "The Sangai Express"
+        },
+        {
+          "row": 47768,
+          "english": "district.",
+          "romanstandard": "jila.",
+          "source_document": "Poknampham"
+        },
+        {
+          "row": 64989,
+          "english": "Loktak Lake, Bishnupur District, Manipur, is an endangered animal.",
+          "romanstandard": "manipuragi bisanupura jilāgi loktak lek asi māngkhigadouraba sā amani.",
+          "source_document": "THE SANGAI EXPRESS MULTIPLE FILESThoungamba"
+        },
+        {
+          "row": 71188,
+          "english": "selected in Kakching district.",
+          "romanstandard": "kākching jilāda khankhi.",
+          "source_document": "THE SANGAI EXPRESS Thoungamba"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "place-manipur",
+      "category": "place",
+      "english": "Manipur",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "manipura"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 18362, 72099",
+      "evidence": [
+        {
+          "row": 18362,
+          "english": "Manipur University.",
+          "romanstandard": "manipura yunibharasiti",
+          "source_document": "The Sangai Express"
+        },
+        {
+          "row": 72099,
+          "english": "Churachandpur District, Manipur.",
+          "romanstandard": "churāchandapura jilā, manipura.",
+          "source_document": "THE SANGAI EXPRESS Thoungamba"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Case endings attach: manipuragi (of), manipurada (in)."
+    },
+    {
+      "id": "place-bishnupur",
+      "category": "place",
+      "english": "Bishnupur",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "bisanupura"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 64989, 46167",
+      "evidence": [
+        {
+          "row": 64989,
+          "english": "Loktak Lake, Bishnupur District, Manipur, is an endangered animal.",
+          "romanstandard": "manipuragi bisanupura jilāgi loktak lek asi māngkhigadouraba sā amani.",
+          "source_document": "THE SANGAI EXPRESS MULTIPLE FILESThoungamba"
+        },
+        {
+          "row": 46167,
+          "english": "30k pari abandoned in Bishnupur amid unrest",
+          "romanstandard": "lanpham amagi marakta bisanupurada pari 30ki paudam thadokkhi.",
+          "source_document": "Poknampham"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Also bishnupur; bisanupurada = in Bishnupur."
+    },
+    {
+      "id": "place-thoubal",
+      "category": "place",
+      "english": "Thoubal",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "thoubāl"
+        },
+        {
+          "script": "Latn",
+          "text": "thoubal"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 64745, 70744",
+      "evidence": [
+        {
+          "row": 64745,
+          "english": "& P.S.Thoubal, Manipur795138, having mobile no.",
+          "romanstandard": "amasung pi.esa. thoubāl, manipura 795138, mobāil no. leiduna .",
+          "source_document": "THE SANGAI EXPRESS MULTIPLE FILESThoungamba"
+        },
+        {
+          "row": 70744,
+          "english": "Bazar, Thoubal district at around | 1.10 pm on Sunday.",
+          "romanstandard": "nongmāijing numitta nungthilgi pung 1.10 romda bājāra, thoubal jilāda.",
+          "source_document": "THE SANGAI EXPRESS Thoungamba"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "place-kakching",
+      "category": "place",
+      "english": "Kakching",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "kākching"
+        },
+        {
+          "script": "Latn",
+          "text": "kakching"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 71188, 64317, 48758",
+      "evidence": [
+        {
+          "row": 71188,
+          "english": "selected in Kakching district.",
+          "romanstandard": "kākching jilāda khankhi.",
+          "source_document": "THE SANGAI EXPRESS Thoungamba"
+        },
+        {
+          "row": 64317,
+          "english": "Thoubal and Kakching as guest of honour.",
+          "romanstandard": "thougal piraba mioi oina thoubal amasung kākching.",
+          "source_document": "THE SANGAI EXPRESS MULTIPLE FILESThoungamba"
+        },
+        {
+          "row": 48758,
+          "english": "Kakching protests Saiton bomb blasts",
+          "romanstandard": "kakchingna saitan bom pokhaibagi matangda wakatkhi.",
+          "source_document": "Poknampham"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "place-imphal",
+      "category": "place",
+      "english": "Imphal",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "imphāl"
+        },
+        {
+          "script": "Latn",
+          "text": "imphal"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 71737, 18143",
+      "evidence": [
+        {
+          "row": 71737,
+          "english": "in Palace Compound, Imphal.",
+          "romanstandard": "imphālgi pelesa kampāundata.",
+          "source_document": "THE SANGAI EXPRESS Thoungamba"
+        },
+        {
+          "row": 18143,
+          "english": "Imphal West this evening.",
+          "romanstandard": "ngasi nungthilda imphal wesatta",
+          "source_document": "The Sangai Express"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "'Imphal West' is attested as 'imphal wesat' (row 18143, with locative -ta)."
+    },
+    {
+      "id": "place-jiribam",
+      "category": "place",
+      "english": "Jiribam",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "jiribam"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 70845, 1144",
+      "evidence": [
+        {
+          "row": 70845,
+          "english": "Jiribam district today.",
+          "romanstandard": "ngasigi jiribam jilā.",
+          "source_document": "THE SANGAI EXPRESS Thoungamba"
+        },
+        {
+          "row": 1144,
+          "english": "He said that he came to Jiribam with a message of peaceful co-existence.",
+          "romanstandard": "mahākna mahāk jiribamda sāntigi oiba punna leiminnabagi paojel amaga loinana lākkhi hāina hāikhi.",
+          "source_document": "The Sangai Express (multiple files) Thoungamba"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "place-churachandpur",
+      "category": "place",
+      "english": "Churachandpur",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "churāchandapura"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 72099, 21857",
+      "evidence": [
+        {
+          "row": 72099,
+          "english": "Churachandpur District, Manipur.",
+          "romanstandard": "churāchandapura jilā, manipura.",
+          "source_document": "THE SANGAI EXPRESS Thoungamba"
+        },
+        {
+          "row": 21857,
+          "english": "Churachandpur on February 15.",
+          "romanstandard": "churāchandapura phebaruwāri 15da.",
+          "source_document": "The Sangai Express"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Also churachandapura."
+    }
+  ],
+  "cue_words": [
+    {
+      "id": "cue-why",
+      "concept": "why",
+      "english": "why",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "karigi"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 26984, 87011, 101675",
+      "evidence": [
+        {
+          "row": 26984,
+          "english": "Why not?",
+          "romanstandard": "karigi oiroi?",
+          "source_document": "little-women-louisa-may-alcott.pdf"
+        },
+        {
+          "row": 87011,
+          "english": "why not?",
+          "romanstandard": "karigi oiroidoino?.",
+          "source_document": "wonder.pdf"
+        },
+        {
+          "row": 101675,
+          "english": "Why Bother?",
+          "romanstandard": "karigi wākhal wābano?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "cue-how",
+      "concept": "how",
+      "english": "how / in what way",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "karamna"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 29434, 100908, 24619",
+      "evidence": [
+        {
+          "row": 29434,
+          "english": "How is the weather?",
+          "romanstandard": "aying asā karamna touri?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 100908,
+          "english": "How is this disease treated?",
+          "romanstandard": "lāinā asi karamna lāyenggani?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 24619,
+          "english": "How do you do?",
+          "romanstandard": "nang karamna touribano?",
+          "source_document": "little-women-louisa-may-alcott.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "cue-which",
+      "concept": "which",
+      "english": "which",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "karamba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 99907, 30179, 103626",
+      "evidence": [
+        {
+          "row": 99907,
+          "english": "Which crops are affected?",
+          "romanstandard": "karamba mahei-marongsingda sokhallibano?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 30179,
+          "english": "Which dog is yours?",
+          "romanstandard": "nakhoigi karamba huino?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 103626,
+          "english": "Which river it was?",
+          "romanstandard": "karamba turel oikhibano?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "cue-any",
+      "concept": "which",
+      "english": "any / anyone",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "kanāgumba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 94374, 62199, 85121",
+      "evidence": [
+        {
+          "row": 94374,
+          "english": "Anyone can join.",
+          "romanstandard": "kanāgumba amahektana yaoba yāi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 62199,
+          "english": "anyone can do that.",
+          "romanstandard": "kanāgumba amahektana madu touba yāi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 85121,
+          "english": "Does anyone know?\"",
+          "romanstandard": "kanāgumbana khangbarā?\"",
+          "source_document": "wonder.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Means any / anyone / no one (1,119 rows), not 'which'. The router treats it as a selector over areas: 'is any area at high risk?' asks for the same ranking as 'which areas are at high risk?'."
+    },
+    {
+      "id": "cue-where",
+      "concept": "where",
+      "english": "where",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "kadāi"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 43200, 96565, 91825",
+      "evidence": [
+        {
+          "row": 43200,
+          "english": "Where's Tom?",
+          "romanstandard": "tom kadāida leige?",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 96565,
+          "english": "Where is she?",
+          "romanstandard": "mahāk kadāidā lei?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 91825,
+          "english": "Where should I begin?",
+          "romanstandard": "ei kadāidagi hougadage?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Case endings attach: kadāida (where), kadāidagi (from where)."
+    },
+    {
+      "id": "cue-begin",
+      "concept": "begin",
+      "english": "begin / start",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "houga"
+        },
+        {
+          "script": "Latn",
+          "text": "hourak"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 91825, 58191, 1585, 86701",
+      "evidence": [
+        {
+          "row": 91825,
+          "english": "Where should I begin?",
+          "romanstandard": "ei kadāidagi hougadage?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 58191,
+          "english": "Where do I begin?",
+          "romanstandard": "ei kadāidagi hougadage?",
+          "source_document": "A Thousand Splendid Suns by Khaled Hosseini.pdf"
+        },
+        {
+          "row": 1585,
+          "english": "It began to rain",
+          "romanstandard": "nong chuba hourakkhi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 86701,
+          "english": ",\" started",
+          "romanstandard": "hourakpada ngāiri",
+          "source_document": "wonder.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Verb stem hou- with endings: hougadage (should begin), hourakkhi (began). The bare stem hou- is not used: it also starts unrelated words (houjik = now, houi = grows)."
+    },
+    {
+      "id": "cue-first",
+      "concept": "first",
+      "english": "first",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "ahānba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 88919, 66779, 12502",
+      "evidence": [
+        {
+          "row": 88919,
+          "english": "Which film will you watch first?",
+          "romanstandard": "nangna ahānba oina karamba mami kumhei yenggadage?",
+          "source_document": "wonder.pdf"
+        },
+        {
+          "row": 66779,
+          "english": "The Guardian, a spokesperson for Novo Nordisk said, \"Patient safety is our top priority, and we take any reports about adverse events from the use",
+          "romanstandard": "nobho noradisakki wāngāngloi ama oiriba gāradiyanna hāi, \"anāba adugi sephati asi eikhoigi ahānba parāioritini, amasung sijinnabadagi thokpa akāiba thoudoksinggi matāngda piriba riporat khudingmak eikhoina loui.",
+          "source_document": "THE SANGAI EXPRESS MULTIPLE FILESThoungamba"
+        },
+        {
+          "row": 12502,
+          "english": "first attack.",
+          "romanstandard": "ahānba etek.",
+          "source_document": "Delver_Magic_3.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "cue-this",
+      "concept": "here",
+      "english": "this",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "masi"
+        },
+        {
+          "script": "Latn",
+          "text": "asi"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 59253, 15525, 100486, 42370, 42516",
+      "evidence": [
+        {
+          "row": 59253,
+          "english": "this",
+          "romanstandard": "masi",
+          "source_document": "wonder.pdf"
+        },
+        {
+          "row": 15525,
+          "english": "Is this a safe area?",
+          "romanstandard": "masi sāphaba mapham ama oibrā?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 100486,
+          "english": "How is it dangerous?",
+          "romanstandard": "masi karamna khudongthiningngāi oibano?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 42370,
+          "english": "Use this.",
+          "romanstandard": "asi sijinnouwo.",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 42516,
+          "english": "Read this.",
+          "romanstandard": "asi paowo.",
+          "source_document": "en_mni(meitei).xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "masigi = of this, masina = by this; asi also follows a noun ('mapham asi' = this place)."
+    },
+    {
+      "id": "cue-my",
+      "concept": "here",
+      "english": "my (the asker's own field or area)",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "eigi"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 59294, 4890, 36534",
+      "evidence": [
+        {
+          "row": 59294,
+          "english": "My",
+          "romanstandard": "eigi",
+          "source_document": "wonder.pdf"
+        },
+        {
+          "row": 4890,
+          "english": "my food.",
+          "romanstandard": "eigi chinjāk.",
+          "source_document": "black-beauty-obooko.pdf"
+        },
+        {
+          "row": 36534,
+          "english": "My father grows rice.",
+          "romanstandard": "eigi pānthouna cheng thāi.",
+          "source_document": "en_mni(meitei).xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "cue-how-much",
+      "concept": "how",
+      "english": "how much / how many",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "kayā"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 43813, 36332, 15876",
+      "evidence": [
+        {
+          "row": 43813,
+          "english": "How many died?",
+          "romanstandard": "kayā sikhre.",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 36332,
+          "english": "How much is it?",
+          "romanstandard": "masi kayā pige?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 15876,
+          "english": "What is the temperature?",
+          "romanstandard": "aying asā kayāno?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Also 'what is the ...' of a quantity: row 15876 'What is the temperature?' = 'aying asā kayāno?'. kayā also means 'many' (row 17513)."
+    },
+    {
+      "id": "cue-very",
+      "concept": "high",
+      "english": "very / much",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "yāmna"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 38338, 11196, 28892",
+      "evidence": [
+        {
+          "row": 38338,
+          "english": "Very good",
+          "romanstandard": "yāmna phaba",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 11196,
+          "english": "“Very well.",
+          "romanstandard": "“yāmna phajakhre.",
+          "source_document": "Delver_Magic_3.pdf"
+        },
+        {
+          "row": 28892,
+          "english": "Rain is so heavy",
+          "romanstandard": "nong yāmna kanli",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "cue-is",
+      "concept": "exist",
+      "english": "is / there is",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "lei"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 42789, 42630, 17509",
+      "evidence": [
+        {
+          "row": 42789,
+          "english": "Tom is out.",
+          "romanstandard": "tom mapān lei.",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 42630,
+          "english": "He is here!",
+          "romanstandard": "mā sida lei!",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 17509,
+          "english": "there are several dangerous insects in the jungle .",
+          "romanstandard": "umang asida khudongthiningngāi oiba tin kayā ama lei.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Marks a Manipuri sentence; no intent rule uses it."
+    },
+    {
+      "id": "cue-here",
+      "concept": "here",
+      "english": "here",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "mapham asida"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 7843, 62703, 88479",
+      "evidence": [
+        {
+          "row": 7843,
+          "english": "here.",
+          "romanstandard": "mapham asida.",
+          "source_document": "Delver_Magic_3.pdf"
+        },
+        {
+          "row": 62703,
+          "english": "its here.",
+          "romanstandard": "masi mapham asidani.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 88479,
+          "english": "\"I'm here",
+          "romanstandard": "\"ei mapham asida leire",
+          "source_document": "wonder.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Literally 'in this place'."
+    },
+    {
+      "id": "cue-high",
+      "concept": "high",
+      "english": "high",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "wāngba"
+        },
+        {
+          "script": "Latn",
+          "text": "awāngba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 103610, 74627, 29781, 36326",
+      "evidence": [
+        {
+          "row": 103610,
+          "english": "Mount Everest is the highest peak of the Himalayas.",
+          "romanstandard": "maont ebharest asi himālayagi khwāidagi wāngba chingdolni .",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 74627,
+          "english": "highest civilian award of india",
+          "romanstandard": "eendiyāgi khwāidagi wāngba sibhiliyan ewārda",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 29781,
+          "english": "You must aim high.",
+          "romanstandard": "nahākna awāngba pāndam thamgadabani.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 36326,
+          "english": "He took a high jump",
+          "romanstandard": "mahākna awāngba chongba ama loukhi",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "khwāidagi wāngba = highest (rows 103610, 74627)."
+    }
+  ]
+}

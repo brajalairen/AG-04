@@ -1,0 +1,63 @@
+{
+  "version": "0.2-member-a-sourced-candidate",
+  "status": "PLACEHOLDER",
+  "note": "Member A candidate, NOT validated. rice_blast: values taken from the cited Government of India (DPPQ&S) advisory and mapped onto the engine's weather variables; the mapping choices (daily mean for the temperature range, hours of RH >= 95% as a proxy for leaf wetness) are listed in team/member-a-agronomy/SOURCES.md. It stays PLACEHOLDER until an agronomist checks the source and the mapping and adds verified_by/verified_on. brown_planthopper: no numeric weather threshold was found in the authoritative sources consulted (DPPQ&S advisory, NIPHM rice IPM package, IRRI Rice Knowledge Bank), so its values are unchanged from the original development placeholder. past_days, forecast_days, full_score_days and min_hours_per_day are engine operating choices, not taken from any source.",
+  "min_hours_per_day": 20,
+  "pests": [
+    {
+      "id": "rice_blast",
+      "name": "Rice blast (leaf / neck)",
+      "crop": "rice",
+      "status": "PLACEHOLDER",
+      "sources": [
+        {
+          "title": "Advisory on blast disease (Magnaporthe oryzae) on rice crop, F.No 3-6/2022-23, dated 22.07.2022. Directorate of Plant Protection, Quarantine & Storage, Ministry of Agriculture & Farmers Welfare, Government of India",
+          "url": "https://ppqs.gov.in/sites/default/files/rice_blast_advisory.pdf",
+          "note": "Quoted: \"Rice blast is favored by low temperatures (22-28°C), high relative humidity (>95%), dew deposits, leaf wetness for more than 10 hours, application of high nitrogen and aerobic soils.\" Mapping: 22-28 °C read as the daily mean; '>95% RH' and 'leaf wetness for more than 10 hours' combined as at least 11 hourly values with RH >= 95% (leaf wetness is not measured; RH near saturation is used as a proxy, which is a modelling assumption, not in the source). Dew deposits, nitrogen and soil are not encoded. National advisory to all States/UTs, not specific to Manipur. Accessed 2026-10-08. Not yet checked by an agronomist."
+        }
+      ],
+      "conditions": [
+        {
+          "variable": "relative_humidity_2m",
+          "aggregate": "hours_at_or_above",
+          "threshold": 95,
+          "at_least": 11,
+          "label": "at least 11 h with relative humidity >= 95%"
+        },
+        {
+          "variable": "temperature_2m",
+          "aggregate": "mean",
+          "between": [22, 28],
+          "label": "daily mean temperature 22-28 °C"
+        }
+      ],
+      "past_days": 7,
+      "forecast_days": 3,
+      "full_score_days": 5
+    },
+    {
+      "id": "brown_planthopper",
+      "name": "Brown planthopper",
+      "crop": "rice",
+      "status": "PLACEHOLDER",
+      "sources": [],
+      "conditions": [
+        {
+          "variable": "temperature_2m",
+          "aggregate": "mean",
+          "between": [25, 32],
+          "label": "daily mean temperature 25-32 °C"
+        },
+        {
+          "variable": "relative_humidity_2m",
+          "aggregate": "mean",
+          "at_least": 80,
+          "label": "daily mean relative humidity >= 80%"
+        }
+      ],
+      "past_days": 7,
+      "forecast_days": 3,
+      "full_score_days": 5
+    }
+  ]
+}
