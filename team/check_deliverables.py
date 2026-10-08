@@ -16,8 +16,9 @@ ROOT = Path(__file__).resolve().parent.parent
 TEAM = ROOT / "team"
 sys.path.insert(0, str(ROOT))
 
-INTENTS = {"AREA_RISK_QUERY", "AREA_EXPLANATION", "INSPECTION_PRIORITY", "CROP_HEALTH", "PEST_RISK",
-           "WEATHER_RISK", "AREA_SPECIFIC_RISK"}
+from satquery.agent.language import CONCEPTS, INTENTS as ROUTED_INTENTS  # noqa: E402  (after the path is set)
+
+INTENTS = set(ROUTED_INTENTS)  # the intents the application's router answers
 SCRIPTS = {"Mtei", "Beng", "Latn"}
 TERM_CATEGORIES = {"crop", "pest", "disease", "weather", "crop_health", "inspection", "risk", "place"}
 MANIPUR_BOX = (92.8, 23.7, 95.0, 25.8)  # generous lon/lat sanity box around Manipur
@@ -139,6 +140,17 @@ def check_member_a(report: Report, folder: Path = TEAM / "member-a-agronomy") ->
                     report.warn(f"{where}: no source")
                 _verified_entry(t, where, report, status)
             report.ok(f"agri_terms_manipuri.json: {len(items)} term(s), status {status}")
+            cues = data.get("cue_words") or []
+            for c in cues:
+                where = f"agri_terms_manipuri.json {c.get('id', '?')}"
+                if c.get("concept") not in CONCEPTS:
+                    report.error(f"{where}: concept must be one of {sorted(CONCEPTS)}")
+                for form in c.get("manipuri") or [{}]:
+                    if form.get("script") not in SCRIPTS or not form.get("text") or PLACEHOLDER_TEXT.search(form["text"]):
+                        report.error(f"{where}: needs a Manipuri form with a known script and real text")
+                _verified_entry(c, where, report, status)
+            if cues:
+                report.ok(f"agri_terms_manipuri.json: {len(cues)} cue word(s) for the router")
     else:
         report.warn("agri_terms_manipuri.json not delivered yet")
     if not (folder / "SOURCES.md").is_file():

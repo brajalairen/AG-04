@@ -1,6 +1,6 @@
 {
   "status": "DRAFT",
-  "note": "Latin-script Manipuri agricultural terms. Every form is attested in CompiledDataEnglishToMeitei.xlsx; the evidence rows are quoted verbatim. Which word in a sentence matches the English term was read off the sentence pairs (co-occurrence across many rows, then checked row by row); that alignment is what a fluent speaker must confirm before verified_by/verified_on are filled. Terms not attested in the dataset are left out and listed in MEMBER_A_README.md.",
+  "note": "Latin-script Manipuri agricultural terms. Every form is attested in CompiledDataEnglishToMeitei.xlsx; the evidence rows are quoted verbatim. Which word in a sentence matches the English term was read off the sentence pairs (co-occurrence across many rows, then checked row by row); that alignment is what a fluent speaker must confirm before verified_by/verified_on are filled. Terms not attested in the dataset are left out and listed in MEMBER_A_README.md. cue_words are question and reference words (why, how, which, where, first, this, here, high) with the same evidence; the router (satquery/agent/language.py) reads terms and cue words as concepts to recognise the intent of a Latin Manipuri question. An optional 'concept' field overrides the concept a term's category implies.",
   "terms": [
     {
       "id": "term-crop",
@@ -1002,6 +1002,42 @@
       "notes": "Single attestation (row 80425). 'High risk' and 'moderate risk' are NOT attested."
     },
     {
+      "id": "term-safe",
+      "category": "risk",
+      "concept": "safe",
+      "english": "safe",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "sāphaba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 15525, 75992, 16463",
+      "evidence": [
+        {
+          "row": 15525,
+          "english": "Is this a safe area?",
+          "romanstandard": "masi sāphaba mapham ama oibrā?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 75992,
+          "english": "Its very safe.",
+          "romanstandard": "masi yāmna sāphaba oi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 16463,
+          "english": "I was not safe.",
+          "romanstandard": "ei sāphaba oiramde.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "The opposite of risk: 'Is this a safe area?' = 'masi sāphaba mapham ama oibrā?' (row 15525)."
+    },
+    {
       "id": "term-warning",
       "category": "risk",
       "english": "warning",
@@ -1136,6 +1172,7 @@
     {
       "id": "term-area",
       "category": "place",
+      "concept": "area",
       "english": "area / place",
       "manipuri": [
         {
@@ -1171,6 +1208,7 @@
     {
       "id": "term-district",
       "category": "place",
+      "concept": "area",
       "english": "district",
       "manipuri": [
         {
@@ -1433,6 +1471,378 @@
       "verified_by": null,
       "verified_on": null,
       "notes": "Also churachandapura."
+    }
+  ],
+  "cue_words": [
+    {
+      "id": "cue-why",
+      "concept": "why",
+      "english": "why",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "karigi"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 26984, 87011, 101675",
+      "evidence": [
+        {
+          "row": 26984,
+          "english": "Why not?",
+          "romanstandard": "karigi oiroi?",
+          "source_document": "little-women-louisa-may-alcott.pdf"
+        },
+        {
+          "row": 87011,
+          "english": "why not?",
+          "romanstandard": "karigi oiroidoino?.",
+          "source_document": "wonder.pdf"
+        },
+        {
+          "row": 101675,
+          "english": "Why Bother?",
+          "romanstandard": "karigi wākhal wābano?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "cue-how",
+      "concept": "how",
+      "english": "how / in what way",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "karamna"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 29434, 100908, 24619",
+      "evidence": [
+        {
+          "row": 29434,
+          "english": "How is the weather?",
+          "romanstandard": "aying asā karamna touri?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 100908,
+          "english": "How is this disease treated?",
+          "romanstandard": "lāinā asi karamna lāyenggani?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 24619,
+          "english": "How do you do?",
+          "romanstandard": "nang karamna touribano?",
+          "source_document": "little-women-louisa-may-alcott.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "cue-which",
+      "concept": "which",
+      "english": "which",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "karamba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 99907, 30179, 103626",
+      "evidence": [
+        {
+          "row": 99907,
+          "english": "Which crops are affected?",
+          "romanstandard": "karamba mahei-marongsingda sokhallibano?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 30179,
+          "english": "Which dog is yours?",
+          "romanstandard": "nakhoigi karamba huino?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 103626,
+          "english": "Which river it was?",
+          "romanstandard": "karamba turel oikhibano?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "cue-any",
+      "concept": "which",
+      "english": "any / anyone",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "kanāgumba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 94374, 62199, 85121",
+      "evidence": [
+        {
+          "row": 94374,
+          "english": "Anyone can join.",
+          "romanstandard": "kanāgumba amahektana yaoba yāi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 62199,
+          "english": "anyone can do that.",
+          "romanstandard": "kanāgumba amahektana madu touba yāi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 85121,
+          "english": "Does anyone know?\"",
+          "romanstandard": "kanāgumbana khangbarā?\"",
+          "source_document": "wonder.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Means any / anyone / no one (1,119 rows), not 'which'. The router treats it as a selector over areas: 'is any area at high risk?' asks for the same ranking as 'which areas are at high risk?'."
+    },
+    {
+      "id": "cue-where",
+      "concept": "where",
+      "english": "where",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "kadāi"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 43200, 96565, 91825",
+      "evidence": [
+        {
+          "row": 43200,
+          "english": "Where's Tom?",
+          "romanstandard": "tom kadāida leige?",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 96565,
+          "english": "Where is she?",
+          "romanstandard": "mahāk kadāidā lei?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 91825,
+          "english": "Where should I begin?",
+          "romanstandard": "ei kadāidagi hougadage?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Case endings attach: kadāida (where), kadāidagi (from where)."
+    },
+    {
+      "id": "cue-begin",
+      "concept": "begin",
+      "english": "begin / start",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "houga"
+        },
+        {
+          "script": "Latn",
+          "text": "hourak"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 91825, 58191, 1585, 86701",
+      "evidence": [
+        {
+          "row": 91825,
+          "english": "Where should I begin?",
+          "romanstandard": "ei kadāidagi hougadage?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 58191,
+          "english": "Where do I begin?",
+          "romanstandard": "ei kadāidagi hougadage?",
+          "source_document": "A Thousand Splendid Suns by Khaled Hosseini.pdf"
+        },
+        {
+          "row": 1585,
+          "english": "It began to rain",
+          "romanstandard": "nong chuba hourakkhi.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 86701,
+          "english": ",\" started",
+          "romanstandard": "hourakpada ngāiri",
+          "source_document": "wonder.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Verb stem hou- with endings: hougadage (should begin), hourakkhi (began). The bare stem hou- is not used: it also starts unrelated words (houjik = now, houi = grows)."
+    },
+    {
+      "id": "cue-first",
+      "concept": "first",
+      "english": "first",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "ahānba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 88919, 66779, 12502",
+      "evidence": [
+        {
+          "row": 88919,
+          "english": "Which film will you watch first?",
+          "romanstandard": "nangna ahānba oina karamba mami kumhei yenggadage?",
+          "source_document": "wonder.pdf"
+        },
+        {
+          "row": 66779,
+          "english": "The Guardian, a spokesperson for Novo Nordisk said, \"Patient safety is our top priority, and we take any reports about adverse events from the use",
+          "romanstandard": "nobho noradisakki wāngāngloi ama oiriba gāradiyanna hāi, \"anāba adugi sephati asi eikhoigi ahānba parāioritini, amasung sijinnabadagi thokpa akāiba thoudoksinggi matāngda piriba riporat khudingmak eikhoina loui.",
+          "source_document": "THE SANGAI EXPRESS MULTIPLE FILESThoungamba"
+        },
+        {
+          "row": 12502,
+          "english": "first attack.",
+          "romanstandard": "ahānba etek.",
+          "source_document": "Delver_Magic_3.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "cue-this",
+      "concept": "here",
+      "english": "this",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "masi"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 59253, 15525, 100486",
+      "evidence": [
+        {
+          "row": 59253,
+          "english": "this",
+          "romanstandard": "masi",
+          "source_document": "wonder.pdf"
+        },
+        {
+          "row": 15525,
+          "english": "Is this a safe area?",
+          "romanstandard": "masi sāphaba mapham ama oibrā?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 100486,
+          "english": "How is it dangerous?",
+          "romanstandard": "masi karamna khudongthiningngāi oibano?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "masigi = of this, masina = by this."
+    },
+    {
+      "id": "cue-here",
+      "concept": "here",
+      "english": "here",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "mapham asida"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 7843, 62703, 88479",
+      "evidence": [
+        {
+          "row": 7843,
+          "english": "here.",
+          "romanstandard": "mapham asida.",
+          "source_document": "Delver_Magic_3.pdf"
+        },
+        {
+          "row": 62703,
+          "english": "its here.",
+          "romanstandard": "masi mapham asidani.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 88479,
+          "english": "\"I'm here",
+          "romanstandard": "\"ei mapham asida leire",
+          "source_document": "wonder.pdf"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Literally 'in this place'."
+    },
+    {
+      "id": "cue-high",
+      "concept": "high",
+      "english": "high",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "wāngba"
+        },
+        {
+          "script": "Latn",
+          "text": "awāngba"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 103610, 74627, 29781, 36326",
+      "evidence": [
+        {
+          "row": 103610,
+          "english": "Mount Everest is the highest peak of the Himalayas.",
+          "romanstandard": "maont ebharest asi himālayagi khwāidagi wāngba chingdolni .",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 74627,
+          "english": "highest civilian award of india",
+          "romanstandard": "eendiyāgi khwāidagi wāngba sibhiliyan ewārda",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 29781,
+          "english": "You must aim high.",
+          "romanstandard": "nahākna awāngba pāndam thamgadabani.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 36326,
+          "english": "He took a high jump",
+          "romanstandard": "mahākna awāngba chongba ama loukhi",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "khwāidagi wāngba = highest (rows 103610, 74627)."
     }
   ]
 }

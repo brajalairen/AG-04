@@ -129,11 +129,18 @@ SATQUERY_AGRI_PEST_RULES=team/member-a-agronomy/verified_pest_rules.json python 
 SATQUERY_AGRI_PEST_RULES=team/member-a-agronomy/verified_pest_rules.json python -m satquery.agri assess --no-ndvi
 ```
 
-**`manipuri_queries.json` and `agri_terms_manipuri.json`:** for Phase 6 (Manipuri). Questions are currently routed by English wording only:
-- `satquery/agri/query.py` decides rank, inspect and explain;
-- `satquery/agent/intents.py` detects weather and crop-health questions.
+**`agri_terms_manipuri.json` and `manipuri_queries.json`:** wired into the router, on DRAFT data:
 
-A Latin-Manipuri question currently matches none of these cues. The intent labels in the queries file map directly onto those paths, and the term forms (risk, inspection, weather words and district names) are the natural keyword list for them. Wire them in only after the entries are verified.
+```text
+question -> satquery/agent/language.py: words -> concepts -> common intent (+ language, places)
+         -> existing router: risk engine (rank / inspect / explain), weather specialist, or NDVI crop health
+```
+
+- **Lexicon:** `language.py` reads the terms (concept from `category`, or from an optional `concept` field) and the `cue_words` (why, how, which/any, where, begin, first, this, here, high) from `agri_terms_manipuri.json`. No Manipuri word is written in code.
+- **Path:** override the lexicon file with `SATQUERY_MANIPURI_LEXICON`.
+- **Intents:** the intent names are the ones in this README. `INTENTS` in `language.py` maps each onto the existing behaviour, and `team/check_deliverables.py` uses the same table.
+- **Tests:** `tests/test_language_routing.py` routes every entry of `manipuri_queries.json` and checks that it reaches its labelled intent. New verified queries are covered automatically.
+- **Unverified label:** every Latin Manipuri routing rule says the lexicon is not yet verified, until the file's `status` is `VERIFIED`.
 
 **`advisory.json`:** not read by the application yet. It could feed the area drawer's "what to do" text later.
 

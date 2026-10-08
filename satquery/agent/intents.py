@@ -2,6 +2,7 @@
 
 import re
 
+from satquery.agent.language import INTENTS, LATIN_MANIPURI, normalize
 from satquery.schemas import InputConfig, Intent
 
 # Canonical target names (the vocabulary passed to the VLM) and the query words that map to them.
@@ -136,6 +137,10 @@ def needs_crop_health(query: str) -> str | None:
     health, vegetation = HEALTH_CUES.search(query), VEGETATION_WORDS.search(query)
     if health and vegetation:
         return f"health cue '{health.group(0)}' + vegetation word '{vegetation.group(0)}'"
+    # A Latin Manipuri question, normalised to the same intent (satquery.agent.language).
+    manipuri = normalize(query)
+    if manipuri.language == LATIN_MANIPURI and manipuri.intent == "CROP_HEALTH":
+        return manipuri.rule
     return None
 
 
@@ -145,7 +150,13 @@ def needs_weather(query: str) -> str | None:
     if strong:
         return strong.group(0)
     ambiguous = AMBIGUOUS_WEATHER_TERMS.search(query)
-    return ambiguous.group(0) if ambiguous and FORECAST_CUES.search(query) else None
+    if ambiguous and FORECAST_CUES.search(query):
+        return ambiguous.group(0)
+    # Latin Manipuri weather words, unless the question is a crop & pest risk question for the risk engine.
+    manipuri = normalize(query)
+    if manipuri.language == LATIN_MANIPURI and INTENTS.get(manipuri.intent, ("",))[0] != "agri":
+        return manipuri.cue("weather")
+    return None
 
 
 def route_query(query: str) -> tuple[str, str]:

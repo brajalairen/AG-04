@@ -175,6 +175,10 @@ export interface RouteResult {
   rule: string;
   /** For "mixed": what to do instead. */
   message: string | null;
+  /** The question's language, read from its words (Latin Manipuri via Member A's lexicon). */
+  language: "english" | "latin_manipuri";
+  /** The common intent (e.g. "AREA_RISK_QUERY") the route answers, when one applies. */
+  intent: string | null;
 }
 
 export interface UploadInfo {
@@ -553,4 +557,7 @@ export interface AgriQueryResult {
   thresholds_status: ThresholdStatus;
   includes_sample_data: boolean;
   disclaimer: string;
+  language: "english" | "latin_manipuri";
+  /** The common intent the question was read as; null when it must be rephrased. */
+  common_intent: string | null;
 }
