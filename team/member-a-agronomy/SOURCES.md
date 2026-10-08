@@ -25,7 +25,10 @@ Date of this record: 2026-10-08. Nothing in this folder has yet been signed off 
 
 ### How the entries were chosen
 
-- **Queries** (`manipuri_queries.json`): each one is a complete dataset sentence, copied as it is. I searched the dataset for questions that match an AG-04 intent and kept only sentences whose English meaning fits the intent. Nothing was composed, edited or machine-translated.
+- **Queries** (`manipuri_queries.json`):
+  - mni-001 to mni-005 are complete dataset sentences, copied as they are. I searched the dataset for questions that match an AG-04 intent and kept only sentences whose English meaning fits the intent.
+  - mni-006 to mni-008 are Member A's own example questions, given in the integration requests of 2026-10-08. They are not in the corpus. Each entry's `source.quote` repeats the request text. They are code-mixed (English words such as *area*, *pest risk* and *crop condition* inside Manipuri), as Member A wrote them.
+  - Nothing was composed by the assistant, edited or machine-translated.
 - **Terms** (`agri_terms_manipuri.json`):
   1. For each English term, I listed the Latin-Manipuri words that co-occur with it across all rows (Dice co-occurrence score).
   2. I read the candidate rows by hand.
@@ -38,14 +41,29 @@ Date of this record: 2026-10-08. Nothing in this folder has yet been signed off 
 
 | File | Entries | Status |
 |---|---|---|
-| `manipuri_queries.json` | 5 queries | **Sourced** (dataset sentences). Not yet checked by a fluent speaker for meaning or intent mapping. |
+| `manipuri_queries.json` | 8 queries | **Sourced**: 5 dataset sentences and 3 of Member A's examples. Not yet checked by a fluent speaker for meaning or intent mapping. |
 | `agri_terms_manipuri.json` | 40 terms, 51 Latin forms | **Sourced** (attested in the dataset). Alignment not yet checked by a fluent speaker. |
 
 ### Not attested in the dataset (left out, not guessed)
 
 - **Agricultural terms:** infestation, pest outbreak, crop disease, plant disease, crop health, healthy crop, vegetation, vegetation stress, crop stress, water stress, damaged crop (as a noun phrase), high risk, moderate risk, early warning, field inspection.
 - **Native Manipuri word for humidity:** only the loanword *riletiba hayumiditi* appears.
-- **Query intents:** AREA_RISK_QUERY, AREA_SPECIFIC_RISK, PEST_RISK and CROP_HEALTH have no suitable dataset sentence (see `MEMBER_A_README.md`).
+- **Query intents:** AREA_RISK_QUERY, AREA_SPECIFIC_RISK, PEST_RISK and CROP_HEALTH have no suitable dataset sentence (see `MEMBER_A_README.md`). Member A's examples now cover all of them except AREA_SPECIFIC_RISK.
+
+### Corpus suitability (checked 2026-10-08)
+
+Read-only count over the CSV export of the workbook (`CompiledDataEnglishToMeitei.csv`: the `compiled` sheet plus the 103 `legend` rows). The script is not committed; it ran outside the repository.
+
+| Check | Result | What it means |
+|---|---|---|
+| Size | 107,592 pairs; 3 empty `romanstandard`; 3,420 exact duplicate pairs | A large general resource |
+| Romanisation | 80.8% of `romanstandard` rows use macrons (`ā`); the rest follow other conventions (*Kayam saathige*, *sathibro*, *cheng leibro*) | Spelling varies, so the router matches spelling variants and folds accents |
+| Domain | 1,297 pairs (1.2%) mention crops, rice, pests, farms, fields, insects or disease; *pest* 11, *planthopper* 0, *humidity* 6, *NDVI/satellite* 21 | Very little agricultural text |
+| Questions | 6,438 question pairs; 35 of them agricultural | Few question forms in the domain |
+| AG-04's question types | High-risk areas 0; why at risk 0; crop health 0; pest risk 0; weather risk to crops 0; risk in a named area 0 (3 loose matches); inspect first 1 (*ei kadāidagi hougadage?*); why prioritised 0 (*nangbu karigi khankhibano?* "Why have you been selected?" is the nearest) | The corpus cannot supply these questions |
+| Phrases it does attest | *khudongthiningngāida leibrā?* "at risk?" (row 100976); *hakchāng phabrā?* "is it healthy?" (row 62727); *ngasigi aying asā asi kamāina touri?* "what's the weather like today?" (row 3058) | Building blocks for a speaker, not sentences to compose from |
+
+**Verdict:** the corpus is suitable as a vocabulary resource: terms, spelling variants and attested phrases for the router's lexicon, plus a source a reviewer can check against. It is not a source of AG-04's questions or answers, because the domain sentences are not in it. For the same reason, a translation model fine-tuned on it would learn little of AG-04's wording, and its output would still need a fluent speaker's review. See `MEMBER_A_README.md` §11.
 
 ---
 
@@ -105,9 +123,11 @@ The candidate rule separates areas where the placeholder could not. That says no
 - The original development values (daily mean 25–32 °C, daily mean RH ≥ 80%) are therefore kept **unchanged and unsourced**, with an empty `sources` list, so that no source appears to back them.
 - **Needed:** a published threshold from ICAR-NRRI, ICAR-IIRR, an SAU (for example CAU Imphal) or a KVK, or a decision by the Department of Agriculture.
 
-### Risk model
+### Risk model (`verified_risk_model.json`): PLACEHOLDER, values unchanged
 
-No `verified_risk_model.json` is delivered. The weights (0.5 / 0.3 / 0.2), level cut-points and scoring breakpoints in `satquery/agri/assets/risk_model.json` are operating choices. None of the sources above supports changing them, and the team rule is to change them only with a cited reason.
+`verified_risk_model.json` is a copy of `satquery/agri/assets/risk_model.json` with **every value unchanged**. Its `sources` list is empty and its status is PLACEHOLDER. The weights (0.5 / 0.3 / 0.2), level cut-points and scoring breakpoints are operating choices. None of the sources above supports changing them, and the team rule is to change them only with a cited reason.
+
+The file gives the agronomist one place to record reviewed values: change a value, cite its source with `verified_by`/`verified_on`, and set VERIFIED only when every value is backed. A test (`tests/test_team_deliverables.py`) fails if a value changes while the file has no source.
 
 ---
 

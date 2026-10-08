@@ -35,7 +35,7 @@ def write(folder, name, data):
 def query(**changes):
     return {"id": "mni-001", "language": "mni", "script": "Latn", "text": "a verified sentence",
             "english_meaning": "Which areas are at high risk?", "intent": "AREA_RISK_QUERY", "area": None,
-            "verified_by": "Speaker", "verified_on": "2026-10-08"} | changes
+            "source": {"type": "member_a_example"}, "verified_by": "Speaker", "verified_on": "2026-10-08"} | changes
 
 
 def test_nothing_delivered_is_warnings_not_errors(tmp_path):
@@ -73,11 +73,28 @@ def test_queries_need_known_intents_scripts_and_verification(tmp_path):
     write(tmp_path, "manipuri_queries.json", {"status": "VERIFIED", "queries": [query()]})
     assert run_a(tmp_path).errors == 0
     bad = [query(id="q1", intent="SOMETHING"), query(id="q2", script="Deva"),
-           query(id="q3", intent="AREA_SPECIFIC_RISK"), query(id="q4", verified_by=None)]
+           query(id="q3", intent="AREA_SPECIFIC_RISK"), query(id="q4", verified_by=None), query(id="q5", source=None)]
     write(tmp_path, "manipuri_queries.json", {"status": "VERIFIED", "queries": bad})
     errors = " ".join(messages(run_a(tmp_path), "ERROR"))
     assert "q1: intent" in errors and "q2: script" in errors and "q3: AREA_SPECIFIC_RISK needs 'area'" in errors
-    assert "q4: 'verified_by' missing" in errors
+    assert "q4: 'verified_by' missing" in errors and "q5: no provenance" in errors
+
+
+def test_the_delivered_risk_model_changes_no_value_without_a_source():
+    """verified_risk_model.json is the engine's own model until a reviewed value replaces one with its source."""
+    from satquery.agri.config import load_risk_model
+    delivered = load_risk_model(ROOT / "team" / "member-a-agronomy" / "verified_risk_model.json")
+    engine = load_risk_model(ROOT / "satquery" / "agri" / "assets" / "risk_model.json")
+    if not delivered.sources:
+        assert delivered.status == "PLACEHOLDER"
+        assert delivered.model_dump(exclude={"version", "note"}) == engine.model_dump(exclude={"version", "note"})
+
+
+def test_the_delivered_queries_cover_the_question_types_and_say_where_they_came_from():
+    data = json.loads((ROOT / "team" / "member-a-agronomy" / "manipuri_queries.json").read_text(encoding="utf-8"))
+    assert {"AREA_RISK_QUERY", "AREA_EXPLANATION", "INSPECTION_PRIORITY", "CROP_HEALTH", "PEST_RISK",
+            "WEATHER_RISK"} <= {q["intent"] for q in data["queries"]}
+    assert all(q.get("dataset_ref") or q.get("source") for q in data["queries"])
 
 
 def district(name, geometry=None, **props):

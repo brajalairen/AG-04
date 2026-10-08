@@ -113,6 +113,8 @@ def check_member_a(report: Report, folder: Path = TEAM / "member-a-agronomy") ->
                     report.error(f"{where}: intent must be one of {sorted(INTENTS)}")
                 if q.get("intent") == "AREA_SPECIFIC_RISK" and not q.get("area"):
                     report.error(f"{where}: AREA_SPECIFIC_RISK needs 'area'")
+                if not (q.get("dataset_ref") or q.get("source")):
+                    report.error(f"{where}: no provenance: needs 'dataset_ref' (corpus row) or 'source' (who gave it)")
                 _verified_entry(q, where, report, status)
             report.ok(f"manipuri_queries.json: {len(items)} quer(ies), status {status}")
     else:

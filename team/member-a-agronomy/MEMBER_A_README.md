@@ -2,6 +2,8 @@
 
 The folder's `README.md` is the integration lead's format specification. This file describes what was delivered against it. Branch: `feature/member-a-manipuri-agri`.
 
+This folder is the `Member_A/` of the task plan. It keeps the integration lead's name, `team/member-a-agronomy/`, because the router, the answer templates and `team/check_deliverables.py` read from it. This file is the plan's `README.md`; the folder's own `README.md` stays the integration lead's specification.
+
 ## 1. Purpose
 
 AG-04 ranks monitored areas by crop and pest **risk indicators** (weather favourable to a pest, NDVI anomaly, reports) and answers questions about them. Member A supplies the knowledge that layer needs:
@@ -11,21 +13,21 @@ AG-04 ranks monitored areas by crop and pest **risk indicators** (weather favour
 - Sourced pest-weather thresholds in the engine's own schema
 - Conservative, sourced advisory text
 
-This folder contains data and documentation only. No application code was changed.
+This folder contains data and documentation. The code that reads it is described in section 9.
 
 ## 2. Files and status
 
 | File | What it holds | Count | Status |
 |---|---|---|---|
-| `manipuri_queries.json` | Latin-script Manipuri questions with intent mapping | 5 | DRAFT: dataset sentences, awaiting a fluent speaker |
+| `manipuri_queries.json` | Latin-script Manipuri questions with intent mapping | 8 | DRAFT: 5 dataset sentences, 3 of Member A's examples; awaiting a fluent speaker |
 | `agri_terms_manipuri.json` | Agricultural, weather, risk and place terms, each with verbatim evidence rows | 40 terms, 51 forms | DRAFT: attested in the dataset, alignment awaiting a fluent speaker |
 | `verified_pest_rules.json` | Pest-weather rules in the schema of `satquery/agri/assets/pest_rules.json` | 2 rules: rice_blast sourced, BPH placeholder | PLACEHOLDER: no agronomist sign-off yet |
+| `verified_risk_model.json` | Weights, level cut-points and scoring breakpoints, in the schema of `satquery/agri/assets/risk_model.json` | every value unchanged from the engine | PLACEHOLDER: no source supports a change (`SOURCES.md` §3) |
+| `manipuri_responses.json` | Latin Manipuri answer templates (section 9) | 24 messages, 5 written | DRAFT |
 | `advisory.json` | Symptoms, weather link, prevention, monitoring, when to contact | 2 pests + 1 general item | DRAFT |
 | `SOURCES.md` | Every source, quotation, mapping choice, applicability and limitation | — | — |
 
-**Not delivered:**
-- `verified_risk_model.json`: no source supports changing the weights or cut-points (see `SOURCES.md` §3).
-- A separate `advisories.md`: the team format is `advisory.json`.
+**Not delivered:** a separate `advisories.md`. The team format is `advisory.json`.
 
 **Nothing is marked VERIFIED.** Every `verified_by` / `verified_on` field is empty on purpose. These fields record a named person's check, and that check has not happened yet.
 
@@ -46,27 +48,31 @@ Nothing was composed, edited or machine-translated.
 
 ## 5. Query intents
 
-The intents are the ones the checker accepts (`team/check_deliverables.py`).
+The intents are AG-04's own (`INTENTS` in `satquery/agent/language.py`); the checker accepts only these.
 
-| Intent | Existing AG-04 behaviour | Delivered |
-|---|---|---|
-| `INSPECTION_PRIORITY` | Inspection order | mni-001 *ei kadāidagi hougadage?* "Where should I begin?" |
-| `AREA_EXPLANATION` | Why the selected area is flagged | mni-002 *masi karamna khudongthiningngāi oibano?* "How is it dangerous?"; mni-003 *masi sāphaba mapham ama oibrā?* "Is this a safe area?" |
-| `WEATHER_RISK` | Weather forecast for a drawn area | mni-004 *aying asā karamna touri?* "How is the weather?"; mni-005 *hayeng nong chugādrā?* "Will it rain tomorrow?" |
-| `AREA_RISK_QUERY` | Ranking of high-risk areas | **none**: no suitable dataset sentence |
-| `AREA_SPECIFIC_RISK` | Why a named area is flagged | **none** |
-| `PEST_RISK` | Pest risk in an area | **none** |
-| `CROP_HEALTH` | NDVI crop-health answer | **none** |
+| # | Question type | AG-04 intent → existing behaviour | Delivered |
+|---|---|---|---|
+| 1 | Which areas are at high risk? | `AREA_RISK_QUERY` → risk ranking | mni-006 *Kanagumba area high risk da lei?* (Member A) |
+| 2 | Why is this area at risk? | `AREA_EXPLANATION` → explain the selected area | mni-002 *masi karamna khudongthiningngāi oibano?* "How is it dangerous?"; mni-003 *masi sāphaba mapham ama oibrā?* "Is this a safe area?" |
+| 3 | Which area should we inspect first? | `INSPECTION_PRIORITY` → inspection order | mni-001 *ei kadāidagi hougadage?* "Where should I begin?" |
+| 4 | How healthy are crops here? | `CROP_HEALTH` → NDVI crop health | mni-008 *Eigi field da crop condition kayano?* (Member A) |
+| 5 | Is there pest risk here? | `PEST_RISK` → explain the selected area's pest risk | mni-007 *Area asi da pest risk yamna lei-i?* (Member A) |
+| 6 | Is there weather-related crop risk? | `WEATHER_RISK` → weather forecast for a drawn area | mni-004 *aying asā karamna touri?* "How is the weather?"; mni-005 *hayeng nong chugādrā?* "Will it rain tomorrow?". These ask about the weather, not crop risk from it. |
+| 7 | Show me the risk in [area]. | `AREA_SPECIFIC_RISK` (with `area`) → explain the named area | **none**: no corpus sentence, no example yet |
+| 8 | Why was [area] prioritized? | `AREA_SPECIFIC_RISK` (with `area`) → explain the named area | **none** |
 
-mni-002 and mni-003 are general-domain sentences. Their `notes` explain the proposed dashboard reading, which the speaker should confirm or reject.
+**Notes:**
+- mni-002 and mni-003 are general-domain sentences. Their `notes` explain the proposed dashboard reading, which the speaker should confirm or reject.
+- mni-006 to mni-008 are code-mixed, as Member A wrote them. Their `source` quotes the request they came from.
+- Types 7 and 8 need sentences from Member A or a fluent speaker. A sentence that names a district needs that district's Manipuri form in the terms file (section 6) so the area matcher can find it.
 
 **Left out on purpose:**
 - "Which crops are affected?" (row 99907): AG-04 monitors rice areas and cannot answer per crop.
 - "What is the cause of the disease?" (row 92755): it would imply AG-04 diagnoses disease, which it does not.
 
-### Worksheet for a fluent speaker: the missing intents
+### Worksheet for a fluent speaker: native wording and the missing types
 
-These sentences are **not** written here, because writing them would mean inventing Manipuri. Below are the dataset words and sentence patterns a speaker can draw on. All are attested; the row numbers point to the dataset.
+These sentences are **not** written here, because writing them would mean inventing Manipuri. They are needed for question types 7 and 8, and for native (not code-mixed) versions of mni-006 to mni-008. Below are the dataset words and sentence patterns a speaker can draw on. All are attested; the row numbers point to the dataset.
 
 | Intent | English query | Attested pieces |
 |---|---|---|
@@ -120,7 +126,7 @@ The district forms (*bisanupura*, *kākching*, *imphāl*, *thoubāl*, *churācha
 
 ## 9. How the SatQuery application can use these files
 
-No application file was changed. Integration is the integration lead's job (`team/README.md`).
+The application code that reads these files is on this branch. Merging it is the integration lead's decision (`team/README.md`).
 
 **`verified_pest_rules.json`:** works today through existing configuration, with no code change. It loads with the engine's own loader, and the dashboard keeps its PLACEHOLDER label because the rules are not verified.
 
@@ -146,7 +152,7 @@ question -> satquery/agent/language.py: words -> concepts -> common intent (+ la
 
 - **Why templates:** AG-04's answers are written by code, not by a language model, so `satquery/agri/answer_language.py` fills one template per message with the engine's own values (level, score, confidence, names, counts). The engine's reasons and NDVI figures are inserted verbatim.
 - **Fallback:** a message whose `text` is `null` is shown in English. A template is refused, and English shown instead, if it changes the `{slots}`, drops PLACEHOLDER or SAMPLE from a warning, or claims a confirmed diagnosis or outbreak.
-- **Written so far:** 5 of 24 templates, all taken from sentences Member A gave on 2026-10-08 (DRAFT). The other 19 have their English text in `english`, ready for a fluent speaker to write `text`. Do not machine-translate them.
+- **Written so far:** 5 of 24 templates, all taken from sentences Member A gave on 2026-10-08 (DRAFT). The other 19 have their English text in `english`, ready for a fluent speaker to write `text`. A machine translation is never put in `text` as finished wording (section 11).
 - **Path:** override the file with `SATQUERY_MANIPURI_RESPONSES`.
 
 **`advisory.json`:** not read by the application yet. It could feed the area drawer's "what to do" text later.
@@ -155,11 +161,26 @@ question -> satquery/agent/language.py: words -> concepts -> common intent (+ la
 
 | Who | Task |
 |---|---|
-| Fluent Manipuri speaker | Check the 5 queries and 40 terms against their rows; fill `verified_by`/`verified_on`; write the missing intents (section 5). |
-| Agronomist (Department of Agriculture, KVK or CAU Imphal) | Decide the blast mapping choices; sign off S1; provide a sourced BPH threshold; review `advisory.json`. |
+| Fluent Manipuri speaker | Check the 8 queries and 40 terms against their rows; fill `verified_by`/`verified_on`; write question types 7 and 8 (section 5) and the 19 unwritten answer templates (section 9). |
+| Agronomist (Department of Agriculture, KVK or CAU Imphal) | Decide the blast mapping choices; sign off S1; provide a sourced BPH threshold; review `verified_risk_model.json` and `advisory.json`. |
 
 Check after any edit:
 
 ```bash
 python team/check_deliverables.py
 ```
+
+## 11. Is fine-tuning a translation model necessary? Not now
+
+Training is paused. The language layer was built and checked first, and on that evidence fine-tuning is not needed.
+
+- **Understanding** a question needs words, not a model. AG-04 has 7 intents, and `language.py` maps a question onto one through concepts (risk, pest, crop, why, which, here and so on) read from `agri_terms_manipuri.json`. New wording is handled by adding attested forms to the lexicon.
+- **Answering** needs about 24 fixed sentences, not open translation. Every answer is assembled by code from the engine's values. A fluent speaker writing the 19 missing templates is a short, checkable job. A model's draft of the same sentences would still need that speaker's review.
+- **The corpus lacks the domain.** It has no sentence of AG-04's question types and about 1% agricultural text (`SOURCES.md` §1, *Corpus suitability*). A model fine-tuned on it would not learn AG-04's wording.
+- **The values must stay exact.** A translation model could reword a score, a level or a PLACEHOLDER warning. Templates with checked `{slots}` cannot.
+
+**When to reconsider:**
+- the questions people ask in the field outgrow the lexicon (measure that from real queries first);
+- a speaker wants machine drafts to edit.
+
+Any machine draft must be labelled as such, stay `DRAFT` with empty `verified_by`, and pass `usable()` in `answer_language.py`. It is never presented as verified.

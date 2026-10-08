@@ -1,6 +1,6 @@
 {
   "status": "DRAFT",
-  "note": "Latin-script (romanised) Manipuri queries taken VERBATIM from CompiledDataEnglishToMeitei.xlsx; nothing was composed or machine-translated. Each text is the dataset's human translation of english_meaning (row in dataset_ref). DRAFT: verified_by/verified_on stay empty until a fluent speaker confirms each text and its intent mapping. Intents with no suitable dataset sentence (AREA_RISK_QUERY, AREA_SPECIFIC_RISK, PEST_RISK, CROP_HEALTH) are listed in MEMBER_A_README.md for a fluent speaker to write.",
+  "note": "Latin-script (romanised) Manipuri queries; nothing was composed by the assistant or machine-translated. mni-001..005 are copied VERBATIM from CompiledDataEnglishToMeitei.xlsx (the dataset's human translation of english_meaning; row in dataset_ref). mni-006..008 are Member A's own example questions from the integration requests of 2026-10-08 (provenance in 'source'). DRAFT: verified_by/verified_on stay empty until a fluent speaker confirms each text and its intent mapping. Query types with no sourced sentence yet (AREA_SPECIFIC_RISK: 'Show me the risk in [area]', 'Why was [area] prioritized?') are listed in MEMBER_A_README.md section 5.",
   "queries": [
     {
       "id": "mni-001",
@@ -91,6 +91,60 @@
       "verified_by": null,
       "verified_on": null,
       "notes": "hayeng = tomorrow; nong = rain. A forecast question; AG-04's weather answer covers the forecast days."
+    },
+    {
+      "id": "mni-006",
+      "language": "mni",
+      "script": "Latn",
+      "text": "Kanagumba area high risk da lei?",
+      "english_meaning": "Which areas are at high risk?",
+      "intent": "AREA_RISK_QUERY",
+      "area": null,
+      "source": {
+        "type": "member_a_example",
+        "given_on": "2026-10-08",
+        "document": "Member A integration requests to the assistant, 2026-10-08 (routing request; Latin Manipuri response request)",
+        "quote": "\"Kanagumba area high risk da lei?\" should resolve to the same intent as its English equivalent: \"Which areas are at high risk?\""
+      },
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Code-mixed: 'area' and 'high risk' are English words, as Member A wrote them. Not in the corpus (no corpus sentence asks which areas are at risk)."
+    },
+    {
+      "id": "mni-007",
+      "language": "mni",
+      "script": "Latn",
+      "text": "Area asi da pest risk yamna lei-i?",
+      "english_meaning": "Is there pest risk in this area?",
+      "intent": "PEST_RISK",
+      "area": null,
+      "source": {
+        "type": "member_a_example",
+        "given_on": "2026-10-08",
+        "document": "Member A integration requests to the assistant, 2026-10-08 (routing request; Latin Manipuri response request)",
+        "quote": "User: \"Area asi da pest risk yamna lei-i?\" Internal intent: PEST_RISK_QUERY"
+      },
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Code-mixed ('area', 'pest risk'). Member A gave the intent, not an English gloss: english_meaning follows the task's 'Is there pest risk here?'; yamna (very/much, a cue word) suggests 'much pest risk' and a speaker should confirm the gloss. Asked with a monitored area selected."
+    },
+    {
+      "id": "mni-008",
+      "language": "mni",
+      "script": "Latn",
+      "text": "Eigi field da crop condition kayano?",
+      "english_meaning": "How is the crop condition in my field?",
+      "intent": "CROP_HEALTH",
+      "area": null,
+      "source": {
+        "type": "member_a_example",
+        "given_on": "2026-10-08",
+        "document": "Member A integration requests to the assistant, 2026-10-08 (routing request; Latin Manipuri response request)",
+        "quote": "Latin Manipuri: \"Eigi field da crop condition kayano?\" → Crop Health Analysis"
+      },
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Code-mixed ('field', 'crop condition'). Member A gave the target (Crop Health Analysis), not an English gloss: english_meaning is the closest English question AG-04 already answers with NDVI. Needs a drawn area or an image."
     }
   ]
 }
