@@ -62,7 +62,7 @@ Folder `team/member-d-pitch/` · branch `feature/pitch` · the facts to state ac
 | Task | Deliverable | Status | Dependency | Blocker |
 |---|---|---|---|---|
 | Deck around Technical Trust (35%), Government Relevance (30%) and Industry Potential (35%), matching the implemented product | `AG04_Pitch.pptx` | not started | None | None |
-| Demo storyline following the real product (dashboard, risk map, priority list, "Why is this area at risk?", agri questions, NDVI crop-health question, Manipuri query only if integrated, roadmap, honest limits) | `DEMO_SCRIPT.md` | not started | Phase 3 (done) | None |
+| Demo storyline following the real product:<br>1. Dashboard and Priority areas.<br>2. "Which areas are high risk?"<br>3. Click Bishnupur (district), its zone, then "Why is this area at risk?"<br>4. **Kakching** zone, then "Check crop health here" (Bishnupur's scene is too cloudy today; that refusal is itself a trust point).<br>5. Layers.<br>6. Manipuri only if integrated.<br>7. Roadmap, honest limits | `DEMO_SCRIPT.md` | not started | Dashboard (done 8 Oct) | None |
 | Likely judge questions and accurate answers (data sources, rules not ML, SAMPLE data, placeholder thresholds, confidence, cost, scale, deployment, adoption path) | `JUDGE_QA.md` | not started | None | None |
 | Screenshots and a backup recording of the stable build; links to large videos in `media/LINKS.md` | `media/` | not started | Stable build | None |
 
@@ -81,7 +81,7 @@ Folder `team/member-d-pitch/` · branch `feature/pitch` · the facts to state ac
 | Phase 1: audit + NDVI foundation | **done**, approved and committed (`418fe58`) |
 | Phase 2: agricultural data + risk engine | **done**, approved and committed (`082cd27`); thresholds are PLACEHOLDER until Member A verifies them |
 | Phase 3: AG-04 dashboard | **done**, approved and committed (`5c966f6`) |
-| Phase 4: demo hardening (offline snapshot, warm start) | **not started**; waits for approval |
+| Phase 4: demo hardening (offline snapshot, warm start) and the district → zone dashboard | **done** 8 Oct. Pre-demo routine: `python -m satquery.agri warm --save-snapshot --crop-health`, then start the server |
 | Phase 5: government workflow (login, monitor area, alerts, inspections, audit) | not started |
 | Phase 6: Manipuri (needs Member A's verified sentences) | blocked |
 | Phase 7: optional extras | not started |

@@ -11,10 +11,10 @@ The source of truth for what we intend to build. Update it after every phase.
 | **Active branch** | `ag04-prototype`, tracking `origin/ag04-prototype`. `main` has not been pushed to AG-04. |
 | **Frozen repos** | **SatQuery-AI** (https://github.com/brajalairen/SatQuery-AI.git) is the frozen SIH submission. Locally its remote is `sih-frozen`: fetch only, push disabled (a test push fails). Never push, merge into it or change its `main` (still at `1433e7d`). SatV2 is a reference copy only; do not modify it. |
 | **Last application commit** | `5c966f6`, Phase 3 (on top of `082cd27` Phase 2 and `418fe58` Phase 1). Later commits are documentation-only unless the change log says otherwise. |
-| **Current phase** | **Phases 1, 2 and 3 are complete, approved and committed.** Phase 4 (demo hardening) has **not** started and waits for approval. |
+| **Current phase** | **Phases 1–3 complete. Phase 4 reliability and the district → zone dashboard are implemented** (8 Oct). Teammate data (thresholds, boundaries, Manipuri) not yet integrated. |
 | **Overall status** | Phases 1–3 work. Phase 3 adds the government-facing dashboard over the unchanged risk engine (read-only `/api/agri/*`, risk map, priority panel, "Why is this area at risk?" drawer, agri command-bar questions). Tests: backend 720 passed, web 106 passed, typecheck clean, build OK. Checked in Chrome at 1600×900 and 1280×720, light and dark, with no page errors. |
 | **Known blockers** | (1) Trustworthy 16-district boundaries are not yet sourced (Member B). OpenStreetMap already has the current districts; this is a lead to verify. (2) **Pest thresholds are PLACEHOLDERS** (Member A). In Oct 2026 the placeholder blast rule held on every day in every area, so weather does not separate areas until verified values replace it. (3) Advisory text is not yet verified (Member A). (4) No verified Manipuri sentence yet (Member A). |
-| **Demo-critical unfinished** | Verified thresholds (Member A); P0.3 district boundaries (Member B); P0.11 frozen offline snapshot and automatic fallback (Phase 4); advice / whom to consult (P0.9 remainder, needs Member A's advisory text). |
+| **Demo-critical unfinished** | Verified thresholds (Member A); verified district boundaries (Member B); advice / whom to consult (Member A); 9 Oct morning: run the pre-demo routine (below). |
 | **Known-good demo rectangle** | Thoubal–Kakching farmland, W 93.95, S 24.45, E 94.03, N 24.52. As of 2026-10-08, the 2026-09-14 Sentinel-2 scene is 91% clear over it. |
 
 Status legend: `done` · `in progress` · `not started` · `blocked` · `dropped`
@@ -104,10 +104,25 @@ Status legend: `done` · `in progress` · `not started` · `blocked` · `dropped
   - PLACEHOLDER notices appear in the panel, drawer and answers; "SAMPLE DATA — Prototype Simulation" labels appear wherever synthetic reports do; data-state chips appear on every source.
   - Wording stays "Indicators suggest…", never "detected" or "outbreak"; tests check this.
   - Phase 3 also fixed one Phase 2 wording bug: an old weather copy in offline mode used to say "the provider could not be reached". It now states its real reason. Methodology and thresholds are unchanged.
-- [ ] **P0.11 Offline demo snapshot.** Status: **foundation done.**
-  - The disk cache plus `--offline` reproduce the last assessment without network, labelled CACHED.
-  - `SATQUERY_AGRI_OFFLINE=1` makes the dashboard serve cached data only, labelled offline.
-  - Remaining (Phase 4): a frozen snapshot file, an automatic fallback in the API, and a pre-demo warm-up.
+- [x] **P0.11 Offline demo snapshot.** Status: **done** (Phase 4).
+  - **Warm-up:** the server computes the assessment in the background at start, so the dashboard was ready in about 2.5 s instead of up to a minute (`SATQUERY_AGRI_WARMUP=0` turns it off).
+  - **Frozen snapshot:** `python -m satquery.agri warm --save-snapshot` writes `runs/agri/snapshot.json` (gitignored).
+  - **Fallback:** live first. The snapshot is shown automatically when live data is less complete than the snapshot (for example, the venue network is down), or always with `SATQUERY_AGRI_MODE=snapshot`.
+  - **Labelling:** every snapshot source is relabelled SNAPSHOT, with its original state and time kept in a note. The strip and the panel say "Frozen SNAPSHOT of …, not live data" and give the reason. It is never shown as LIVE.
+  - **Crop-health warm-up:** `--crop-health` also fetches today's Sentinel-2 scene for each rectangular zone.
+  - **Stable SAMPLE scenario:** reports are seeded by area, not by date, with dates relative to today, so the ranking no longer reshuffles daily. They stay labelled SAMPLE.
+  - Files: `satquery/agri/service.py`, `__main__.py` (`warm`), `server.py` (lifespan warm-up), `settings.py`, `models.py` (`SNAPSHOT` state), `reports.py`; tests in `tests/test_agri_snapshot.py`.
+- [x] **District → zone dashboard** (8 Oct; extends P0.6–P0.8).
+  - **Districts are context, never scored or coloured.** The API groups the engine's ranked zones by district (`satquery/agri/districts.py`, overview `districts`). A district's level, score and confidence are those of its top zone, and the UI says "it does not mean the whole district is affected".
+  - **District list:** 16 names from OpenStreetMap (names only, to be confirmed by Member B). Districts without a zone show "Monitoring coverage not yet available" (not "no risk").
+  - **Priority panel:** districts in engine order (rank, level, score, confidence, zone count; filters All/High/Moderate/Low). The drill-down shows the district's zones, and a zone opens the existing drawer.
+  - **Layers control** (base map, district boundaries, monitoring zones, priority markers):
+    - District boundaries stay disabled until verified outlines are loaded (`SATQUERY_AGRI_DISTRICTS`).
+    - There is no block layer (no verified data).
+    - The legend moved to the top strip, so eastern Manipur is clear at 1280×720.
+  - **"Check crop health here · Sentinel-2"** in the zone drawer reuses the Phase 1 NDVI flow on the zone's rectangle; the result card says it is separate from the risk score.
+  - **Statuses shown separately:** "Pest thresholds" and "Risk weighting" have their own status lines (PLACEHOLDER until Member A's verified rules).
+  - Files: `web/src/agri/PriorityPanel.tsx`, `MapLayersControl.tsx`, `StatusStrip.tsx`, `RiskLayer.tsx`, `AreaRiskDrawer.tsx`, `badges.tsx`, `format.ts`, `useAgriStore.ts`; `satquery/agri/routes.py`; tests in `tests/test_agri_districts.py` and the web tests.
 
 ## P1: Important government workflow (start only when P0 is stable)
 
@@ -176,6 +191,20 @@ Status legend: `done` · `in progress` · `not started` · `blocked` · `dropped
 5. Mean NDVI was averaged over every pixel, water included, so a lake dragged "crop health" down.
 6. Crop-change wording ("declined", "worsened", "deteriorating") was not recognised as needing two dates.
 
+## Phase 4 / dashboard notes (8 Oct)
+
+**Pre-demo routine (9 Oct about 07:30, with network):**
+1. `.venv\Scripts\python -m satquery.agri warm --save-snapshot --crop-health` (about 6 min). This fetches today's data, freezes the snapshot and warms the crop-health scenes.
+2. `.venv\Scripts\python -m uvicorn satquery.server:app --port 8000`. It warms itself at start. If the venue network fails, it falls back to the snapshot automatically. To force the snapshot: `SATQUERY_AGRI_MODE=snapshot`.
+
+**Live check, 8 Oct 15:20 IST (stable SAMPLE seed):**
+- Ranking: Bishnupur 73, Thoubal 65 and Kakching 62 (HIGH); Imphal West 52; Churachandpur, Imphal East and Jiribam 50 (MODERATE).
+- Crop health had a clear scene for Kakching, Imphal West, Imphal East and Jiribam. **Bishnupur, Thoubal and Churachandpur were refused as too cloudy** (honest refusal), so the demo's crop-health step should use Kakching (HIGH, #3).
+
+**Known limits:**
+- With no network the basemap tiles do not load (plain background); the zones and panel still work.
+- District membership comes from each zone's own properties (OpenStreetMap reverse geocoding) until Member B's verified boundaries arrive.
+
 ## Phase 3 notes
 
 **Architecture:** agricultural data → risk engine (`satquery/agri`, unchanged method) → `AssessmentService` (one assessment of all areas, reused for `SATQUERY_AGRI_REFRESH_S`, default 30 min) → read-only `/api/agri/*` → dashboard (`web/src/agri/*`). The frontend computes no risk figure: ranks, levels, scores, points, reasons, confidence and completeness come from the API; the frontend only filters by level and formats.
@@ -222,6 +251,10 @@ All areas have 100% data completeness and *low* confidence, because the threshol
 ---
 
 ## Change log
+- **2026-10-08, Phase 4 reliability + district dashboard:**
+  - Warm-up at server start; frozen snapshot with live-first fallback and SNAPSHOT labelling; `warm` CLI; stable SAMPLE seed.
+  - District context API; district → zone priority panel; Layers control; crop-health action; separate threshold statuses; legend moved to the top strip.
+  - Risk engine methodology, weights and thresholds unchanged.
 - **2026-10-08, team intake** (no application change):
   - `team/` holds one folder per member with exact formats and templates, plus `team/check_deliverables.py`, which validates deliverables with the engine's own loaders.
   - TEAM_TASKS.md now uses the agreed deliverables: A `manipuri_queries.json`, `agri_terms_manipuri.json`, verified thresholds, `advisory.json`, `SOURCES.md`; B `manipur_districts.geojson`, `SOURCES.md`, `geo_validation.md`; C `UI_REVIEW.md`, `QA_REPORT.md`, `TEST_MATRIX.md`; D `AG04_Pitch.pptx`, `DEMO_SCRIPT.md`, `JUDGE_QA.md`.
