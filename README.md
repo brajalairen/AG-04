@@ -37,6 +37,9 @@ visual evidence pinned to the map, a confidence value with its method, and a ful
   Conversation pipeline, speak the answer, listen again. It pauses after two silent turns. The answer is spoken with
   its scores, confidence and PLACEHOLDER/SAMPLE warnings; long lists of reasons are shortened, and the full answer
   stays on screen.
+  - **Interrupting:** start speaking while it answers ("Stop. What about Bishnupur?"). The answer stops at your first
+    words and your question is answered instead. The app's own voice, heard through the speakers, does not count as
+    an interruption.
 
 ## Tech Stack
 

@@ -14,10 +14,14 @@ import { useVoiceChat, voiceChatSupported, type VoiceStatus } from "./useVoiceCh
 const EXAMPLES = ["Which areas are at high risk?", "Why?", "What about Thoubal?"];
 const STATUS_LABEL: Record<VoiceStatus, string> = {
   idle: "",
-  listening: "Listening…",
-  thinking: "Thinking…",
-  speaking: "Speaking…",
+  listening: "🎙️ Listening…",
+  processing: "Processing…",
+  speaking: "🔊 Speaking…",
+  interrupting: "🎙️ Listening…",
+  error: "",
 };
+/** Whether a voice session is running (an error or idle state is not). */
+const isOn = (status: VoiceStatus) => status !== "idle" && status !== "error";
 
 /** The two mode buttons, beside the theme toggle. */
 export function ConversationLaunchers() {
@@ -26,7 +30,7 @@ export function ConversationLaunchers() {
   const status = useVoiceChat((s) => s.status);
   const start = useVoiceChat((s) => s.start);
   const stop = useVoiceChat((s) => s.stop);
-  const voiceOn = status !== "idle";
+  const voiceOn = isOn(status);
   return (
     <Surface className="flex items-center gap-0.5 p-1">
       <IconButton label={open ? "Close conversation" : "Conversation"} side="bottom" active={open}
@@ -84,7 +88,7 @@ export function ConversationPanel() {
   const stopVoice = useVoiceChat((s) => s.stop);
   const [draft, setDraft] = useState("");
   const list = useRef<HTMLOListElement>(null);
-  const voiceOn = status !== "idle";
+  const voiceOn = isOn(status);
   const busy = pending || appBusy || voiceOn;
   const placeholderShown = messages.some((m) => m.placeholder);
   const thresholdsNote = useAgriStore((s) => s.overview?.thresholds_note ?? null);
