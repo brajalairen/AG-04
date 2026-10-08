@@ -49,6 +49,9 @@ satquery = "satquery.cli:main"
 [tool.setuptools.packages.find]
 include = ["satquery*"]
 
+[tool.setuptools.package-data]
+"satquery.agri" = ["assets/*.json", "assets/*.geojson"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = ["gpu: needs a GPU and downloaded model weights",

@@ -1,0 +1,57 @@
+{
+  "version": "0.1-placeholder",
+  "status": "PLACEHOLDER",
+  "note": "PLACEHOLDER thresholds, chosen only to develop and test the risk engine. They are NOT taken from a verified agronomic source and must not be presented as validated. Member A replaces each value with a verified threshold and its citation (see TEAM_TASKS.md, pest_rules_sources.md), then sets status to VERIFIED with verified_by and verified_on on every source.",
+  "min_hours_per_day": 20,
+  "pests": [
+    {
+      "id": "rice_blast",
+      "name": "Rice blast (leaf / neck)",
+      "crop": "rice",
+      "status": "PLACEHOLDER",
+      "sources": [],
+      "conditions": [
+        {
+          "variable": "relative_humidity_2m",
+          "aggregate": "hours_at_or_above",
+          "threshold": 90,
+          "at_least": 8,
+          "label": "at least 8 h with relative humidity >= 90%"
+        },
+        {
+          "variable": "temperature_2m",
+          "aggregate": "mean",
+          "between": [20, 28],
+          "label": "daily mean temperature 20-28 °C"
+        }
+      ],
+      "past_days": 7,
+      "forecast_days": 3,
+      "full_score_days": 5
+    },
+    {
+      "id": "brown_planthopper",
+      "name": "Brown planthopper",
+      "crop": "rice",
+      "status": "PLACEHOLDER",
+      "sources": [],
+      "conditions": [
+        {
+          "variable": "temperature_2m",
+          "aggregate": "mean",
+          "between": [25, 32],
+          "label": "daily mean temperature 25-32 °C"
+        },
+        {
+          "variable": "relative_humidity_2m",
+          "aggregate": "mean",
+          "at_least": 80,
+          "label": "daily mean relative humidity >= 80%"
+        }
+      ],
+      "past_days": 7,
+      "forecast_days": 3,
+      "full_score_days": 5
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "type": "FeatureCollection",
+  "name": "SatQuery AG-04 demo monitoring areas",
+  "note": "Demo monitoring RECTANGLES over Manipur valley farmland, drawn by the team for the prototype. They are NOT administrative boundaries. Place names come from OpenStreetMap Nominatim reverse geocoding of each rectangle's centre (ODbL, checked 2026-10-08). District boundaries will come from Member B's verified dataset.",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"id": "demo-kakching-khangshim", "name": "Kakching farmland near Khangshim", "kind": "demo",
+                     "district": "Kakching", "state": "Manipur",
+                     "boundary_source": "demo rectangle drawn by the team (not an administrative boundary)",
+                     "note": "Centre reverse-geocoded to Khangshim, Kakching subdivision, Kakching district (OpenStreetMap)."},
+      "geometry": {"type": "Polygon", "coordinates": [[[93.95, 24.45], [94.03, 24.45], [94.03, 24.52], [93.95, 24.52], [93.95, 24.45]]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "demo-bishnupur-nambol", "name": "Bishnupur farmland near Keinou Thongkha (Nambol)", "kind": "demo",
+                     "district": "Bishnupur", "state": "Manipur",
+                     "boundary_source": "demo rectangle drawn by the team (not an administrative boundary)",
+                     "note": "Centre reverse-geocoded to Keinou Thongkha, Nambol subdivision, Bishnupur district (OpenStreetMap)."},
+      "geometry": {"type": "Polygon", "coordinates": [[[93.76, 24.63], [93.84, 24.63], [93.84, 24.70], [93.76, 24.70], [93.76, 24.63]]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "demo-imphal-west-lamsang", "name": "Imphal West farmland near Senjam Khunou (Lamsang)", "kind": "demo",
+                     "district": "Imphal West", "state": "Manipur",
+                     "boundary_source": "demo rectangle drawn by the team (not an administrative boundary)",
+                     "note": "Centre reverse-geocoded to Senjam Khunou, Lamsang subdivision, Imphal West (OpenStreetMap)."},
+      "geometry": {"type": "Polygon", "coordinates": [[[93.84, 24.86], [93.92, 24.86], [93.92, 24.93], [93.84, 24.93], [93.84, 24.86]]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "demo-imphal-east-sawombung", "name": "Imphal East farmland near Sawombung", "kind": "demo",
+                     "district": "Imphal East", "state": "Manipur",
+                     "boundary_source": "demo rectangle drawn by the team (not an administrative boundary)",
+                     "note": "Centre reverse-geocoded to Sawombung, Sawombung subdivision, Imphal East (OpenStreetMap)."},
+      "geometry": {"type": "Polygon", "coordinates": [[[93.97, 24.84], [94.05, 24.84], [94.05, 24.91], [93.97, 24.91], [93.97, 24.84]]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "demo-thoubal-chaobok", "name": "Thoubal farmland near Chaobok", "kind": "demo",
+                     "district": "Thoubal", "state": "Manipur",
+                     "boundary_source": "demo rectangle drawn by the team (not an administrative boundary)",
+                     "note": "Centre reverse-geocoded to Chaobok, Thoubal subdivision, Thoubal district (OpenStreetMap)."},
+      "geometry": {"type": "Polygon", "coordinates": [[[93.88, 24.58], [93.96, 24.58], [93.96, 24.65], [93.88, 24.65], [93.88, 24.58]]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "demo-jiribam-kamaranga", "name": "Jiribam farmland near Kamaranga", "kind": "demo",
+                     "district": "Jiribam", "state": "Manipur",
+                     "boundary_source": "demo rectangle drawn by the team (not an administrative boundary)",
+                     "note": "Centre reverse-geocoded to Kamaranga, Jiribam district (OpenStreetMap)."},
+      "geometry": {"type": "Polygon", "coordinates": [[[93.08, 24.77], [93.16, 24.77], [93.16, 24.84], [93.08, 24.84], [93.08, 24.77]]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"id": "demo-churachandpur-bungmual", "name": "Churachandpur valley near Bungmual", "kind": "demo",
+                     "district": "Churachandpur", "state": "Manipur",
+                     "boundary_source": "demo rectangle drawn by the team (not an administrative boundary)",
+                     "note": "Centre reverse-geocoded to Bungmual, Churachandpur subdivision, Churachandpur district (OpenStreetMap)."},
+      "geometry": {"type": "Polygon", "coordinates": [[[93.64, 24.30], [93.72, 24.30], [93.72, 24.37], [93.64, 24.37], [93.64, 24.30]]]}
+    }
+  ]
+}

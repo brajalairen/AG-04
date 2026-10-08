@@ -1,0 +1,31 @@
+{
+  "status": "SAMPLE",
+  "note": "Scenario for the seeded SAMPLE pest-report generator. Every report it produces is SYNTHETIC, for prototype demonstration only, and is labelled 'SAMPLE DATA — Prototype Simulation'. It is not, and must never be presented as, a real government or field observation. Member B may replace this scenario (sample_reports_spec.md).",
+  "seed": 20261008,
+  "crop": "rice",
+  "window_days": 21,
+  "pests": {
+    "rice_blast": 0.5,
+    "brown_planthopper": 0.5
+  },
+  "pressure_levels": {
+    "background": {
+      "reports": [0, 2],
+      "severity": {"low": 0.7, "moderate": 0.25, "high": 0.05}
+    },
+    "elevated": {
+      "reports": [3, 6],
+      "severity": {"low": 0.4, "moderate": 0.4, "high": 0.2}
+    },
+    "high": {
+      "reports": [6, 10],
+      "severity": {"low": 0.2, "moderate": 0.45, "high": 0.35}
+    }
+  },
+  "default_pressure": "background",
+  "area_pressure": {
+    "demo-bishnupur-nambol": "high",
+    "demo-kakching-khangshim": "elevated",
+    "demo-thoubal-chaobok": "elevated"
+  }
+}

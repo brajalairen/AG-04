@@ -1,0 +1,46 @@
+{
+  "version": "0.1-placeholder",
+  "status": "PLACEHOLDER",
+  "note": "PLACEHOLDER weights, level cut-points and scoring breakpoints, chosen only to develop and test the risk engine. They are operating choices to be reviewed with Member A and the Department of Agriculture, not validated values.",
+  "sources": [],
+  "weights": {
+    "weather_pest": 0.5,
+    "ndvi_anomaly": 0.3,
+    "report_pressure": 0.2
+  },
+  "levels": {
+    "critical": 0.8,
+    "high": 0.6,
+    "moderate": 0.35
+  },
+  "critical_corroboration": {
+    "min_factors": 2,
+    "factor_score_at_least": 0.6,
+    "min_completeness": 0.9
+  },
+  "min_completeness_for_level": 0.5,
+  "ndvi": {
+    "window_days": 30,
+    "baseline_years": 3,
+    "min_baseline_years": 2,
+    "min_observed_fraction": 0.3,
+    "ignore_relative_drop_below": 0.03,
+    "relative_drop_for_full_score": 0.2,
+    "max_pixels": 100000,
+    "min_resolution_deg": 0.0005
+  },
+  "reports": {
+    "lookback_days": 14,
+    "severity_weights": {
+      "low": 0.5,
+      "moderate": 1.0,
+      "high": 2.0
+    },
+    "weighted_count_for_full_score": 6.0
+  },
+  "confidence": {
+    "high_min_completeness": 0.9,
+    "medium_min_completeness": 0.6
+  },
+  "weather_point_span_km": 10.0
+}

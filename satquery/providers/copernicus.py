@@ -49,6 +49,8 @@ from satquery.providers.errors import (
 TOKEN_URL = "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"
 CATALOG_URL = "https://sh.dataspace.copernicus.eu/api/v1/catalog/1.0.0/search"
 PROCESS_URL = "https://sh.dataspace.copernicus.eu/api/v1/process"
+# Area statistics over any polygon and time window (AG-04 NDVI baseline); verified live 2026-10-08.
+STATISTICS_URL = "https://sh.dataspace.copernicus.eu/api/v1/statistics"
 COLLECTION = "sentinel-2-l2a"
 
 # Band sets by what the question needs. Keys match satquery.agent.intents.find_target() targets.
@@ -391,6 +393,14 @@ class CopernicusSentinelProvider:
         return width, height
 
     # ----------------------------------------------------------------- public
+
+    def statistics(self, payload: dict) -> dict:
+        """One Statistical API request (statistics of an evalscript's output over a polygon and time range).
+
+        The polygon is not limited to `max_aoi_km2`: the caller chooses a resolution that keeps the
+        pixel count small. Raises a typed RetrievalError like every other request.
+        """
+        return self._post(STATISTICS_URL, payload, what="computing area statistics").json()
 
     def cache_key(self, bbox, bands: list[str], *, days_back: int | None = None,
                   max_cloud: float | None = None) -> str:
