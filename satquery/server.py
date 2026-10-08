@@ -188,7 +188,7 @@ class RouteRequest(BaseModel):
 class RouteResult(BaseModel):
     """Which specialist a question is for. Wording only: nothing is retrieved or planned here."""
 
-    route: Literal["weather", "imagery", "mixed"]
+    route: Literal["weather", "imagery", "mixed", "agri"]
     rule: str
     message: str | None = None  # for "mixed": what to do instead
 
@@ -508,9 +508,16 @@ def _examples() -> list[Example]:
 # --------------------------------------------------------------------------- app
 
 
-def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = analyze) -> FastAPI:
-    """`run_analysis` is injected so a host can wrap it (e.g. `spaces.GPU`), as `build_demo` does."""
+def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = analyze,
+               agri_service: "AssessmentService | None" = None) -> FastAPI:
+    """`run_analysis` is injected so a host can wrap it (e.g. `spaces.GPU`), as `build_demo` does.
+    `agri_service` serves the AG-04 dashboard's risk assessments; tests inject one with fake sources."""
+    from satquery.agri import query as agri_query
+    from satquery.agri.routes import agri_router
+    from satquery.agri.service import AssessmentService
+
     settings = load_settings()
+    agri = agri_service or AssessmentService()
     store = UploadStore(directory=_uploads_dir(settings))
     upload_limit = settings.max_upload_mb * 1024 * 1024
     too_large = f"the file is larger than the {settings.max_upload_mb} MB upload limit (SATQUERY_MAX_UPLOAD_MB)"
@@ -540,6 +547,11 @@ def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = ana
     def route(request: RouteRequest) -> RouteResult:
         """Weather, imagery, or an unsupported mix of both: decided from the wording alone, so the client
         can send a weather question to the weather specialist before any imagery is retrieved."""
+        # An agricultural risk question ("Which areas are high risk?") is answered by the risk engine,
+        # checked first: it names no imagery and must never reach the VLM for a visual guess.
+        agri_rule = agri_query.is_agri(request.query, agri.areas())
+        if agri_rule:
+            return RouteResult(route="agri", rule=f"{agri_rule} -> crop & pest risk engine")
         decided, rule = route_query(request.query)
         message = ("This asks for a weather forecast and a satellite analysis at once, which is not supported yet. "
                    "Please ask the weather question and the imagery question separately.") if decided == "mixed" else None
@@ -577,7 +589,7 @@ def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = ana
 
     @app.get("/api/example-queries", response_model=list[str])
     def example_queries() -> list[str]:
-        return list(EXAMPLE_QUERIES)
+        return [*agri_query.EXAMPLES, *EXAMPLE_QUERIES]  # AG-04 questions first
 
     @app.post("/api/examples/{index}/load", response_model=list[UploadInfo])
     def load_example(index: int) -> list[UploadInfo]:
@@ -997,6 +1009,8 @@ def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = ana
         path = _safe_child(load_settings().runs_dir, run_id, filename)
         media = {".png": "image/png", ".html": "text/html", ".json": "application/json"}
         return FileResponse(path, media_type=media.get(path.suffix.lower(), "application/octet-stream"))
+
+    app.include_router(agri_router(agri))  # before the static mount, which would otherwise shadow it
 
     if WEB_DIST.is_dir():  # production: one origin serves the API and the built client
         app.mount("/", StaticFiles(directory=WEB_DIST, html=True), name="web")

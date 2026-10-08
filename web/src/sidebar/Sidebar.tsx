@@ -1,7 +1,7 @@
 /** Left sidebar. Collapsed it is an icon rail with the everyday actions; expanded it reveals the
  *  detailed controls. Nothing advanced is reachable until the user asks for it. */
 
-import { CircleHelp, Layers, MapPin, Search, Bookmark, SlidersHorizontal, X } from "lucide-react";
+import { CircleHelp, Layers, ListOrdered, MapPin, Search, Bookmark, SlidersHorizontal, X } from "lucide-react";
 import { useAppStore, type SidebarSection } from "../state/useAppStore";
 import { cx, IconButton, Surface } from "../ui/primitives";
 import { SearchPanel } from "./SearchPanel";
@@ -9,8 +9,10 @@ import { AreaSelectionTools } from "./AreaSelectionTools";
 import { LayersPanel } from "./LayersPanel";
 import { SavedAreas } from "./SavedAreas";
 import { HelpPanel } from "./HelpPanel";
+import { PriorityPanel } from "../agri/PriorityPanel";
 
 const ITEMS: { id: Exclude<SidebarSection, null>; label: string; icon: typeof Search }[] = [
+  { id: "priority", label: "Priority areas (crop & pest risk)", icon: ListOrdered },
   { id: "search", label: "Search location", icon: Search },
   { id: "select", label: "Select area", icon: MapPin },
   { id: "layers", label: "Images and imagery settings", icon: Layers },
@@ -18,6 +20,7 @@ const ITEMS: { id: Exclude<SidebarSection, null>; label: string; icon: typeof Se
 ];
 
 const TITLES: Record<Exclude<SidebarSection, null>, string> = {
+  priority: "Priority areas",
   search: "Search location",
   select: "Select area",
   layers: "Images",
@@ -79,6 +82,7 @@ export function Sidebar() {
             </IconButton>
           </header>
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            {section === "priority" && <PriorityPanel />}
             {section === "search" && <SearchPanel />}
             {section === "select" && <AreaSelectionTools />}
             {section === "layers" && <LayersPanel />}

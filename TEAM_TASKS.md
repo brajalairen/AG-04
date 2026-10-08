@@ -46,6 +46,7 @@ Who owns what while Claude does the main implementation in this repository. Role
 | Review the current SatQuery UI: what to keep (map, drawing, result card, trace drawer, voice input) and what to redesign for a government agricultural dashboard | `ux_review.md` with screenshots | not started | App running locally | None |
 | Sketch the dashboard information hierarchy: Manipur overview → risk map → priority areas → selected-area explanation → recommended action → ask the AI | Sketch or wireframe in `ux_review.md` | not started | None | None |
 | Browser QA of each phase: the demo flow, loading/error/empty states, light and dark themes, projector size (1280×720 and 1920×1080) | Bug list with steps to reproduce | not started | Each phase | None |
+| **Phase 3 dashboard QA:** start the server, open http://127.0.0.1:8000.<br>- Check the priority panel, the map (hover, click, dashed demo outlines), the drawer "Why is this area at risk?" and the three chips (high risk, why Bishnupur, inspect first).<br>- Try "Why is Imphal flagged?" (should ask which) and "Is there pest risk in this area?" with no area selected.<br>- Check dark mode, the satellite basemap and 1280×720.<br>- Stop the network and run with `SATQUERY_AGRI_OFFLINE=1`: the labels must say cached or offline | Bug list | not started | Phase 3 (done) | None |
 | Before the dashboard is built, review the risk engine's wording: run `python -m satquery.agri assess` and read the reasons and headlines in `runs/agri/assessment-*.json`. Are they clear to an agriculture officer? | Wording notes | not started | Phase 2 (done) | None |
 | Test the Phase 1 crop-health queries on a drawn rectangle over Manipur valley farmland: "What is the NDVI?", "How healthy is the crop here?", "Is vegetation stressed here?". Known-good rectangle: Thoubal–Kakching, W 93.95, S 24.45, E 94.03, N 24.52. Also try a cloudy area (e.g. south of Imphal: 93.90, 24.55, 93.98, 24.62) and check that the refusal reads well | QA notes | not started | Phase 1 (done) | Copernicus credentials in `.env` |
 
@@ -54,7 +55,7 @@ Who owns what while Claude does the main implementation in this repository. Role
 | Task | Deliverable | Status | Dependency | Blocker |
 |---|---|---|---|---|
 | Pitch deck structured around **Technical Trust (35%)**, **Government Relevance (30%)** and **Industry Potential (35%)** | Deck | not started | None | None |
-| Main demo storyline (3–5 minutes), with exact clicks and queries | `demo_script.md` | not started | Phase 3 UI | None |
+| Main demo storyline (3–5 minutes), with exact clicks and queries. Phase 3 flow:<br>1. Opens on Manipur with the priority list.<br>2. Point at the PLACEHOLDER/SAMPLE strip.<br>3. "Which areas are high risk?"<br>4. Click #1, then "Why is this area at risk?" (score breakdown, NDVI vs 2023–25, day strips, sources).<br>5. "Which should we inspect first?"<br>6. Show a crop-health NDVI question on the Kakching rectangle (Phase 1).<br>7. Close with the honest limits | `demo_script.md` | not started | Phase 3 UI (done) | None |
 | Prepare answers to likely judge questions: data sources, why rules and not ML, accuracy, synthetic data, privacy, cost, scale, deployment, government adoption path. Facts from Phase 2:<br>- Hybrid design: satellite NDVI baseline (Copernicus Statistical API), model weather (Open-Meteo), SAMPLE reports, rule thresholds as reviewable data.<br>- The score is the visible sum of factor points; missing data lowers confidence instead of being filled in.<br>- Confidence is a rule-based label, not a probability.<br>- The future ML model learns only from verified inspections | `judge_qa.md` | not started | None | None |
 | Record backup demo videos after each stable milestone (end of Phase 4, Phase 5 and the final freeze) | Video files | not started | Stable builds | None |
 | **Only after P0/P1 are stable:** a time-boxed AG-01 investigation (rice leaf disease classifier, CPU-runnable, licence OK, tested on real photos). Drop it if it isn't credible | `ag01_findings.md` | not started | P0 and P1 stable | Time |
@@ -64,8 +65,8 @@ Who owns what while Claude does the main implementation in this repository. Role
 | Task | Status |
 |---|---|
 | Phase 1: audit + NDVI foundation | **done**, approved |
-| Phase 2: agricultural data + risk engine | **done**, awaiting approval (thresholds are PLACEHOLDER until Member A verifies them) |
-| Phase 3: AG-04 dashboard | not started |
+| Phase 2: agricultural data + risk engine | **done**, approved and committed (`082cd27`); thresholds are PLACEHOLDER until Member A verifies them |
+| Phase 3: AG-04 dashboard | **done**, awaiting approval (not committed) |
 | Phase 4: demo hardening (offline snapshot) | not started |
 | Phase 5: government workflow (login, monitor area, alerts, inspections, audit) | not started |
 | Phase 6: Manipuri (needs Member A's verified sentences) | blocked |

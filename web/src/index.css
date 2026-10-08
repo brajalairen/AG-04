@@ -31,6 +31,11 @@
   --radius-sm: 8px;
   --rail: 56px;
   --panel: 320px;
+
+  /* AG-04 score breakdown: categorical slots 1-3 (validated all-pairs, light). */
+  --factor-weather: #2a78d6;
+  --factor-ndvi: #eb6834;
+  --factor-reports: #1baf7a;
 }
 
 :root[data-theme="dark"] {
@@ -48,6 +53,11 @@
   --danger: 248 113 113;
   --warn: 245 185 66;
   --ok: 74 200 145;
+
+  /* AG-04 score breakdown, dark steps of the same three hues (validated all-pairs, dark). */
+  --factor-weather: #3987e5;
+  --factor-ndvi: #d95926;
+  --factor-reports: #199e70;
 
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 1px 3px rgb(0 0 0 / 0.25);
   --shadow-md: 0 4px 12px rgb(0 0 0 / 0.35), 0 1px 3px rgb(0 0 0 / 0.3);

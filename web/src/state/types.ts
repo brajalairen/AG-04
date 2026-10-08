@@ -170,7 +170,8 @@ export interface WeatherInfo {
 
 /** Which specialist a question is for. Mirrors satquery.server.RouteResult. */
 export interface RouteResult {
-  route: "weather" | "imagery" | "mixed";
+  /** "agri": a crop & pest risk question, answered by the AG-04 risk engine (/api/agri/query). */
+  route: "weather" | "imagery" | "mixed" | "agri";
   rule: string;
   /** For "mixed": what to do instead. */
   message: string | null;
@@ -321,4 +322,235 @@ export interface RetrievalProblem {
   code: string;
   message: string;
   detail?: string;
+}
+
+/* ------------------------------------------------------------------ AG-04 crop & pest risk
+ * Mirrors satquery/agri/models.py and satquery/agri/routes.py. Every figure here is computed by the
+ * risk engine on the server; the dashboard only presents it. */
+
+export type RiskLevel = "LOW" | "MODERATE" | "HIGH" | "CRITICAL" | "INSUFFICIENT_DATA";
+export type DataState = "LIVE" | "CACHED" | "SAMPLE" | "UNAVAILABLE";
+export type ThresholdStatus = "PLACEHOLDER" | "VERIFIED";
+export type FactorStatus = "ok" | "partial" | "unavailable";
+export type FactorId = "weather_pest" | "ndvi_anomaly" | "report_pressure";
+
+export interface AgriProvenance {
+  source: string;
+  state: DataState;
+  retrieved_at: string | null;
+  covers: string | null;
+  licence: string | null;
+  note: string | null;
+}
+
+export interface PestReport {
+  id: string;
+  area_id: string | null;
+  latitude: number;
+  longitude: number;
+  observed_on: string;
+  crop: string;
+  pest: string;
+  severity: "low" | "moderate" | "high";
+  source: "SAMPLE";
+  synthetic: boolean;
+  verified: boolean;
+  label: string;
+}
+
+export interface DayCheck {
+  date: string;
+  period: "past" | "forecast";
+  /** null: not enough hourly data that day to judge. */
+  favourable: boolean | null;
+  values: Record<string, number | null>;
+  unmet: string[];
+}
+
+export interface PestEvaluation {
+  pest_id: string;
+  name: string;
+  crop: string;
+  status: FactorStatus;
+  index: number | null;
+  favourable_past: number;
+  known_past: number;
+  past_days: number;
+  favourable_forecast: number;
+  known_forecast: number;
+  forecast_days: number;
+  longest_run: number;
+  full_score_days: number;
+  conditions: string[];
+  thresholds: ThresholdStatus;
+  sources: Record<string, string | null>[];
+  explanation: string;
+  days: DayCheck[];
+}
+
+export interface NdviWindow {
+  label: string;
+  start: string;
+  end: string;
+  mean: number | null;
+  median: number | null;
+  p10: number | null;
+  p90: number | null;
+  pixels: number;
+  observed_fraction: number;
+  usable: boolean;
+  reason: string | null;
+  state: DataState;
+  retrieved_at: string | null;
+}
+
+export interface NdviAnomaly {
+  current: NdviWindow;
+  baseline: NdviWindow[];
+  baseline_mean: number | null;
+  baseline_range: [number, number] | null;
+  baseline_years_used: number;
+  relative_change: number | null;
+  absolute_change: number | null;
+  within_baseline_range: boolean | null;
+  resolution_deg: number;
+  method: string;
+}
+
+export interface WeatherFigures {
+  days: number;
+  mean_temperature_c: number | null;
+  min_temperature_c: number | null;
+  max_temperature_c: number | null;
+  mean_relative_humidity_pct: number | null;
+  hours_rh_at_or_above_90: number;
+  precipitation_mm: number | null;
+}
+
+/** The engine's per-factor details; which keys are present depends on the factor. */
+export interface FactorDetails {
+  driver?: string;
+  weather_summary?: { past_7_days: WeatherFigures; next_7_days: WeatherFigures };
+  point?: { latitude: number; longitude: number };
+  anomaly?: NdviAnomaly;
+  count?: number;
+  weighted?: number;
+  by_pest?: Record<string, number>;
+  by_severity?: Record<string, number>;
+  lookback_days?: number;
+  reports?: PestReport[];
+}
+
+export interface FactorResult {
+  id: FactorId;
+  name: string;
+  status: FactorStatus;
+  score: number | null;
+  weight: number;
+  availability: number;
+  /** This factor's share of the 0-100 score; the points of all factors sum to the score. */
+  points: number | null;
+  summary: string;
+  reasons: string[];
+  details: FactorDetails;
+  provenance: AgriProvenance[];
+  thresholds: ThresholdStatus | null;
+  unavailable_reason: string | null;
+  sample_data: boolean;
+}
+
+export interface RiskConfidence {
+  level: "low" | "medium" | "high";
+  data_completeness: number;
+  method: string;
+  calibrated: boolean;
+  notes: string[];
+}
+
+export interface RiskAssessment {
+  area_id: string;
+  area_name: string;
+  area_kind: string;
+  as_of: string;
+  score: number | null;
+  level: RiskLevel;
+  headline: string;
+  reasons: string[];
+  top_factors: string[];
+  factors: FactorResult[];
+  pests: PestEvaluation[];
+  confidence: RiskConfidence;
+  provenance: AgriProvenance[];
+  thresholds_status: ThresholdStatus;
+  includes_sample_data: boolean;
+  disclaimer: string;
+  rank: number | null;
+  rank_of: number | null;
+  district_context: Record<string, string | null> | null;
+}
+
+export interface AreaSummary {
+  id: string;
+  name: string;
+  kind: "district" | "custom" | "demo";
+  /** True only for an administrative district from a named dataset. */
+  official_boundary: boolean;
+  boundary_source: string;
+  district: string | null;
+  state: string | null;
+  geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon;
+  label_point: [number, number];
+  bounds: [number, number, number, number];
+  rank: number | null;
+  rank_of: number | null;
+  level: RiskLevel;
+  score: number | null;
+  headline: string;
+  confidence: "low" | "medium" | "high";
+  data_completeness: number;
+  top_factors: string[];
+  factor_points: Record<FactorId, number | null>;
+  factor_status: Record<FactorId, FactorStatus>;
+  includes_sample_data: boolean;
+  thresholds_status: ThresholdStatus;
+}
+
+export interface AgriOverview {
+  computed_at: string;
+  as_of: string | null;
+  region: string;
+  view_bounds: [number, number, number, number] | null;
+  thresholds_status: ThresholdStatus;
+  /** Set while thresholds are placeholders. */
+  thresholds_note: string | null;
+  includes_sample_data: boolean;
+  sample_label: string;
+  disclaimer: string;
+  area_note: string;
+  official_boundaries: boolean;
+  offline: boolean;
+  data_states: DataState[];
+  counts: Record<RiskLevel, number>;
+  examples: string[];
+  areas: AreaSummary[];
+}
+
+export interface AgriAreaDetail {
+  area: AreaSummary;
+  assessment: RiskAssessment;
+  boundary_note: string;
+  thresholds_note: string | null;
+  sample_label: string;
+}
+
+export interface AgriQueryResult {
+  intent: "rank" | "inspect" | "explain" | "unmatched";
+  matched_rule: string;
+  answer: string;
+  area_ids: string[];
+  focus_area_id: string | null;
+  computed_at: string;
+  thresholds_status: ThresholdStatus;
+  includes_sample_data: boolean;
+  disclaimer: string;
 }

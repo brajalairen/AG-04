@@ -63,7 +63,7 @@ def weather_factor(pests: list[PestEvaluation], weather: weather_data.HourlyWeat
         reasons.append(f"Weather is for one point inside the area, which spans about {width:.0f} x {height:.0f} km; "
                        "conditions can differ across it.")
     if weather.stale:
-        reasons.append("Weather is a STALE cached copy: the provider could not be reached.")
+        reasons.append(f"Weather is a STALE cached copy ({weather.stale_reason or 'not refreshed'}).")
     days = driver.favourable_past + driver.favourable_forecast
     return FactorResult(
         id="weather_pest", name=FACTOR_NAMES["weather_pest"], weight=weight, score=driver.index,

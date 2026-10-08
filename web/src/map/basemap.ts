@@ -100,4 +100,5 @@ export const offlineStyle = (theme: "light" | "dark"): StyleSpecification => ({
   ],
 });
 
-export const INITIAL_VIEW = { center: [20, 30] as [number, number], zoom: 1.6 };
+/** AG-04 opens on Manipur (the risk layer then frames its monitored areas); the map still pans anywhere. */
+export const INITIAL_VIEW = { center: [93.9, 24.75] as [number, number], zoom: 7.6 };

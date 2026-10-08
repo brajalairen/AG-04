@@ -10,6 +10,7 @@ from datetime import date, timedelta
 from satquery.agri.config import ASSETS, PestRulesConfig, RiskModelConfig
 from satquery.agri.models import MonitoredArea
 from satquery.agri.weather import parse_hourly
+from satquery.specialists.weather import WeatherUnavailable
 
 TODAY = date(2026, 10, 8)
 VERIFIED_SOURCE = {"title": "Test source", "url": "https://example.org/verified", "verified_by": "Test agronomist",
@@ -105,3 +106,19 @@ def verified_rules() -> PestRulesConfig:
 def verified_model(**overrides) -> RiskModelConfig:
     data = risk_model_dict() | {"status": "VERIFIED", "sources": [VERIFIED_SOURCE]} | overrides
     return RiskModelConfig.model_validate(data)
+
+
+class FakeWeather:
+    """Hourly weather from `days`; fails for points inside `fail_inside` (west, south, east, north)."""
+
+    def __init__(self, days=None, fail_inside=None):
+        self.days, self.fail_inside, self.calls = days, fail_inside, []
+
+    def fetch(self, latitude, longitude):
+        self.calls.append((latitude, longitude))
+        if self.fail_inside:
+            west, south, east, north = self.fail_inside
+            if west <= longitude <= east and south <= latitude <= north:
+                raise WeatherUnavailable("The weather provider could not be reached.")
+        return parse_hourly(hourly_payload(self.days), requested=(latitude, longitude),
+                            retrieved_at="2026-10-08T05:59:00+00:00")

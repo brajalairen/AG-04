@@ -3,7 +3,8 @@
 One request returns both, in the location's local time. The "history" is the weather model's own
 recent data (analyses and short-range forecasts), not station observations, and every result says
 so. Responses are cached on disk; a cached answer is labelled CACHED with its age, and an answer
-older than the freshness limit is used only when the provider fails, labelled stale. Failures raise
+older than the freshness limit is used only when the provider fails or in offline mode, labelled stale with
+the reason. Failures raise
 the typed errors of `satquery.specialists.weather`; no value is ever made up.
 """
 
@@ -37,6 +38,7 @@ class HourlyWeather:
     state: DataState = "LIVE"
     stale: bool = False
     units: dict = field(default_factory=dict)
+    stale_reason: str | None = None  # why an old copy is shown: offline mode, or the provider failed
 
     def local_today(self, now: datetime | None = None) -> date:
         now = now or datetime.now(timezone.utc)
@@ -55,13 +57,13 @@ class HourlyWeather:
         first, last = (self.times[0][:10], self.times[-1][:10]) if self.times else (None, None)
         note = HISTORY_NOTE + f" Grid cell {self.latitude:.3f}, {self.longitude:.3f}; times in {self.timezone}."
         if self.stale:
-            note += " STALE: the provider could not be reached, so an older cached copy is shown."
+            note += f" STALE: an older cached copy is shown ({self.stale_reason or 'not refreshed'})."
         return Provenance(source=SOURCE, state=self.state, retrieved_at=self.retrieved_at,
                           covers=f"{first} to {last}" if first else None, licence=ATTRIBUTION, note=note)
 
 
 def parse_hourly(payload, *, requested: tuple[float, float], retrieved_at: str, state: DataState = "LIVE",
-                 stale: bool = False) -> HourlyWeather:
+                 stale: bool = False, stale_reason: str | None = None) -> HourlyWeather:
     if not isinstance(payload, dict) or not isinstance(payload.get("hourly"), dict):
         raise InvalidWeatherResponse("The weather provider's response has no hourly data.")
     hourly = payload["hourly"]
@@ -86,7 +88,8 @@ def parse_hourly(payload, *, requested: tuple[float, float], retrieved_at: str, 
                          elevation_m=float(elevation) if isinstance(elevation, (int, float)) else None,
                          timezone=str(payload.get("timezone") or "GMT"), utc_offset_seconds=offset,
                          times=tuple(str(t) for t in times), values=values, retrieved_at=retrieved_at,
-                         state=state, stale=stale, units=dict(payload.get("hourly_units") or {}))
+                         state=state, stale=stale, units=dict(payload.get("hourly_units") or {}),
+                         stale_reason=stale_reason if stale else None)
 
 
 class HourlyWeatherClient:
@@ -105,7 +108,8 @@ class HourlyWeatherClient:
         hit = self.cache.get("weather", key) if self.cache else None
         if hit and (self.offline or hit.age_s < self.max_age_s):
             return parse_hourly(hit.value, requested=requested, retrieved_at=hit.retrieved_at, state="CACHED",
-                                stale=hit.age_s >= self.max_age_s)
+                                stale=hit.age_s >= self.max_age_s,
+                                stale_reason="offline mode: cached data only, not refreshed")
         if self.offline:
             raise WeatherUnavailable("Offline mode: no cached weather for this location.")
         try:
@@ -115,7 +119,7 @@ class HourlyWeatherClient:
         except (WeatherUnavailable, WeatherTimeout, WeatherRateLimited, InvalidWeatherResponse, NoForecastData):
             if hit:  # an older copy, labelled stale, rather than nothing or something invented
                 return parse_hourly(hit.value, requested=requested, retrieved_at=hit.retrieved_at, state="CACHED",
-                                    stale=True)
+                                    stale=True, stale_reason="the provider could not be reached")
             raise
         if self.cache:  # cached only once it has parsed, so a broken response is never kept
             entry = self.cache.put("weather", key, payload)

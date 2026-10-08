@@ -8,10 +8,10 @@ The source of truth for what we intend to build. Update it after every phase.
 | **Judging** | Technical Trust 35% · Government Relevance 30% · Industry Potential 35%. Reliability > feature count. |
 | **Pitch** | 9 Oct 2026, from 09:30 IST |
 | **Active repo** | `SatQuery-AI` (this repository). SatV2 is reference only; do not modify it. |
-| **Current phase** | **Phase 2: Agricultural data + risk engine.** Done; awaiting approval for Phase 3 (dashboard). |
-| **Overall status** | Phase 1 NDVI path plus the Phase 2 data layer and explainable risk engine work. Tests: backend 667 passed, web 83 passed, build OK, plus 2 opt-in live tests passed. Verified live on 7 Manipur demo areas. No dashboard UI yet. |
+| **Current phase** | **Phase 3: AG-04 dashboard.** Done; awaiting approval for Phase 4 (demo hardening). Not committed. |
+| **Overall status** | Phases 1–3 work. Phase 3 adds the government-facing dashboard over the unchanged risk engine (read-only `/api/agri/*`, risk map, priority panel, "Why is this area at risk?" drawer, agri command-bar questions). Tests: backend 720 passed, web 106 passed, typecheck clean, build OK. Checked in Chrome at 1600×900 and 1280×720, light and dark, with no page errors. |
 | **Known blockers** | (1) Trustworthy 16-district boundaries are not yet sourced (Member B). OpenStreetMap already has the current districts; this is a lead to verify. (2) **Pest thresholds are PLACEHOLDERS** (Member A). In Oct 2026 the placeholder blast rule held on every day in every area, so weather does not separate areas until verified values replace it. (3) Advisory text is not yet verified (Member A). (4) No verified Manipuri sentence yet (Member A). |
-| **Demo-critical unfinished** | P0.3 district boundaries; P0.6 risk map; P0.7 drawer; P0.8 priority panel; P0.9 agri NL queries; P0.10 provenance UI; P0.11 offline snapshot UI and fallback. Verified thresholds are needed before the final demo. |
+| **Demo-critical unfinished** | Verified thresholds (Member A); P0.3 district boundaries (Member B); P0.11 frozen offline snapshot and automatic fallback (Phase 4); advice / whom to consult (P0.9 remainder, needs Member A's advisory text). |
 | **Known-good demo rectangle** | Thoubal–Kakching farmland, W 93.95, S 24.45, E 94.03, N 24.52. As of 2026-10-08, the 2026-09-14 Sentinel-2 scene is 91% clear over it. |
 
 Status legend: `done` · `in progress` · `not started` · `blocked` · `dropped`
@@ -73,29 +73,38 @@ Status legend: `done` · `in progress` · `not started` · `blocked` · `dropped
   - **Wording:** "Indicators suggest HIGH risk (67/100) …", never "detected" or "outbreak". The disclaimer is on every assessment.
   - **No ML model, fake or otherwise.**
   - CLI: `python -m satquery.agri assess [--offline] [--areas FILE] [--json OUT]` and `python -m satquery.agri thresholds`.
-- [ ] **P0.6 Risk map (choropleth).** Status: **not started.**
-  - Coloured polygons, a legend, click-to-inspect, hover; works in both themes.
-  - Files (planned): `web/src/map/RiskLayer.tsx`.
-  - Must follow the `syncAoi` re-add-on-`styleReady` pattern in `MapView.tsx`.
-- [ ] **P0.7 Area risk drawer.** Status: **not started.**
-  - Hero section "WHY IS THIS AREA AT HIGH RISK?". Also: NDVI and anomaly, weather contribution, report pressure, per-pest breakdown, recent reports, provenance, actions, whom to consult, disclaimer.
-  - Files (planned): `web/src/results/AreaRiskDrawer.tsx` (reuse `Block`/`Pair` from `DetailsDrawer.tsx`).
-- [ ] **P0.8 Priority / early-warning panel.** Status: **not started.**
-  - Ranked areas, level, score, severity filters, totals.
-  - Files (planned): `web/src/sidebar/AlertsPanel.tsx`.
-- [ ] **P0.9 Natural-language agricultural queries.** Status: **partly done.**
-  - Phase 1 covers the crop-health/NDVI questions.
-  - Remaining: risk ranking, "why is X flagged", advice, "whom to consult", "inspect first", and pest risk for a drawn area.
-  - Files (planned): an agri route in `agent/intents.py` and `satquery/agri/`.
-  - Notes: "Is rain hurting the crops?" now asks to split the question, because rain is a weather cue and crop health an imagery cue. A real agri route comes with P0.9.
-- [ ] **P0.10 Explainability / provenance / responsible AI.** Status: **backend done, UI remaining.**
-  - Done in the backend:
-    - Every factor and assessment carries provenance (source, LIVE / CACHED / SAMPLE / UNAVAILABLE, fetch time, period, licence).
-    - Each assessment has an as-of time, reasons, top factors, the confidence method, the thresholds status, an `includes_sample_data` flag and the disclaimer.
-  - Remaining (Phase 3): show these as chips and text in the UI.
+- [x] **P0.6 Risk map (choropleth).** Status: **done** (Phase 3).
+  - Each area is filled by its engine-given level (status palette: Low, Moderate, High, Critical, Not enough data) with a legend; the level is never shown by colour alone.
+  - **Demo rectangles are outlined dashed, official district outlines solid**, and the legend says so ("none loaded" until Member B's file arrives).
+  - Rank markers (#1…); hover shows name, level, score and the demo tag; a click opens the drawer. Selected and answer-highlighted areas are outlined blue.
+  - The map opens on Manipur and frames the monitored areas. Outlines follow the theme and basemap. Layers are re-added on every style load.
+  - Files: `web/src/agri/RiskLayer.tsx`, `RiskLegend.tsx`, `format.ts`; `web/src/map/basemap.ts` (`INITIAL_VIEW` = Manipur).
+- [x] **P0.7 Area risk drawer.** Status: **done** (Phase 3); headed "Why is this area at risk?".
+  - Shows the level, score, rank, headline, confidence, data completeness and as-of time, with the full PLACEHOLDER notice.
+  - Score breakdown: the engine's factor points as a stacked bar plus rows (weather, NDVI, SAMPLE reports); unavailable factors carry their reason.
+  - Also: the engine's reasons; NDVI against each baseline year (unusable windows show why); weather for the last and next 7 days (labelled model data); per-pest day strips (favourable / not / no data, values on hover; PLACEHOLDER tags); SAMPLE reports list; every data source with LIVE / CACHED / SAMPLE state, period and fetch time; the boundary note; the disclaimer.
+  - Not yet: recommended actions and whom to consult. That needs Member A's verified advisory text and contacts; nothing is invented.
+  - Files: `web/src/agri/AreaRiskDrawer.tsx`, `badges.tsx`.
+- [x] **P0.8 Priority / early-warning panel.** Status: **done** (Phase 3); opens by default.
+  - Lists areas in the engine's rank order, with level, score, confidence, data completeness and the demo tag. Shows counts by level and filters (All / High+ / Moderate / Low / No data).
+  - Also: the as-of time and data-state chips, the PLACEHOLDER and SAMPLE notices, the area note, the disclaimer and a reload button.
+  - Has loading, error-with-retry and empty states.
+  - Files: `web/src/agri/PriorityPanel.tsx`, `useAgriStore.ts`; `web/src/sidebar/Sidebar.tsx` (the new "priority" section).
+- [x] **P0.9 Natural-language agricultural queries.** Status: **done for Phase 3 scope.** Advice and whom-to-consult wait for Member A's content.
+  - "Which areas are high risk?", "Why is Bishnupur flagged?" and "Which should we inspect first?" are answered from the engine's assessments (`satquery/agri/query.py`, `POST /api/agri/query`).
+  - Also handled: "this area" (the selected area); ambiguous places ("Imphal" asks which one); unknown places (lists the monitored areas).
+  - `/api/route` returns `agri` for these questions first, so they never reach the VLM. Crop-health, weather and imagery questions keep their Phase 1 routes.
+  - The answer card shows the rule that matched and the caveats; an explanation also opens the drawer.
+  - Remaining: a pest-risk assessment for a newly drawn area (P1.2) and advice (Member A).
+- [x] **P0.10 Explainability / provenance / responsible AI.** Status: **done** (backend and UI).
+  - An always-visible strip reads "Prototype · PLACEHOLDER thresholds · SAMPLE pest reports".
+  - PLACEHOLDER notices appear in the panel, drawer and answers; "SAMPLE DATA — Prototype Simulation" labels appear wherever synthetic reports do; data-state chips appear on every source.
+  - Wording stays "Indicators suggest…", never "detected" or "outbreak"; tests check this.
+  - Phase 3 also fixed one Phase 2 wording bug: an old weather copy in offline mode used to say "the provider could not be reached". It now states its real reason. Methodology and thresholds are unchanged.
 - [ ] **P0.11 Offline demo snapshot.** Status: **foundation done.**
   - The disk cache plus `--offline` reproduce the last assessment without network, labelled CACHED.
-  - Remaining (Phase 4): a frozen snapshot file, an automatic fallback in the API, and the as-of time in the UI.
+  - `SATQUERY_AGRI_OFFLINE=1` makes the dashboard serve cached data only, labelled offline.
+  - Remaining (Phase 4): a frozen snapshot file, an automatic fallback in the API, and a pre-demo warm-up.
 
 ## P1: Important government workflow (start only when P0 is stable)
 
@@ -164,6 +173,27 @@ Status legend: `done` · `in progress` · `not started` · `blocked` · `dropped
 5. Mean NDVI was averaged over every pixel, water included, so a lake dragged "crop health" down.
 6. Crop-change wording ("declined", "worsened", "deteriorating") was not recognised as needing two dates.
 
+## Phase 3 notes
+
+**Architecture:** agricultural data → risk engine (`satquery/agri`, unchanged method) → `AssessmentService` (one assessment of all areas, reused for `SATQUERY_AGRI_REFRESH_S`, default 30 min) → read-only `/api/agri/*` → dashboard (`web/src/agri/*`). The frontend computes no risk figure: ranks, levels, scores, points, reasons, confidence and completeness come from the API; the frontend only filters by level and formats.
+
+**Endpoints:**
+- `GET /api/agri/overview` → `AgriOverview`: areas as `AreaSummary` with geometry, counts, notices and view bounds.
+- `GET /api/agri/areas/{id}` → `AgriAreaDetail` (the full `RiskAssessment`). An unknown id gives 404 `unknown_area`.
+- `POST /api/agri/query` → `AgriQueryResult`.
+- An invalid areas file gives 503 `agri_unavailable`.
+- `/api/route` can now answer `agri`. `/api/example-queries` lists the three AG-04 questions first.
+
+**Settings:** `SATQUERY_AGRI_AREAS` (`demo` or a GeoJSON path), `SATQUERY_AGRI_OFFLINE`, `SATQUERY_AGRI_REFRESH_S`.
+
+**Known limitations:**
+- The first page load after a server start runs the assessment: about 9 s with a warm NDVI cache, about 1 minute cold. The panel shows a loading state meanwhile. A pre-demo warm-up is Phase 4.
+- The rank currently follows SAMPLE reports, because the placeholder weather rule saturates (Phase 2 finding).
+- No advice or whom-to-consult section yet (Member A content).
+- Pest risk for a newly drawn area is not assessed yet; the bar says so.
+- At 1280×720 the legend can sit over the easternmost areas, and the answer card can cover part of the map (it can be dismissed).
+- On phone width the panel and drawer take most of the screen. The demo targets projector sizes.
+
 ## Phase 2 notes
 
 **Live result, 2026-10-08 04:05 IST** (`python -m satquery.agri assess`; PLACEHOLDER thresholds, SAMPLE reports):
@@ -198,6 +228,11 @@ All areas have 100% data completeness and *low* confidence, because the threshol
   - 43 new tests. Backend 544 passed (baseline 501); web 83 passed; build OK.
   - pytest was installed into `.venv` (`uv pip install pytest`).
   - Created this checklist and TEAM_TASKS.md.
+- **2026-10-08, Phase 3** (not committed):
+  - Read-only `/api/agri/*` (`satquery/agri/routes.py`, `service.py`, `query.py`) and the agri route in `/api/route`.
+  - Dashboard: risk map, legend, priority panel, area drawer, answer card, prototype strip; Manipur default view; the command bar routes every question.
+  - 53 new backend tests (API, queries, routing, stale wording, contract types) and 23 new frontend tests.
+  - Backend 720 passed, web 106 passed, typecheck and build OK. Browser-checked.
 - **2026-10-08, Phase 2:**
   - New package `satquery/agri/`: models, config (thresholds as data, PLACEHOLDER status gating), areas, hourly weather, NDVI baseline via the Statistical API, SAMPLE reports, pest rules, the risk engine, pipeline, district context and a CLI.
   - Assets: `pest_rules.json`, `risk_model.json`, `sample_scenario.json` and `demo_areas.geojson`.

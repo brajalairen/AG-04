@@ -125,7 +125,9 @@ def test_examples_are_listed_and_loadable(client):
 
 def test_example_queries_are_served(client):
     queries = client.get("/api/example-queries").json()
-    assert len(queries) == 5 and all(isinstance(q, str) for q in queries)
+    assert len(queries) == 8 and all(isinstance(q, str) for q in queries)
+    assert queries[:3] == ["Which areas are high risk?", "Why is Bishnupur flagged?",
+                           "Which should we inspect first?"], "AG-04 questions first"
 
 
 @pytest.fixture

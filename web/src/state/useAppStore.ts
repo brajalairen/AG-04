@@ -14,10 +14,12 @@ import type {
   UploadInfo,
 } from "./types";
 import { isBasemapId, type BasemapId } from "../map/basemap";
+import { useAgriStore } from "../agri/useAgriStore";
 
 /** Area-enclosing shapes only: a point cannot restrict an analysis (D-025). */
 export type DrawMode = "rectangle" | "polygon" | "circle" | null;
-export type SidebarSection = "search" | "select" | "layers" | "saved" | "help" | null;
+/** "priority": the AG-04 early-warning list, open by default. */
+export type SidebarSection = "priority" | "search" | "select" | "layers" | "saved" | "help" | null;
 
 /** A loaded raster plus its display state. `mappable` decides map layer vs off-map viewer. */
 export interface Layer extends UploadInfo {
@@ -50,7 +52,8 @@ export type ProgressStage =
   | "analysing"
   | "analysing-change"
   | "forecasting"
-  | "radar";
+  | "radar"
+  | "assessing";
 
 /** Each label names a step that is really running. The earlier and later scenes of a comparison are
  *  found and downloaded together inside one server request, so they share one honest label rather
@@ -64,6 +67,7 @@ export const PROGRESS_LABELS: Record<ProgressStage, string> = {
   "analysing-change": "Analysing changes",
   forecasting: "Getting the weather forecast",
   radar: "Preparing Sentinel-1 radar imagery",
+  assessing: "Consulting the crop & pest risk engine",
 };
 
 interface AppState {
@@ -276,10 +280,20 @@ async function answerIfNotImagery(
   inflight = controller;
   const timer = setTimeout(() => controller.abort("timeout"), ANALYSIS_TIMEOUT_MS);
   set({ pending: true, stage: null, error: null });
+  useAgriStore.getState().clearAnswer();
   let forecasting = false;
+  let assessing = false;
   try {
     const routed = await api.route(query, controller.signal);
     if (controller.signal.aborted) throw controller.signal.reason;
+    if (routed.route === "agri") {
+      // AG-04: answered from the risk engine's assessments; no imagery is retrieved and no area is needed.
+      assessing = true;
+      set({ stage: "assessing", result: null, scenes: [], opticalQuality: null, detailsOpen: false });
+      await useAgriStore.getState().ask(query, controller.signal);
+      set({ pending: false, stage: null });
+      return true;
+    }
     if (routed.route === "imagery") {
       set({ pending: false });
       return false;
@@ -310,7 +324,8 @@ async function answerIfNotImagery(
   } catch (error) {
     // A server that predates routing (no /api/route) has no weather capability either: its imagery
     // flow is all it offers, so the question goes there as it did before.
-    if (!forecasting && !controller.signal.aborted && error instanceof ApiError && [404, 405].includes(error.status)) {
+    if (!forecasting && !assessing && !controller.signal.aborted && error instanceof ApiError &&
+        [404, 405].includes(error.status)) {
       set({ pending: false });
       return false;
     }
@@ -324,7 +339,9 @@ async function answerIfNotImagery(
           : error.message
         : forecasting
           ? "Could not get the weather forecast."
-          : "The question could not be sent to the server.";
+          : assessing
+            ? "Could not get an answer from the crop & pest risk engine."
+            : "The question could not be sent to the server.";
     set({ error: message, pending: false, stage: null });
     return true;
   } finally {
@@ -347,8 +364,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   error: null,
   hiddenOverlays: new Set(),
 
-  sidebarOpen: false,
-  section: null,
+  // The AG-04 dashboard opens on its priority list.
+  sidebarOpen: true,
+  section: "priority",
   pendingQuery: null,
   detailsOpen: false,
   theme: readTheme(),
@@ -421,7 +439,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   runAnalysis: async (query, forcedTask) => {
     // Weather first: a weather question is answered by its own specialist and must never reach the
     // imagery flow below, which would retrieve Sentinel imagery for it. Below that line nothing changed.
-    if (!forcedTask && (get().aoi || get().layers.length) && (await answerIfNotImagery(query, set, get))) return;
+    // Every question is routed, even with no area or image: an AG-04 risk question needs neither.
+    if (!forcedTask && (await answerIfNotImagery(query, set, get))) return;
 
     const { layers, aoi } = get();
     const source = nextAnalysisSource(layers, aoi);

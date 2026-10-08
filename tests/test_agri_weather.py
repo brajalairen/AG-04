@@ -108,7 +108,21 @@ def test_an_expired_cache_is_refreshed_and_used_only_as_a_labelled_stale_fallbac
     monkeypatch.setattr(client, "_get", down)
     stale = client.fetch(24.485, 93.99)
     assert stale.state == "CACHED" and stale.stale
-    assert "STALE" in stale.provenance().note
+    assert "STALE" in stale.provenance().note and "the provider could not be reached" in stale.provenance().note
+
+
+def test_an_old_copy_in_offline_mode_says_offline_not_that_the_provider_failed(tmp_path, monkeypatch):
+    clock = Clock()
+    cache = JsonCache(tmp_path, clock=clock)
+    online = HourlyWeatherClient(cache, max_age_s=3600)
+    monkeypatch.setattr(online, "_get", lambda lat, lon: hourly_payload())
+    online.fetch(24.485, 93.99)
+    clock.now += 7200
+    old = HourlyWeatherClient(cache, max_age_s=3600, offline=True).fetch(24.485, 93.99)
+    assert old.stale and old.stale_reason == "offline mode: cached data only, not refreshed"
+    assert "could not be reached" not in old.provenance().note
+    fresh = HourlyWeatherClient(cache, max_age_s=10_000, offline=True).fetch(24.485, 93.99)
+    assert not fresh.stale and fresh.stale_reason is None
 
 
 def test_no_cache_and_no_provider_raises_instead_of_inventing(tmp_path, monkeypatch):

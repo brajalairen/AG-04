@@ -15,13 +15,16 @@ import {
   useAppStore,
   type Aoi,
   type Layer,
+  PROGRESS_LABELS,
 } from "./useAppStore";
 import type { AnalyzeResult, UploadInfo } from "./types";
+import { useAgriStore } from "../agri/useAgriStore";
 
 const analyze = vi.fn();
 const fetchImagery = vi.fn();
 const route = vi.fn();
 const weather = vi.fn();
+const agriQuery = vi.fn();
 vi.mock("./api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("./api")>();
   return {
@@ -32,6 +35,7 @@ vi.mock("./api", async (importOriginal) => {
       fetchImagery: (...args: unknown[]) => fetchImagery(...args),
       route: (...args: unknown[]) => route(...args),
       weather: (...args: unknown[]) => weather(...args),
+      agriQuery: (...args: unknown[]) => agriQuery(...args),
     },
   };
 });
@@ -113,6 +117,7 @@ beforeEach(() => {
   fetchImagery.mockReset();
   route.mockReset();
   weather.mockReset();
+  agriQuery.mockReset();
   analyze.mockResolvedValue(result(["a"]));
   // Every question is an imagery question unless a test says otherwise: the existing flows unchanged.
   route.mockResolvedValue({ route: "imagery", rule: "no weather cue -> satellite analysis", message: null });
@@ -820,5 +825,62 @@ describe("water under cloud: the radar fallback (D-030)", () => {
     await useAppStore.getState().runAnalysis("Describe this area");
 
     expect(useAppStore.getState().opticalQuality).toBeNull();
+  });
+});
+
+describe("AG-04 crop & pest risk questions", () => {
+  const ranking = {
+    intent: "rank", matched_rule: "ranking cue 'Which areas are high risk'", answer: "Indicators suggest HIGH risk",
+    area_ids: ["demo-bishnupur-nambol"], focus_area_id: "demo-bishnupur-nambol",
+    computed_at: "2026-10-08T05:00:26+00:00", thresholds_status: "PLACEHOLDER", includes_sample_data: true,
+    disclaimer: "Decision support only.",
+  };
+
+  beforeEach(() => {
+    route.mockResolvedValue({ route: "agri", rule: "ranking cue -> crop & pest risk engine", message: null });
+    useAgriStore.setState({ answer: null, highlightIds: [], selectedId: null, status: "ready" });
+  });
+
+  it("are answered by the risk engine with no area drawn and no imagery fetched", async () => {
+    agriQuery.mockResolvedValue(ranking);
+    useAppStore.setState({ layers: [], aoi: null });
+    await useAppStore.getState().runAnalysis("Which areas are high risk?");
+
+    expect(agriQuery).toHaveBeenCalledWith("Which areas are high risk?", null, expect.any(AbortSignal));
+    expect(fetchImagery).not.toHaveBeenCalled();
+    expect(analyze).not.toHaveBeenCalled();
+    expect(weather).not.toHaveBeenCalled();
+    expect(useAgriStore.getState().answer?.intent).toBe("rank");
+    expect(useAppStore.getState()).toMatchObject({ pending: false, stage: null, error: null, result: null });
+  });
+
+  it("shows the progress step that is really running", async () => {
+    const stages: (string | null)[] = [];
+    const stop = useAppStore.subscribe((state) => stages.push(state.stage));
+    agriQuery.mockResolvedValue(ranking);
+    await useAppStore.getState().runAnalysis("Which should we inspect first?");
+    stop();
+    expect(stages).toContain("assessing");
+  });
+
+  it("says the risk engine failed, with the server's reason, and shows nothing in its place", async () => {
+    agriQuery.mockRejectedValue(new ApiError("The monitored areas could not be loaded.", 503, "agri_unavailable"));
+    await useAppStore.getState().runAnalysis("Which areas are high risk?");
+    expect(useAppStore.getState().error).toBe("The monitored areas could not be loaded.");
+    expect(useAgriStore.getState().answer).toBeNull();
+  });
+
+  it("a new question clears the previous agricultural answer", async () => {
+    useAgriStore.setState({ answer: ranking as never, highlightIds: ["demo-bishnupur-nambol"] });
+    route.mockResolvedValue({ route: "imagery", rule: "no weather cue", message: null });
+    useAppStore.setState({ layers: [upload("a")], aoi: null });
+    await useAppStore.getState().runAnalysis("Describe this image");
+    expect(useAgriStore.getState().answer).toBeNull();
+    expect(analyze).toHaveBeenCalledTimes(1);
+  });
+
+  it("the dashboard opens on the priority list, and names the risk-engine step", () => {
+    expect(useAppStore.getInitialState()).toMatchObject({ sidebarOpen: true, section: "priority" });
+    expect(PROGRESS_LABELS.assessing).toBe("Consulting the crop & pest risk engine");
   });
 });

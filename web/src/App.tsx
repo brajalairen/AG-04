@@ -14,6 +14,12 @@ import { api } from "./state/api";
 import { applyTheme, useAppStore } from "./state/useAppStore";
 import { IconButton, Surface, ToastHost } from "./ui/primitives";
 import { BrandMark } from "./ui/BrandMark";
+import { RiskLayer } from "./agri/RiskLayer";
+import { RiskLegend } from "./agri/RiskLegend";
+import { AreaRiskDrawer } from "./agri/AreaRiskDrawer";
+import { AgriAnswerCard } from "./agri/AgriAnswerCard";
+import { StatusStrip } from "./agri/StatusStrip";
+import { useAgriStore } from "./agri/useAgriStore";
 
 export default function App() {
   const theme = useAppStore((s) => s.theme);
@@ -23,6 +29,12 @@ export default function App() {
   const setError = useAppStore((s) => s.setError);
 
   useEffect(() => applyTheme(theme), [theme]);
+
+  // AG-04: the risk engine's assessment of every monitored area, the dashboard's starting point.
+  const loadRisk = useAgriStore((s) => s.load);
+  useEffect(() => {
+    void loadRisk();
+  }, [loadRisk]);
 
   useEffect(() => {
     api
@@ -35,12 +47,16 @@ export default function App() {
     <ToastHost>
       <main className="relative h-full w-full overflow-hidden">
         <MapView>
+          <RiskLayer />
           <AoiLayer />
           <BrandMark />
+          <StatusStrip />
           <Sidebar />
           <ImageCanvas />
           <ResultOverlay />
+          <AgriAnswerCard />
           <AICommandBar />
+          <AreaRiskDrawer />
 
           <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
             {/* A stand-in model must be visible at all times, never mistaken for the real one. */}
@@ -63,6 +79,7 @@ export default function App() {
 
           {/* Anchored where the zoom buttons always were; the basemap picker stacks above them. */}
           <div className="absolute right-4 bottom-28 z-20 flex flex-col items-end gap-2">
+            <RiskLegend />
             <BasemapControl />
             <ZoomControls />
           </div>

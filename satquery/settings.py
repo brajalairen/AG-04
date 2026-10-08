@@ -61,6 +61,11 @@ class Settings:
     weather_cache_ttl_s: float = 1800.0   # a forecast is reused for this long, in memory only
     weather_timeout_s: float = 20.0
 
+    # --- AG-04 agricultural risk dashboard ---
+    agri_areas: str = "demo"         # "demo" (the team's demo rectangles) or a GeoJSON file of monitored areas
+    agri_offline: bool = False       # serve cached agricultural data only (no network), labelled CACHED
+    agri_refresh_s: float = 1800.0   # how long one assessment of all areas is reused before it is recomputed
+
     @property
     def weather_enabled(self) -> bool:
         """Whether weather questions can be answered. Safe to expose: it reveals no credential."""
@@ -99,4 +104,7 @@ def load_settings() -> Settings:
         open_meteo_api_key=env("OPEN_METEO_API_KEY", defaults.open_meteo_api_key),
         weather_cache_ttl_s=float(env("SATQUERY_WEATHER_CACHE_TTL_S", defaults.weather_cache_ttl_s)),
         weather_timeout_s=float(env("SATQUERY_WEATHER_TIMEOUT_S", defaults.weather_timeout_s)),
+        agri_areas=env("SATQUERY_AGRI_AREAS", defaults.agri_areas),
+        agri_offline=env("SATQUERY_AGRI_OFFLINE", "").strip().lower() in ("1", "true", "yes", "on"),
+        agri_refresh_s=float(env("SATQUERY_AGRI_REFRESH_S", defaults.agri_refresh_s)),
     )

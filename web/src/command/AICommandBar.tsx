@@ -35,6 +35,8 @@ export function AICommandBar() {
   const runAnalysis = useAppStore((s) => s.runAnalysis);
   const cancelAnalysis = useAppStore((s) => s.cancelAnalysis);
   const pendingQuery = useAppStore((s) => s.pendingQuery);
+  // An open sidebar panel takes the left 400 px: centre the bar in the space beside it.
+  const panelOpen = useAppStore((s) => s.sidebarOpen && s.section !== null);
   const setPendingQuery = useAppStore((s) => s.setPendingQuery);
 
   // The same routing the store uses, so what this bar says matches what the question will run on.
@@ -73,10 +75,16 @@ export function AICommandBar() {
     setQuery("");
   };
 
-  const showSuggestions = ready && !result && !pending && !query.trim();
+  // AG-04 risk questions (the first suggestions) need no area or image, so they are offered whenever idle.
+  const showSuggestions = !result && !pending && !query.trim();
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-4 z-30 flex flex-col items-center gap-2 px-4">
+    <div
+      className={cx(
+        "pointer-events-none absolute inset-x-0 bottom-4 z-30 flex flex-col items-center gap-2 px-4",
+        panelOpen && "sm:pl-[412px]",
+      )}
+    >
       {showSuggestions && (
         <div className="pointer-events-auto flex max-w-[720px] flex-wrap justify-center gap-1.5">
           {suggestions.slice(0, 3).map((suggestion) => (
@@ -171,9 +179,9 @@ export function AICommandBar() {
                 ? "Ask about this area..."
                 : hasImages
                   ? "Ask anything about these images..."
-                  : "Add an image or select an area to get started..."
+                  : "Ask about crop & pest risk, e.g. Which areas are high risk?"
             }
-            aria-label="Ask a question about your imagery"
+            aria-label="Ask a question about crop and pest risk or your imagery"
             className="max-h-[120px] flex-1 resize-none self-center bg-transparent px-2 py-2 text-[14px] leading-snug text-ink placeholder:text-faint focus:outline-none disabled:opacity-60"
           />
 

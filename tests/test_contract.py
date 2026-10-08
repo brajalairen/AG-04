@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from satquery import schemas, server
+from satquery.agri import models as agri_models, routes as agri_routes
 
 TYPES_TS = Path(__file__).resolve().parent.parent / "web" / "src" / "state" / "types.ts"
 
@@ -34,6 +35,20 @@ MIRRORED = {
     "RouteResult": server.RouteResult,
     "OpticalQualityInfo": server.OpticalQualityInfo,
     "SceneCheck": server.SceneCheck,
+    # AG-04 risk dashboard
+    "AgriProvenance": agri_models.Provenance,
+    "PestReport": agri_models.PestReport,
+    "DayCheck": agri_models.DayCheck,
+    "PestEvaluation": agri_models.PestEvaluation,
+    "NdviWindow": agri_models.NdviWindow,
+    "NdviAnomaly": agri_models.NdviAnomaly,
+    "FactorResult": agri_models.FactorResult,
+    "RiskConfidence": agri_models.RiskConfidence,
+    "RiskAssessment": agri_models.RiskAssessment,
+    "AreaSummary": agri_routes.AreaSummary,
+    "AgriOverview": agri_routes.AgriOverview,
+    "AgriAreaDetail": agri_routes.AgriAreaDetail,
+    "AgriQueryResult": agri_routes.AgriQueryResult,
 }
 
 

@@ -5,33 +5,15 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from agri_helpers import TODAY, FakeStatsProvider, hourly_payload, humid_day, stats_response
+from agri_helpers import TODAY, FakeStatsProvider, FakeWeather, humid_day, stats_response
 from satquery.agri import __main__ as cli
 from satquery.agri.areas import demo_areas
 from satquery.agri.cache import JsonCache
 from satquery.agri.ndvi import NdviClient
 from satquery.agri.pipeline import Sources, assess_areas, default_sources
 from satquery.agri.reports import SampleReportSource
-from satquery.agri.weather import parse_hourly
-from satquery.specialists.weather import WeatherUnavailable
 
 NOW = datetime(2026, 10, 8, 6, 0, tzinfo=timezone.utc)  # 11:30 in Manipur
-
-
-class FakeWeather:
-    """Hourly weather from `days`; fails for points inside `fail_inside` (west, south, east, north)."""
-
-    def __init__(self, days=None, fail_inside=None):
-        self.days, self.fail_inside, self.calls = days, fail_inside, []
-
-    def fetch(self, latitude, longitude):
-        self.calls.append((latitude, longitude))
-        if self.fail_inside:
-            west, south, east, north = self.fail_inside
-            if west <= longitude <= east and south <= latitude <= north:
-                raise WeatherUnavailable("The weather provider could not be reached.")
-        return parse_hourly(hourly_payload(self.days), requested=(latitude, longitude),
-                            retrieved_at="2026-10-08T05:59:00+00:00")
 
 
 def ndvi(current=0.60, baseline=(0.75, 0.75, 0.75)):
