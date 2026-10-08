@@ -595,3 +595,24 @@ export interface AgriQueryResult {
   /** The common intent the question was read as; null when it must be rephrased. */
   common_intent: string | null;
 }
+
+/** Conversation mode: what the previous answer was about. Mirrors satquery.agri.conversation.ChatContext. */
+export interface ChatContext {
+  last_query: string | null;
+  /** A common intent ("AREA_RISK_QUERY", ...) or "IMAGERY". */
+  last_intent: string | null;
+  focus_area_id: string | null;
+  /** The areas the last ranking or inspection list gave, in order ("the second one"). */
+  area_ids: string[];
+  language: string | null;
+}
+
+/** A message read in its conversation. Mirrors satquery.agri.conversation.ChatResolveResult. */
+export interface ChatResolveResult {
+  /** The complete question to ask; null when the user must be asked back instead. */
+  query: string | null;
+  rewritten: boolean;
+  rule: string;
+  clarification: string | null;
+  area_id: string | null;
+}

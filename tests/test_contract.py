@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from satquery import schemas, server
-from satquery.agri import models as agri_models, routes as agri_routes
+from satquery.agri import conversation as agri_chat, models as agri_models, routes as agri_routes
 
 TYPES_TS = Path(__file__).resolve().parent.parent / "web" / "src" / "state" / "types.ts"
 
@@ -50,6 +50,9 @@ MIRRORED = {
     "AgriAreaDetail": agri_routes.AgriAreaDetail,
     "AgriQueryResult": agri_routes.AgriQueryResult,
     "DistrictSummary": agri_routes.DistrictSummary,
+    # Conversation mode
+    "ChatContext": agri_chat.ChatContext,
+    "ChatResolveResult": agri_chat.ChatResolveResult,
 }
 
 
