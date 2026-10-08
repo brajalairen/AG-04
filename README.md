@@ -28,6 +28,15 @@ visual evidence pinned to the map, a confidence value with its method, and a ful
 - **Agentic, auditable workflow:** a rule-based agent classifies the request, plans a sequence of registered tools
   (each with permitted parameters only), executes it and records every step. Unsupported or invalid requests are
   refused with a stated reason rather than answered with a guess.
+- **Conversation (💬):** a chat panel with follow-ups. *Which areas are at high risk?*, then *Why?*, then *What about
+  Thoubal?* A follow-up is rewritten into a complete question ("Why is Thoubal flagged?"), and the panel shows how
+  it was read. That question is then answered by the existing router and risk engine, so the answer text, scores and
+  warnings are unchanged. No language model is involved. A follow-up that can't be tied to one area gets a
+  clarifying question back.
+- **Voice Chat (🎙️, English, Chrome/Edge):** one click starts a hands-free loop: listen, answer through the
+  Conversation pipeline, speak the answer, listen again. It pauses after two silent turns. The answer is spoken with
+  its scores, confidence and PLACEHOLDER/SAMPLE warnings; long lists of reasons are shortened, and the full answer
+  stays on screen.
 
 ## Tech Stack
 
@@ -160,6 +169,10 @@ such as PyTorch.
    before/after pair.
 8. **Inspect the result.** **Details** opens the execution trace: the routing decision, every tool with its
    parameters, the input checks, and the HTML/JSON reports.
+9. **Have a conversation.** Click the speech-bubble button (top right), ask *Which areas are at high risk?*, then
+   *Why?* and *What about Thoubal?*. Each follow-up shows "Read as: …" with the question it was asked as.
+10. **Talk to it.** Click the Voice Chat button (top right, or in the conversation panel) in Chrome or Edge, allow
+    the microphone, and speak. The app answers aloud and listens again; click it again to stop.
 
 ## Fine-Tuning / Model Adaptation
 
@@ -225,6 +238,13 @@ base model. Retraining needs BigEarthNet.txt and BigEarthNet v2.0; see `experime
 - The fine-tuned adapter covers Sentinel-2 yes/no questions only (see
   [Fine-Tuning / Model Adaptation](#fine-tuning--model-adaptation)); no claim is made for other sensors, such as
   Cartosat or RISAT, or other question types.
+- **Conversation (v1)** resolves English follow-ups only.
+  - Latin Manipuri questions work when asked in full, but a short Manipuri follow-up is not rewritten.
+  - A weather or crop-health follow-up about a named area asks you to draw that area first.
+- **Voice Chat (v1)** uses the browser's own speech recognition and speech output (Web Speech API).
+  - It works in Chrome and Edge only; in Chrome, the audio is processed by Google's servers.
+  - It is English only.
+  - The planned offline replacements are Whisper (speech recognition) and Piper (speech output).
 
 ## Data and Licences
 
