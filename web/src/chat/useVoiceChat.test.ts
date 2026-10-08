@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { chunks, speakable } from "./speakable";
 import { useChatStore, type ChatMessage } from "./useChatStore";
 import {
-  BLOCKED, ENDPOINT_MS, isEcho, LISTEN_IDLE_MS, liveRecognisers, PAUSED, questionPart, SPEECH_WATCHDOG_MS,
-  UNSTABLE, UNSUPPORTED, userWords, useVoiceChat, voiceTrace,
+  BLOCKED, classifyHeard, ECHO_TAIL_MS, ENDPOINT_MS, isEcho, LISTEN_IDLE_MS, liveRecognisers, PAUSED, questionPart,
+  SPEECH_WATCHDOG_MS, UNSTABLE, UNSUPPORTED, userWords, useVoiceChat, voiceTrace, WAITING_FOR_MIC,
 } from "./useVoiceChat";
 
 /** SpeechRecognition as measured in Chrome: one continuous session; results accumulate (an interim result is
@@ -14,6 +14,7 @@ class FakeRecognition {
   continuous = false;
   interimResults = false;
   started = false;
+  track: unknown = null;
   ended = false;
   results: (Array<{ transcript: string }> & { isFinal: boolean })[] = [];
   onresult: ((event: unknown) => void) | null = null;
@@ -22,8 +23,9 @@ class FakeRecognition {
   constructor() {
     FakeRecognition.instances.push(this);
   }
-  start() {
+  start(track?: unknown) {
     this.started = true;
+    this.track = track ?? null;
   }
   stop() {
     queueMicrotask(() => this.end());
@@ -92,6 +94,7 @@ const send = vi.fn();
 const mic = () => FakeRecognition.instances[FakeRecognition.instances.length - 1]!;
 const voice = () => useVoiceChat.getState();
 const settle = () => vi.advanceTimersByTimeAsync(10);
+const INTERIM_WAIT = 2100; // INTERIM_ENDPOINT_MS and a little
 const spokenSince = (n: number) => synth.all.slice(n).map((u) => u.text).join(" ");
 
 // A long answer: every sentence is spoken, in many utterances.
@@ -145,14 +148,22 @@ afterEach(async () => {
 });
 
 describe("words heard while the app speaks", () => {
-  const spoken = "Number 1 Jiribam farmland near Kamaranga: HIGH, 71 out of 100 (confidence low). PLACEHOLDER thresholds.";
-  it("removes the app's own words, run by run, and keeps the user's", () => {
+  const spoken = "number 1 Jiribam farmland near Kamaranga: HIGH, 71 out of 100 (confidence low). Bishnupur currently has a high risk because of pest-favourable weather.";
+  it("recognises the app's own voice even when recognition mishears it", () => {
     expect(isEcho("jiribam farmland near kamaranga", spoken)).toBe(true);
-    expect(isEcho("71 out of 100 confidence low", spoken)).toBe(true);
-    expect(userWords("jiribam farmland near what about thoubal", [spoken])).toBe("what about thoubal");
-    expect(userWords("why is jiribam high", [spoken])).toBe("why is jiribam high");
-    expect(userWords("farmland", [spoken])).toBe(""); // a lone word of the answer is echo
-    expect(userWords("stop", [spoken])).toBe("stop");
+    expect(isEcho("number one jiribam farmland near camera anger high 71 out of 100", spoken)).toBe(true);
+    expect(isEcho("vishnupur currently has a high risk because of pest favourite weather", spoken)).toBe(true);
+    expect(isEcho("seventy one out of 100 confidence low", spoken)).toBe(true);
+    expect(userWords("number one jiribam farmland near camera anger", [spoken])).toBe(""); // no misheard leftovers
+  });
+  it("hears the user, even when the question reuses words of the answer", () => {
+    expect(classifyHeard("What about Bishnupur?", [spoken])).toEqual({ kind: "user", text: "What about Bishnupur?" });
+    expect(classifyHeard("What about Thoubal?", [spoken]).kind).toBe("user");
+    expect(classifyHeard("Why is Bishnupur high risk?", [spoken]).kind).toBe("user");
+    expect(classifyHeard("stop", [spoken]).kind).toBe("user");
+    expect(classifyHeard("farmland", [spoken]).kind).toBe("unclear"); // one word of the answer: too little to tell
+    expect(classifyHeard("a high risk what about thoubal please", [spoken]))
+      .toEqual({ kind: "user", text: "what about thoubal please" }); // an echo fragment inside is removed
   });
   it("finds the question in what was said", () => {
     expect(questionPart("Okay, what about Thoubal?")).toBe("what about Thoubal?");
@@ -227,14 +238,14 @@ describe("Voice Chat lifecycle", () => {
     expect(voice().status).toBe("listening");
   });
 
-  it("a phrase mixing the app's voice and the user's is cut down to the user's words", async () => {
+  it("a phrase mixing a little of the app's voice with the user's is cut down to the user's words", async () => {
     await askAndSpeak("Which areas are at high risk?", LONG);
     send.mockResolvedValueOnce(reply("Thoubal: MODERATE."));
-    mic().say("bishnupur currently has a high risk what about thoubal", true); // final: interrupts at once
+    mic().say("a high risk what about thoubal please", true); // final, mostly the user: interrupts at once
     expect(voice().status).toBe("listening");
     mic().say("because the rice blast window", true); // the cancelled answer's last echo, arriving late
     await vi.advanceTimersByTimeAsync(ENDPOINT_MS + 10);
-    expect(send).toHaveBeenLastCalledWith("what about thoubal", "voice");
+    expect(send).toHaveBeenLastCalledWith("what about thoubal please", "voice");
   });
 
   it("the app's own voice never interrupts it", async () => {
@@ -392,5 +403,171 @@ describe("Voice Chat lifecycle", () => {
     vi.stubGlobal("webkitSpeechRecognition", undefined);
     voice().start();
     expect(voice()).toMatchObject({ status: "error", notice: UNSUPPORTED });
+  });
+});
+
+/** What the microphone hears of the app's own voice through speakers: recognition never returns it word for word. */
+const MISHEARD: [RegExp, string][] = [
+  [/kamaranga/gi, "camera anger"], [/bishnupur/gi, "vishnupur"], [/favourable/gi, "favourite"],
+  [/nambol/gi, "numbal"], [/thoubal/gi, "the ball"], [/chaobok/gi, "chow bok"], [/\b1\b/g, "one"],
+  [/placeholder/gi, "place holder"],
+];
+function echoOf(spoken: string): string {
+  let heard = spoken.toLowerCase().replace(/[^a-z0-9\s-]/g, " ");
+  for (const [pattern, misheard] of MISHEARD) heard = heard.replace(pattern, misheard);
+  const all = heard.split(/\s+/).filter(Boolean);
+  return all.filter((_, i) => i % 7 !== 3).join(" "); // and a dropped word now and then
+}
+/** Play the whole answer through "speakers": each utterance is heard back (unfinished, then finished). */
+function playWithEcho(options: { last?: "interim" } = {}) {
+  while (synth.queue.length) {
+    const playing = synth.queue[0]!;
+    const echo = echoOf(playing.text);
+    const half = echo.split(" ").slice(0, Math.ceil(echo.split(" ").length / 2)).join(" ");
+    mic().say(half);
+    if (synth.queue.length === 1 && options.last === "interim") {
+      synth.finishOne(); // the answer ends while its last words are still being recognised
+      mic().say(echo, true);
+      return;
+    }
+    mic().say(echo, true);
+    synth.finishOne();
+  }
+}
+
+describe("the app's own voice is never taken for the user (speakers)", () => {
+  it("1: a whole answer heard back through the speakers: no interruption, no transcript, no second request", async () => {
+    await askAndSpeak("Which areas are at high risk?", LONG);
+    playWithEcho({ last: "interim" });
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + INTERIM_WAIT);
+    expect(synth.cancel).not.toHaveBeenCalled();
+    expect(voice().status).toBe("listening");
+    expect(voice().hearing).toBe("");
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it("2: again on the next answer, and across turns", async () => {
+    await askAndSpeak("Which areas are at high risk?", RANKING);
+    playWithEcho({ last: "interim" });
+    send.mockResolvedValueOnce(reply(LONG));
+    await userSays("Why is Bishnupur flagged?");
+    expect(voice().status).toBe("speaking");
+    playWithEcho({ last: "interim" });
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + INTERIM_WAIT);
+    expect(send.mock.calls.map((c) => c[0])).toEqual(["Which areas are at high risk?", "Why is Bishnupur flagged?"]);
+    expect(voice().status).toBe("listening");
+  });
+
+  it("3: a real interruption amid the echo is taken, and its transcript is the user's", async () => {
+    await askAndSpeak("Which areas are at high risk?", LONG);
+    mic().say(echoOf(synth.queue[0]!.text), true); // the echo is heard first: the app knows it plays on speakers
+    synth.finishOne();
+    send.mockResolvedValueOnce(reply("Thoubal farmland near Chaobok: MODERATE, 36/100."));
+    mic().say("What about");
+    mic().say("What about Thoubal");
+    expect(synth.cancel).not.toHaveBeenCalled(); // on speakers, two words are not enough yet
+    mic().say("What about Thoubal?", true);
+    expect(synth.cancel).toHaveBeenCalledTimes(1);
+    expect(voice().status).toBe("listening");
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + 10);
+    expect(send).toHaveBeenLastCalledWith("What about Thoubal?", "voice");
+    expect(voice().status).toBe("speaking");
+  });
+
+  it("4: 'What about Bishnupur?' over an answer about Bishnupur is the user, not echo", async () => {
+    await askAndSpeak("Which areas are at high risk?", "Bishnupur currently has a high risk because of pest-favourable weather.");
+    mic().say("vishnupur currently has a high risk"); // the echo, heard
+    send.mockResolvedValueOnce(reply("Bishnupur: HIGH, 71/100."));
+    mic().say("What about Bishnupur?", true);
+    expect(voice().status).toBe("listening");
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + 10);
+    expect(send).toHaveBeenLastCalledWith("What about Bishnupur?", "voice");
+  });
+
+  it("5: a silent user: the answer finishes and nothing is asked", async () => {
+    await askAndSpeak("Which areas are at high risk?", RANKING);
+    playWithEcho();
+    await vi.advanceTimersByTimeAsync(LISTEN_IDLE_MS - 1000);
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(voice().status).toBe("listening");
+  });
+
+  it("6: several turns with echo and a follow-up: only the user's three questions are asked", async () => {
+    await askAndSpeak("Which area has the highest risk?", RANKING);
+    playWithEcho({ last: "interim" });
+    send.mockResolvedValueOnce(reply(`Thoubal farmland near Chaobok: MODERATE, 36/100. ${LONG}`));
+    await userSays("What about Thoubal?");
+    synth.cancel.mockClear(); // speak() clears earlier speech when an answer starts; count only what follows
+    mic().say(echoOf(synth.queue[0]!.text), true);
+    synth.finishOne();
+    send.mockResolvedValueOnce(reply("Thoubal: MODERATE because of recent pest reports."));
+    mic().say("Why?"); // one word, on speakers: not an interruption
+    expect(synth.cancel).not.toHaveBeenCalled();
+    playWithEcho();
+    await userSays("Why?");
+    playWithEcho();
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + INTERIM_WAIT);
+    expect(send.mock.calls.map((c) => c[0])).toEqual(["Which area has the highest risk?", "What about Thoubal?", "Why?"]);
+  });
+
+  it("a one-word question is asked once the app is quiet, even if the answer contained that word", async () => {
+    await askAndSpeak("Why is Bishnupur flagged?", ["Bishnupur: LOW, 29/100.", "Why:", "- 7 SAMPLE pest reports in the last 14 days."].join("\n"));
+    playWithEcho();
+    mic().say("why", true); // just after the answer: may be its echo ("Why:")
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + 10);
+    expect(send).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(ECHO_TAIL_MS);
+    send.mockResolvedValueOnce(reply("Bishnupur is LOW because ..."));
+    await userSays("Why?"); // the app has been quiet: this is the user
+    expect(send).toHaveBeenLastCalledWith("Why?", "voice");
+  });
+
+  it("the hard guard: an echo phrase that reaches the end of a turn is never sent", async () => {
+    await askAndSpeak("Which areas are at high risk?", RANKING);
+    playWithEcho();
+    mic().say("number one bishnupur farmland near nambol high", true); // late echo, after the answer ended
+    await vi.advanceTimersByTimeAsync(ENDPOINT_MS + INTERIM_WAIT);
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it("7: Stop while speaking: audio and recognition stop, no transcript, no request, no restart", async () => {
+    await askAndSpeak("Which areas are at high risk?", LONG);
+    mic().say(echoOf(synth.queue[0]!.text));
+    const session = mic();
+    voice().stop();
+    session.say(echoOf(synth.all[0]!.text), true);
+    await vi.advanceTimersByTimeAsync(LISTEN_IDLE_MS + 5000);
+    expect(synth.queue).toHaveLength(0);
+    expect(session.ended).toBe(true);
+    expect(FakeRecognition.instances).toHaveLength(1);
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(voice()).toMatchObject({ status: "idle", hearing: "" });
+  });
+
+  it("listens on an echo-cancelled microphone track, and releases it on Stop", async () => {
+    const track = { readyState: "live", stop: vi.fn(), getSettings: () => ({ echoCancellation: true }) };
+    const stream = { getAudioTracks: () => [track], getTracks: () => [track] };
+    const getUserMedia = vi.fn().mockResolvedValue(stream);
+    vi.stubGlobal("navigator", { ...globalThis.navigator, mediaDevices: { getUserMedia } });
+    voice().start();
+    expect(voice().notice).toBe(WAITING_FOR_MIC); // while the browser asks for the microphone
+    await settle();
+    expect(voice().notice).toBeNull();
+    expect(getUserMedia).toHaveBeenCalledWith({
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+    });
+    expect(mic().track).toBe(track);
+    expect(voice().status).toBe("listening");
+    voice().stop();
+    expect(track.stop).toHaveBeenCalled();
+  });
+
+  it("a blocked microphone (getUserMedia refused) stops with an error", async () => {
+    const refused = Object.assign(new Error("denied"), { name: "NotAllowedError" });
+    vi.stubGlobal("navigator", { ...globalThis.navigator, mediaDevices: { getUserMedia: vi.fn().mockRejectedValue(refused) } });
+    voice().start();
+    await settle();
+    expect(voice()).toMatchObject({ status: "error", notice: BLOCKED });
+    expect(FakeRecognition.instances).toHaveLength(0);
   });
 });

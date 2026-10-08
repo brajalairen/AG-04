@@ -43,6 +43,9 @@ export const INTERIM_ENDPOINT_MS = 2000;
 export const LISTEN_IDLE_MS = 15000;
 /** Speech output silent for this long while SPEAKING counts as finished (an end event can be lost). */
 export const SPEECH_WATCHDOG_MS = 750;
+/** After the app stops speaking, its last words can still arrive from recognition for this long. */
+export const ECHO_TAIL_MS = 1500;
+export const WAITING_FOR_MIC = "Allow the microphone in the browser to start Voice Chat.";
 /** One word is enough to interrupt only when it is one of these. */
 export const INTERRUPT_WORDS = new Set(["stop", "wait", "hold", "cancel", "pause", "no", "hey", "sorry", "excuse"]);
 const RESTART_WINDOW_MS = 5000;
@@ -63,7 +66,8 @@ interface Recognition {
   lang: string;
   continuous: boolean;
   interimResults: boolean;
-  start(): void;
+  /** Chrome (verified in 154) takes its audio from `track` when one is given; others ignore the argument. */
+  start(track?: MediaStreamTrack): void;
   stop(): void;
   abort(): void;
   onresult: ((event: RecognitionEvent) => void) | null;
@@ -105,34 +109,92 @@ export function words(text: string): string[] {
   return text.toLowerCase().match(/[a-z0-9]+/g) ?? [];
 }
 
-/** What the user said in a heard phrase: the phrase without every run of two or more words that the app has just
- *  spoken (its echo through the speakers), with the user's own words kept as they were heard (case, punctuation).
- *  A lone word that the app also spoke counts as echo. */
-export function userWords(heard: string, spoken: string[]): string {
-  const tokens = heard.trim().split(/\s+/).filter(Boolean);
-  const said = tokens.map((t) => t.toLowerCase().replace(/[^a-z0-9]/g, ""));
-  const sources = spoken.map(words).filter((s) => s.length);
-  const echo = said.map((w) => !w); // a token of punctuation alone is never the user's word
+// ---- Echo: recognition hears the app's own voice through the speakers, and never word for word ("Kamaranga" may
+// come back as "camera anger", "1" as "one", "favourable" as "favourite"). So a heard phrase is judged as a whole:
+// it is the app's echo when at least half of its words fall in runs (two or more words in a row) that follow the
+// answer being spoken, matching words approximately. An echo phrase is ignored entirely; its misheard leftovers are
+// never taken for the user. A user's question that merely reuses a word or two of the answer ("What about
+// Bishnupur?") stays the user's.
+
+const NUMBER_WORDS: Record<string, string> = {
+  zero: "0", one: "1", two: "2", three: "3", four: "4", five: "5", six: "6", seven: "7", eight: "8", nine: "9",
+  ten: "10", eleven: "11", twelve: "12", thirteen: "13", fourteen: "14", fifteen: "15", sixteen: "16",
+  seventeen: "17", eighteen: "18", nineteen: "19", twenty: "20", thirty: "30", forty: "40", fifty: "50",
+  sixty: "60", seventy: "70", eighty: "80", ninety: "90", hundred: "100", first: "1", second: "2", third: "3",
+};
+
+function normalWord(token: string): string {
+  const word = token.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return NUMBER_WORDS[word] ?? word;
+}
+
+/** The words of a text for comparison: lower case, no punctuation, hyphenated words split, numbers as digits. */
+function comparable(text: string): string[] {
+  return text.split(/[\s\-–—/]+/).map(normalWord).filter(Boolean);
+}
+
+function editDistance(a: string, b: string): number {
+  const row = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i += 1) {
+    let previous = row[0]!;
+    row[0] = i;
+    for (let j = 1; j <= b.length; j += 1) {
+      const kept = row[j]!;
+      row[j] = Math.min(row[j]! + 1, row[j - 1]! + 1, previous + (a[i - 1] === b[j - 1] ? 0 : 1));
+      previous = kept;
+    }
+  }
+  return row[b.length]!;
+}
+
+/** Whether a heard word is a spoken word, allowing for how speech recognition mishears longer words. */
+export function sameWord(heard: string, spoken: string): boolean {
+  if (heard === spoken) return true;
+  const shorter = Math.min(heard.length, spoken.length);
+  const longer = Math.max(heard.length, spoken.length);
+  if (shorter < 4) return false;
+  return 1 - editDistance(heard, spoken) / longer >= (longer >= 6 ? 0.7 : 0.75);
+}
+
+export type HeardKind = "echo" | "user" | "unclear";
+
+/** Whether a heard phrase is the app's own voice (echo), the user ("user", with the user's words as heard), or too
+ *  little to tell ("unclear": a single word that the answer also contains). */
+export function classifyHeard(heard: string, spoken: string[]): { kind: HeardKind; text: string } {
+  const tokens = heard.trim().split(/[\s\-–—/]+/).filter((t) => normalWord(t));
+  const said = tokens.map(normalWord);
+  const sources = spoken.map(comparable).filter((s) => s.length);
+  if (!said.length) return { kind: "echo", text: "" };
+  const run = new Array<number>(said.length).fill(0); // the longest echo run each heard word belongs to
   for (const source of sources) {
     for (let i = 0; i < said.length; i += 1) {
       for (let j = 0; j < source.length; j += 1) {
         let k = 0;
-        while (i + k < said.length && j + k < source.length && said[i + k] === source[j + k]) k += 1;
-        if (k >= 2) for (let m = i; m < i + k; m += 1) echo[m] = true;
+        while (i + k < said.length && j + k < source.length && sameWord(said[i + k]!, source[j + k]!)) k += 1;
+        if (k >= 2) for (let m = i; m < i + k; m += 1) run[m] = Math.max(run[m]!, k);
       }
     }
   }
-  const kept = tokens.filter((_, i) => !echo[i]);
-  const keptWords = said.filter((_, i) => !echo[i]);
-  if (keptWords.length === 1 && !INTERRUPT_WORDS.has(keptWords[0]!) && sources.some((s) => s.includes(keptWords[0]!))) {
-    return "";
+  const inAnswer = (w: string) => sources.some((source) => source.some((s) => sameWord(w, s)));
+  if (said.length === 1) {
+    if (INTERRUPT_WORDS.has(said[0]!)) return { kind: "user", text: tokens.join(" ") };
+    return { kind: inAnswer(said[0]!) ? "unclear" : "user", text: tokens.join(" ") };
   }
-  return kept.join(" ");
+  const covered = run.filter((r) => r >= 2).length;
+  if (covered / said.length >= 0.5) return { kind: "echo", text: "" };
+  // The user's phrase: without any clear echo fragment (three or more words of the answer in a row) inside it.
+  return { kind: "user", text: tokens.filter((_, i) => run[i]! < 3).join(" ") };
 }
 
-/** Whether a phrase heard while the app speaks is entirely its own voice. */
+/** The user's words in a heard phrase ("" when it is the app's echo or too little to tell while it may be echo). */
+export function userWords(heard: string, spoken: string[]): string {
+  const found = classifyHeard(heard, spoken);
+  return found.kind === "user" ? found.text : "";
+}
+
+/** Whether a phrase heard while the app speaks is its own voice. */
 export function isEcho(heard: string, spoken: string): boolean {
-  return !userWords(heard, [spoken]);
+  return classifyHeard(heard, [spoken]).kind === "echo";
 }
 
 const LEADING_INTERRUPTION =
@@ -143,9 +205,12 @@ export function questionPart(text: string): string {
   return text.trim().replace(LEADING_INTERRUPTION, "").trim();
 }
 
-function enoughToInterrupt(text: string): boolean {
+/** Whether the user's words are enough to interrupt: two words, or three once the app's own voice has been heard
+ *  in this session (it is playing through speakers, so recognition is less clean); one interruption word always. */
+function enoughToInterrupt(text: string, speakerEcho: boolean): boolean {
   const heard = words(text);
-  return heard.length >= 2 || INTERRUPT_WORDS.has(heard[0] ?? "");
+  if (INTERRUPT_WORDS.has(heard[0] ?? "")) return true;
+  return heard.length >= (speakerEcho ? 3 : 2);
 }
 
 // ----------------------------------------------------------------------------------------- debug log
@@ -204,6 +269,12 @@ let lastCommitted = "";
 
 // The current answer.
 let spokenAnswers: string[] = []; // the answer being spoken and the one before it (echo sources)
+let speakerEcho = false; // the app's own voice has been heard this session: it plays through speakers
+let echoTailUntil = 0; // until then, a lone word that the last answer also contains may still be its echo
+let echoResults = new Set<number>(); // finished results of this session judged to be echo: never judged again
+let lastResults: RecognitionEvent["results"] | null = null;
+// The microphone, opened with the browser's echo cancellation and handed to recognition.
+let micStream: MediaStream | null = null;
 let utterances: SpeechSynthesisUtterance[] = []; // kept referenced: a discarded utterance may never fire onend
 
 // Timers.
@@ -253,7 +324,10 @@ export const useVoiceChat = create<VoiceState>((set, get) => {
     }
     utterances = [];
     const synth = synthesis();
-    if (synth && (synth.speaking || synth.pending)) log(`speech cancelled (${reason})`);
+    if (synth && (synth.speaking || synth.pending)) {
+      log(`speech cancelled (${reason})`);
+      echoTailUntil = Date.now() + ECHO_TAIL_MS;
+    }
     synth?.cancel();
   }
 
@@ -299,8 +373,11 @@ export const useVoiceChat = create<VoiceState>((set, get) => {
     if (!active || gen !== generation || get().status !== "speaking") return log(`ignored: ${reason} (stale)`);
     watchdog = watchdog ? (clearInterval(watchdog), null) : null;
     utterances = [];
-    // The answer's echo is not the user's next utterance; a phrase still being heard may be the user, so keep it.
-    resultsBase = lastResultFinal ? resultsSeen : Math.max(0, resultsSeen - 1);
+    echoTailUntil = Date.now() + ECHO_TAIL_MS;
+    // What is still being recognised now is usually the answer's own last words: keep it only if it is the user's.
+    const open = !lastResultFinal && lastResults ? lastResults[lastResults.length - 1]?.[0]?.transcript ?? "" : "";
+    const keepOpen = open && classifyHeard(open, spokenAnswers).kind === "user";
+    resultsBase = keepOpen ? Math.max(0, resultsSeen - 1) : resultsSeen;
     startListening(reason);
   }
 
@@ -343,6 +420,13 @@ export const useVoiceChat = create<VoiceState>((set, get) => {
       startListening("only an interruption word", "");
       return;
     }
+    // Hard guard: the app's own words are never asked, whatever path they came by.
+    const verdict = classifyHeard(question, spokenAnswers).kind;
+    if (verdict === "echo" || (verdict === "unclear" && Date.now() < echoTailUntil)) {
+      log(`AI_ECHO dropped, not sent: "${question}"`);
+      startListening("echo of the app's own voice", "");
+      return;
+    }
     generation += 1;
     const gen = generation;
     lastCommitted = question;
@@ -382,20 +466,29 @@ export const useVoiceChat = create<VoiceState>((set, get) => {
 
   function onResults(event: RecognitionEvent) {
     resultsSeen = event.results.length;
+    lastResults = event.results;
     lastResultFinal = !!event.results[event.results.length - 1]?.isFinal;
     if (!active) return;
+    const status = get().status;
+    const echoPossible = status === "speaking" || Date.now() < echoTailUntil;
     const parts: string[] = [];
     let final = event.results.length > resultsBase;
     for (let i = resultsBase; i < event.results.length; i += 1) {
+      if (echoResults.has(i)) continue;
       const result = event.results[i];
-      const heard = userWords(result?.[0]?.transcript ?? "", spokenAnswers);
-      if (heard) parts.push(heard);
+      const found = classifyHeard(result?.[0]?.transcript ?? "", spokenAnswers);
+      if (result?.isFinal && (found.kind === "echo" || (found.kind === "unclear" && echoPossible))) echoResults.add(i);
+      if (found.kind === "echo" && spokenAnswers.length) {
+        if (!speakerEcho) log("the app's own voice is reaching the microphone (speakers): stricter interruption");
+        speakerEcho = true;
+      }
+      // A lone word that the answer also contains ("Why?") is the user's once the app cannot be heard any more.
+      if ((found.kind === "user" || (found.kind === "unclear" && !echoPossible)) && found.text) parts.push(found.text);
       if (!result?.isFinal) final = false;
     }
     const heard = parts.join(" ").trim();
-    const status = get().status;
     if (status === "speaking") {
-      if (!heard || !enoughToInterrupt(heard)) {
+      if (!heard || !enoughToInterrupt(heard, speakerEcho)) {
         candidateHits = 0;
         return;
       }
@@ -444,9 +537,12 @@ export const useVoiceChat = create<VoiceState>((set, get) => {
     resultsSeen = 0;
     resultsBase = 0;
     lastResultFinal = true;
+    echoResults = new Set();
     try {
-      instance.start();
-      log("recognition started");
+      const track = micStream?.getAudioTracks().find((t) => t.readyState === "live");
+      if (track) instance.start(track);
+      else instance.start();
+      log(`recognition started${track ? " on the echo-cancelled microphone track" : ""}`);
     } catch {
       recognition = null;
       get().stop(BLOCKED, "error");
@@ -509,12 +605,40 @@ export const useVoiceChat = create<VoiceState>((set, get) => {
       }
       active = true;
       generation += 1;
+      const gen = generation;
       restarts = [];
       spokenAnswers = [];
+      speakerEcho = false;
       set({ notice: null });
       log("voice chat started");
       useChatStore.getState().setOpen(true);
-      startListening("voice chat started");
+      const media = globalThis.navigator?.mediaDevices;
+      if (!media?.getUserMedia) {
+        startListening("voice chat started");
+        return;
+      }
+      // The browser's echo cancellation removes what it can of the app's voice before recognition hears it.
+      set({ notice: WAITING_FOR_MIC });
+      media
+        .getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } })
+        .then((stream) => {
+          if (!active || gen !== generation) {
+            stream.getTracks().forEach((t) => t.stop());
+            return;
+          }
+          micStream = stream;
+          set({ notice: null });
+          const settings = stream.getAudioTracks()[0]?.getSettings();
+          log(`microphone open, echoCancellation=${settings?.echoCancellation ?? "unknown"}`);
+          startListening("voice chat started");
+        })
+        .catch((error: unknown) => {
+          if (!active || gen !== generation) return;
+          set({ notice: null });
+          const denied = error instanceof Error && /NotAllowed|Security|Permission/i.test(error.name);
+          if (denied) get().stop(BLOCKED, "error");
+          else startListening("voice chat started (default microphone)");
+        });
     },
 
     stop: (notice = null, status: VoiceStatus = "idle") => {
@@ -526,6 +650,8 @@ export const useVoiceChat = create<VoiceState>((set, get) => {
       idleTimer = clearTimer(idleTimer);
       restartWhenEnded = false;
       endRecognition();
+      micStream?.getTracks().forEach((t) => t.stop());
+      micStream = null;
       carried = "";
       utterance = "";
       set({ status, hearing: "", notice });
