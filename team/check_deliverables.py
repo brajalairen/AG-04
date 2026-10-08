@@ -21,6 +21,7 @@ from satquery.agent.language import CONCEPTS, INTENTS as ROUTED_INTENTS  # noqa:
 INTENTS = set(ROUTED_INTENTS)  # the intents the application's router answers
 SCRIPTS = {"Mtei", "Beng", "Latn"}
 TERM_CATEGORIES = {"crop", "pest", "disease", "weather", "crop_health", "inspection", "risk", "place"}
+RULES_FILE = "verified_agricultural_risk_rules.json"  # pest-weather rules, in the schema of satquery/agri/assets/pest_rules.json
 MANIPUR_BOX = (92.8, 23.7, 95.0, 25.8)  # generous lon/lat sanity box around Manipur
 EXPECTED_DISTRICTS = 16
 PLACEHOLDER_TEXT = re.compile(r"<[^>]*>")
@@ -57,31 +58,32 @@ def _json(path: Path, report: Report):
 
 
 def _verified_entry(entry: dict, where: str, report: Report, file_status: str) -> None:
+    claimed = file_status == "VERIFIED" or entry.get("verified") is True  # a claim needs a named check
     for key in ("verified_by", "verified_on"):
         value = entry.get(key)
         if not value or PLACEHOLDER_TEXT.search(str(value)):
-            (report.error if file_status == "VERIFIED" else report.warn)(f"{where}: '{key}' missing")
+            (report.error if claimed else report.warn)(f"{where}: '{key}' missing")
     if entry.get("verified_on") and not PLACEHOLDER_TEXT.search(str(entry["verified_on"])) \
             and not DATE.match(str(entry["verified_on"])):
         report.error(f"{where}: verified_on must be YYYY-MM-DD")
 
 
-def check_member_a(report: Report, folder: Path = TEAM / "member-a-agronomy") -> None:
+def check_member_a(report: Report, folder: Path = ROOT / "Member_A") -> None:
     from satquery.agri.config import load_pest_rules, load_risk_model
 
     report.info("Member A: Manipuri and agronomy")
-    rules = folder / "verified_pest_rules.json"
+    rules = folder / RULES_FILE
     if rules.is_file():
         try:
             loaded = load_pest_rules(rules)
             statuses = ", ".join(f"{p.id}={p.status} ({len(p.sources)} source(s))" for p in loaded.pests)
-            report.ok(f"verified_pest_rules.json loads with the engine's schema: file {loaded.status}; {statuses}")
+            report.ok(f"{RULES_FILE} loads with the engine's schema: file {loaded.status}; {statuses}")
             if loaded.status != "VERIFIED":
-                report.warn("verified_pest_rules.json is not fully VERIFIED: the dashboard will keep saying PLACEHOLDER")
+                report.warn(f"{RULES_FILE} is not fully VERIFIED: the dashboard will keep saying PLACEHOLDER")
         except Exception as error:  # the engine's own validation message is the useful part
-            report.error(f"verified_pest_rules.json is rejected by the engine's loader: {error}")
+            report.error(f"{RULES_FILE} is rejected by the engine's loader: {error}")
     else:
-        report.warn("verified_pest_rules.json not delivered yet (most urgent)")
+        report.warn(f"{RULES_FILE} not delivered yet (most urgent)")
     model = folder / "verified_risk_model.json"
     if model.is_file():
         try:

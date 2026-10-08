@@ -2,7 +2,7 @@
 
 AG-04's answers are written by code from the engine's results, not by a language model (the only model, the
 Falcon remote-sensing VLM, writes no Manipuri), so this is a template layer. The Latin Manipuri sentences are
-data: team/member-a-agronomy/manipuri_responses.json, one template per message, with slots ({level}, {score},
+data: Member_A/manipuri_responses.json, one template per message, with slots ({level}, {score},
 {confidence}, ...) that code fills with the engine's own values. Nothing numerical or scientific passes through
 a template unfilled or reworded: scores, levels, confidence, the engine's reasons (its evidence) and the NDVI
 figures are inserted exactly as the engine gives them.
@@ -21,7 +21,7 @@ from pathlib import Path
 from satquery.agent.language import LATIN_MANIPURI
 from satquery.agri.models import SAMPLE_LABEL
 
-DEFAULT_RESPONSES = Path(__file__).resolve().parents[2] / "team" / "member-a-agronomy" / "manipuri_responses.json"
+DEFAULT_RESPONSES = Path(__file__).resolve().parents[2] / "Member_A" / "manipuri_responses.json"
 
 # Every message the Latin Manipuri answers use, in English: the fallback, and the source for a translator.
 MESSAGES = {

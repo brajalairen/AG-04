@@ -1,7 +1,7 @@
 """Language and intent normalisation for agricultural questions, before the existing router (D-006).
 
 A question is read as concepts ("risk", "where", "first", ...): Latin Manipuri forms come from Member A's lexicon
-(team/member-a-agronomy/agri_terms_manipuri.json: its terms by category, and its cue words), English forms from the
+(Member_A/agri_terms_manipuri.json: its terms by category, and its cue words), English forms from the
 word classes below. The intent rules are written on concepts only, so one rule serves English, Latin Manipuri and
 code-mixed questions ("Kanagumba area high risk da lei?"), and no sentence is listed anywhere.
 
@@ -20,7 +20,7 @@ from pathlib import Path
 from satquery.agent.meitei_mayek import to_latin
 
 LATIN_MANIPURI, ENGLISH = "latin_manipuri", "english"
-DEFAULT_LEXICON = Path(__file__).resolve().parents[2] / "team" / "member-a-agronomy" / "agri_terms_manipuri.json"
+DEFAULT_LEXICON = Path(__file__).resolve().parents[2] / "Member_A" / "agri_terms_manipuri.json"
 
 # Common intent -> (route, existing behaviour): "agri" is the risk engine (rank / inspect / explain in
 # satquery.agri.query), "weather" the weather specialist, "imagery" the NDVI crop-health analysis.

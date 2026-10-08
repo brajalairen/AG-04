@@ -82,6 +82,9 @@ class PestRule(Strict):
     past_days: int = Field(7, ge=1, le=14)
     forecast_days: int = Field(3, ge=0, le=7)
     full_score_days: int = Field(5, ge=1, le=21)
+    # Documentation for the reviewer, never scored: where and when the rule applies, and what it cannot tell.
+    applicability: str | None = None
+    limitations: str | None = None
 
     @model_validator(mode="after")
     def _verified(self):

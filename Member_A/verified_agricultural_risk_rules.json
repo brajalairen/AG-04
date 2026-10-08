@@ -1,7 +1,7 @@
 {
   "version": "0.2-member-a-sourced-candidate",
   "status": "PLACEHOLDER",
-  "note": "Member A candidate, NOT validated. rice_blast: values taken from the cited Government of India (DPPQ&S) advisory and mapped onto the engine's weather variables; the mapping choices (daily mean for the temperature range, hours of RH >= 95% as a proxy for leaf wetness) are listed in team/member-a-agronomy/SOURCES.md. It stays PLACEHOLDER until an agronomist checks the source and the mapping and adds verified_by/verified_on. brown_planthopper: no numeric weather threshold was found in the authoritative sources consulted (DPPQ&S advisory, NIPHM rice IPM package, IRRI Rice Knowledge Bank), so its values are unchanged from the original development placeholder. past_days, forecast_days, full_score_days and min_hours_per_day are engine operating choices, not taken from any source.",
+  "note": "Member A candidate, NOT validated. rice_blast: values taken from the cited Government of India (DPPQ&S) advisory and mapped onto the engine's weather variables; the mapping choices (daily mean for the temperature range, hours of RH >= 95% as a proxy for leaf wetness) are listed in Member_A/SOURCES.md. It stays PLACEHOLDER until an agronomist checks the source and the mapping and adds verified_by/verified_on. brown_planthopper: no numeric weather threshold was found in the authoritative sources consulted (DPPQ&S advisory, NIPHM rice IPM package, IRRI Rice Knowledge Bank), so its values are unchanged from the original development placeholder. past_days, forecast_days, full_score_days and min_hours_per_day are engine operating choices, not taken from any source.",
   "min_hours_per_day": 20,
   "pests": [
     {
@@ -27,13 +27,18 @@
         {
           "variable": "temperature_2m",
           "aggregate": "mean",
-          "between": [22, 28],
+          "between": [
+            22,
+            28
+          ],
           "label": "daily mean temperature 22-28 °C"
         }
       ],
       "past_days": 7,
       "forecast_days": 3,
-      "full_score_days": 5
+      "full_score_days": 5,
+      "applicability": "Rice (kharif), all growth stages, per the source. National advisory to all States/UTs, not specific to Manipur. Read against one Open-Meteo weather point per monitored area.",
+      "limitations": "Describes weather that FAVOURS blast; it does not detect blast. Leaf wetness is not measured: hours with RH >= 95% stand in for it (a modelling assumption, not in the source). The 22-28 °C range is read as the daily mean. Dew, nitrogen and soil factors are not encoded. TNAU gives different values (RH 93-99%, night temperature 15-20 °C or < 26 °C). Needs an agronomist's decision before VERIFIED."
     },
     {
       "id": "brown_planthopper",
@@ -45,7 +50,10 @@
         {
           "variable": "temperature_2m",
           "aggregate": "mean",
-          "between": [25, 32],
+          "between": [
+            25,
+            32
+          ],
           "label": "daily mean temperature 25-32 °C"
         },
         {
@@ -57,7 +65,9 @@
       ],
       "past_days": 7,
       "forecast_days": 3,
-      "full_score_days": 5
+      "full_score_days": 5,
+      "applicability": "Rice. Development placeholder only: no source backs these values.",
+      "limitations": "The values (daily mean 25-32 °C, daily mean RH >= 80%) are unsourced placeholders. The authoritative weather-based BPH rules found (ICAR-NCIPM Technical Bulletin 39, 2016, Table 5) are location-specific (Ludhiana, Chinsurah, Raipur, Hyderabad, Mandya, Aduthurai; none in Manipur), use weekly means, morning/evening RH, sunshine and wind, and count how many of 5-6 criteria are met. The engine's daily all-conditions rule cannot express them, so they were not copied in. Field-scouting thresholds (TNAU ETL, IRRI) are in advisories.md, not here."
     }
   ]
 }

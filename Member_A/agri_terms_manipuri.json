@@ -1,6 +1,6 @@
 {
   "status": "DRAFT",
-  "note": "Latin-script Manipuri agricultural terms. Every form is attested in CompiledDataEnglishToMeitei.xlsx; the evidence rows are quoted verbatim. Which word in a sentence matches the English term was read off the sentence pairs (co-occurrence across many rows, then checked row by row); that alignment is what a fluent speaker must confirm before verified_by/verified_on are filled. Terms not attested in the dataset are left out and listed in MEMBER_A_README.md. cue_words are question and reference words (why, how, which, where, first, this, here, high, very, is) with the same evidence; the router (satquery/agent/language.py) reads terms and cue words as concepts to recognise the intent of a Latin Manipuri question. An optional 'concept' field overrides the concept a term's category implies.",
+  "note": "Latin-script Manipuri agricultural terms. Every form is attested in CompiledDataEnglishToMeitei.xlsx; the evidence rows are quoted verbatim. Which word in a sentence matches the English term was read off the sentence pairs (co-occurrence across many rows, then checked row by row); that alignment is what a fluent speaker must confirm before verified_by/verified_on are filled. Terms not attested in the dataset are left out and listed in Member_A/README.md. cue_words are question and reference words (why, how, which, where, first, this, here, high, very, is) with the same evidence; the router (satquery/agent/language.py) reads terms and cue words as concepts to recognise the intent of a Latin Manipuri question. An optional 'concept' field overrides the concept a term's category implies.",
   "terms": [
     {
       "id": "term-crop",
@@ -41,7 +41,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Plural mahei-marongsing. Also written maheimarong / mahei marong. 81 of the 97 rows whose English contains 'crop(s)' contain this form."
+      "notes": "Plural mahei-marongsing. Also written maheimarong / mahei marong. 81 of the 97 rows whose English contains 'crop(s)' contain this form.",
+      "verified": false
     },
     {
       "id": "term-rice",
@@ -76,7 +77,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Row 17464 gives the distinction: 'Rice in the husk is known as paddy' = 'makuda leiba cheng asi phou hāina khangnei'. Cooked rice is a different word in the dataset (chāk, chagang: rows 2310, 3462); do not use those for the crop."
+      "notes": "Row 17464 gives the distinction: 'Rice in the husk is known as paddy' = 'makuda leiba cheng asi phou hāina khangnei'. Cooked rice is a different word in the dataset (chāk, chagang: rows 2310, 3462); do not use those for the crop.",
+      "verified": false
     },
     {
       "id": "term-paddy",
@@ -111,7 +113,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "phougi = of paddy. Row 88831: 'paddy crop' = 'phougi mahei marong'."
+      "notes": "phougi = of paddy. Row 88831: 'paddy crop' = 'phougi mahei marong'.",
+      "verified": false
     },
     {
       "id": "term-paddy-field",
@@ -140,7 +143,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": ""
+      "notes": "",
+      "verified": false
     },
     {
       "id": "term-field",
@@ -181,7 +185,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "86 of the 97 rows containing loubuk have 'field(s)' in the English. lampāk is also translated 'field' (rows 99363, 15333) but in the sense of an open ground; loubuk is the farm-field word."
+      "notes": "86 of the 97 rows containing loubuk have 'field(s)' in the English. lampāk is also translated 'field' (rows 99363, 15333) but in the sense of an open ground; loubuk is the farm-field word.",
+      "verified": false
     },
     {
       "id": "term-farming",
@@ -222,7 +227,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Also louu alone. 'farmland' is attested as 'louu-singugi lam' (row 16288)."
+      "notes": "Also louu alone. 'farmland' is attested as 'louu-singugi lam' (row 16288).",
+      "verified": false
     },
     {
       "id": "term-farmer",
@@ -257,7 +263,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Plural loumising. 322 of the 339 rows with 'farmer(s)' in the English contain loumi."
+      "notes": "Plural loumising. 322 of the 339 rows with 'farmer(s)' in the English contain loumi.",
+      "verified": false
     },
     {
       "id": "term-harvest",
@@ -292,7 +299,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "The verb 'to harvest' is attested as lok- (lokpa, loklaba): row 64887 'the harvested crops' = 'loklaba maheimarongsing'."
+      "notes": "The verb 'to harvest' is attested as lok- (lokpa, loklaba): row 64887 'the harvested crops' = 'loklaba maheimarongsing'.",
+      "verified": false
     },
     {
       "id": "term-seed",
@@ -327,7 +335,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Plural marusing. Homograph: maru also means 'important / main' (maruoiba), so maru alone is ambiguous outside a farming context."
+      "notes": "Plural marusing. Homograph: maru also means 'important / main' (maruoiba), so maru alone is ambiguous outside a farming context.",
+      "verified": false
     },
     {
       "id": "term-soil",
@@ -372,7 +381,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Two words are attested. leihao: soil as material (row 104417 'The soil is sandy here'). leipāk (also leipak): land/soil, used for 'soil conservation' and 'soil health' in news text (rows 72284, 49401); it also means 'land/country'. A fluent speaker should choose the preferred word for agricultural soil."
+      "notes": "Two words are attested. leihao: soil as material (row 104417 'The soil is sandy here'). leipāk (also leipak): land/soil, used for 'soil conservation' and 'soil health' in news text (rows 72284, 49401); it also means 'land/country'. A fluent speaker should choose the preferred word for agricultural soil.",
+      "verified": false
     },
     {
       "id": "term-plant",
@@ -407,7 +417,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Plural pāmbising."
+      "notes": "Plural pāmbising.",
+      "verified": false
     },
     {
       "id": "term-pest",
@@ -446,7 +457,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "tin-kāng (also written tin kāng / tinkāng / tin-kang) is the general 'insect / bug' word; row 92419 uses it for 'pest' and row 46675 for pests of an orange crop. pesat is the English loanword, used in 'Integrated Pest Management' (row 64400). 'Infestation' and 'pest outbreak' are NOT attested (see MEMBER_A_README.md)."
+      "notes": "tin-kāng (also written tin kāng / tinkāng / tin-kang) is the general 'insect / bug' word; row 92419 uses it for 'pest' and row 46675 for pests of an orange crop. pesat is the English loanword, used in 'Integrated Pest Management' (row 64400). 'Infestation' and 'pest outbreak' are NOT attested (see Member_A/README.md).",
+      "verified": false
     },
     {
       "id": "term-insect",
@@ -487,7 +499,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "tin-kāng is also used for 'insects' (row 31824)."
+      "notes": "tin-kāng is also used for 'insects' (row 31824).",
+      "verified": false
     },
     {
       "id": "term-disease",
@@ -528,7 +541,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Plural lāināsing. Most dataset rows are about human disease; rows 92419 and 46675 use it next to pests in a crop context. 'Crop disease' / 'plant disease' are NOT attested as phrases."
+      "notes": "Plural lāināsing. Most dataset rows are about human disease; rows 92419 and 46675 use it next to pests in a crop context. 'Crop disease' / 'plant disease' are NOT attested as phrases.",
+      "verified": false
     },
     {
       "id": "term-infection",
@@ -567,7 +581,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "English loanword. All dataset examples are medical, none agricultural: a speaker should confirm before using it for plant infection."
+      "notes": "English loanword. All dataset examples are medical, none agricultural: a speaker should confirm before using it for plant infection.",
+      "verified": false
     },
     {
       "id": "term-rain",
@@ -612,7 +627,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "nong = rain; nong chuba = rain falling (rainfall)."
+      "notes": "nong = rain; nong chuba = rain falling (rainfall).",
+      "verified": false
     },
     {
       "id": "term-weather",
@@ -647,7 +663,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Also written aying-asā / aing-asā."
+      "notes": "Also written aying-asā / aing-asā.",
+      "verified": false
     },
     {
       "id": "term-temperature",
@@ -692,7 +709,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "aying asā (literally 'cold-hot') is used for both 'weather' and 'temperature' in the dataset; the loanword temparechara is also attested (row 103481)."
+      "notes": "aying asā (literally 'cold-hot') is used for both 'weather' and 'temperature' in the dataset; the loanword temparechara is also attested (row 103481).",
+      "verified": false
     },
     {
       "id": "term-humidity",
@@ -721,7 +739,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "English loanword from newspaper weather reports. No native Manipuri word for humidity is attested in the dataset."
+      "notes": "English loanword from newspaper weather reports. No native Manipuri word for humidity is attested in the dataset.",
+      "verified": false
     },
     {
       "id": "term-drought",
@@ -756,7 +775,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Also written ikang."
+      "notes": "Also written ikang.",
+      "verified": false
     },
     {
       "id": "term-flood",
@@ -801,7 +821,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Literally 'water flood'. Both spellings are attested."
+      "notes": "Literally 'water flood'. Both spellings are attested.",
+      "verified": false
     },
     {
       "id": "term-storm",
@@ -836,7 +857,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Row 13984: 'All crop was ruined in storm'."
+      "notes": "Row 13984: 'All crop was ruined in storm'.",
+      "verified": false
     },
     {
       "id": "term-damage",
@@ -871,7 +893,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Noun. Dataset examples are about objects and buildings, not crops. For crops see term-ruined."
+      "notes": "Noun. Dataset examples are about objects and buildings, not crops. For crops see term-ruined.",
+      "verified": false
     },
     {
       "id": "term-ruined",
@@ -906,7 +929,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Rows 13984 and 67509 use it for crops ruined by storm and hailstorm. A noun phrase for 'damaged crop' is NOT attested."
+      "notes": "Rows 13984 and 67509 use it for crops ruined by storm and hailstorm. A noun phrase for 'damaged crop' is NOT attested.",
+      "verified": false
     },
     {
       "id": "term-soil-health",
@@ -935,7 +959,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "From Poknampham news text (romanised without macrons). phibam = condition/state. 'Crop health', 'healthy crop', 'vegetation', 'vegetation stress', 'crop stress' and 'water stress' are NOT attested."
+      "notes": "From Poknampham news text (romanised without macrons). phibam = condition/state. 'Crop health', 'healthy crop', 'vegetation', 'vegetation stress', 'crop stress' and 'water stress' are NOT attested.",
+      "verified": false
     },
     {
       "id": "term-risk",
@@ -976,7 +1001,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "One word for both 'risk' and 'danger'. 'khudongthiningngāi oiba' = risky / dangerous; 'khudongthiningngāi oire' = is at risk (row 98175). The loanword risak appears in news and finance text."
+      "notes": "One word for both 'risk' and 'danger'. 'khudongthiningngāi oiba' = risky / dangerous; 'khudongthiningngāi oire' = is at risk (row 98175). The loanword risak appears in news and finance text.",
+      "verified": false
     },
     {
       "id": "term-low-risk",
@@ -999,7 +1025,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Single attestation (row 80425). 'High risk' and 'moderate risk' are NOT attested."
+      "notes": "Single attestation (row 80425). 'High risk' and 'moderate risk' are NOT attested.",
+      "verified": false
     },
     {
       "id": "term-safe",
@@ -1035,7 +1062,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "The opposite of risk: 'Is this a safe area?' = 'masi sāphaba mapham ama oibrā?' (row 15525)."
+      "notes": "The opposite of risk: 'Is this a safe area?' = 'masi sāphaba mapham ama oibrā?' (row 15525).",
+      "verified": false
     },
     {
       "id": "term-warning",
@@ -1064,7 +1092,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "In 151 of the 230 rows with 'warn*' in the English. 'cheksinwā pikhi' = warned. 'Early warning' is NOT attested."
+      "notes": "In 151 of the 230 rows with 'warn*' in the English. 'cheksinwā pikhi' = warned. 'Early warning' is NOT attested.",
+      "verified": false
     },
     {
       "id": "term-affected-area",
@@ -1103,7 +1132,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Row 75948: 'flood-affected areas' = 'eesing eechaona sokhallaba ... maphamsing'. Row 99907: 'Which crops are affected?' = 'karamba mahei-marongsingda sokhallibano?'."
+      "notes": "Row 75948: 'flood-affected areas' = 'eesing eechaona sokhallaba ... maphamsing'. Row 99907: 'Which crops are affected?' = 'karamba mahei-marongsingda sokhallibano?'.",
+      "verified": false
     },
     {
       "id": "term-inspection",
@@ -1132,7 +1162,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Past tense: row 102771 'We inspected the place.' = 'eikhoina mapham adu yengsinkhi.'. The loanword insapeksan is also attested (row 82820). 'Field inspection' is NOT attested."
+      "notes": "Past tense: row 102771 'We inspected the place.' = 'eikhoina mapham adu yengsinkhi.'. The loanword insapeksan is also attested (row 82820). 'Field inspection' is NOT attested.",
+      "verified": false
     },
     {
       "id": "term-priority",
@@ -1167,7 +1198,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Only the English loanword is attested (also spelled paraioriti). Row 66779: 'top priority' = 'ahānba parāioriti' (ahānba = first)."
+      "notes": "Only the English loanword is attested (also spelled paraioriti). Row 66779: 'top priority' = 'ahānba parāioriti' (ahānba = first).",
+      "verified": false
     },
     {
       "id": "term-area",
@@ -1203,7 +1235,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Plural maphamsing."
+      "notes": "Plural maphamsing.",
+      "verified": false
     },
     {
       "id": "term-district",
@@ -1249,7 +1282,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": ""
+      "notes": "",
+      "verified": false
     },
     {
       "id": "place-manipur",
@@ -1278,7 +1312,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Case endings attach: manipuragi (of), manipurada (in)."
+      "notes": "Case endings attach: manipuragi (of), manipurada (in).",
+      "verified": false
     },
     {
       "id": "place-bishnupur",
@@ -1307,7 +1342,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Also bishnupur; bisanupurada = in Bishnupur."
+      "notes": "Also bishnupur; bisanupurada = in Bishnupur.",
+      "verified": false
     },
     {
       "id": "place-thoubal",
@@ -1340,7 +1376,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": ""
+      "notes": "",
+      "verified": false
     },
     {
       "id": "place-kakching",
@@ -1379,7 +1416,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": ""
+      "notes": "",
+      "verified": false
     },
     {
       "id": "place-imphal",
@@ -1412,7 +1450,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "'Imphal West' is attested as 'imphal wesat' (row 18143, with locative -ta)."
+      "notes": "'Imphal West' is attested as 'imphal wesat' (row 18143, with locative -ta).",
+      "verified": false
     },
     {
       "id": "place-jiribam",
@@ -1441,7 +1480,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": ""
+      "notes": "",
+      "verified": false
     },
     {
       "id": "place-churachandpur",
@@ -1470,7 +1510,80 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Also churachandapura."
+      "notes": "Also churachandapura.",
+      "verified": false
+    },
+    {
+      "id": "term-cloud",
+      "category": "weather",
+      "english": "cloud / clouds",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "leichil"
+        }
+      ],
+      "evidence": [
+        {
+          "row": 1625,
+          "english": "Look at those black clouds",
+          "romanstandard": "madugi amuba leichilsing adu yengngu.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 1671,
+          "english": "The moon is behind the clouds",
+          "romanstandard": "thā asi leichilsinggi maningda lei.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 1736,
+          "english": "There are no clouds in the sky",
+          "romanstandard": "atiyāda leichil leite.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 1625, 1671, 1736",
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Plural leichilsing. 'Cloudy weather' as a phrase is not attested; this is the word for cloud.",
+      "verified": false
+    },
+    {
+      "id": "term-vegetation",
+      "category": "crop",
+      "english": "vegetation",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "pāmbi-singbi"
+        }
+      ],
+      "evidence": [
+        {
+          "row": 28511,
+          "english": "The students documented wildlife and vegetation, comparing different microhabitats to understand the impact of human activity on bird diversity.",
+          "romanstandard": "maheiroisingna umanggi jibasing amasung pāmbi-singbising dokayument toukhi, mioibagi thabak thouramna ucheksinggi makhal kayāda karamna akāiba pirammi hāibadu khangnaba tongān-tongānba akuppa leikāising chāngdamnakhi.",
+          "source_document": "The Sangai Express"
+        },
+        {
+          "row": 48936,
+          "english": "Its most distinctive feature, phumdi, floating islands composed of soil, vegetation, and organic matter reaching 2.5 metres thickness, has historically supported a circular economy of fishing and agriculture",
+          "romanstandard": "masigi khwaidagi top-toppa masak adudi leibak, pambi-singbi amasung 2.5 mitara phauba thaba oraganik metarana semba isingda tauba ithatsing oiriba phumdina puwarigi oina nga phaba amasung louu-singugi sarakulara ikonomi ama sougatli.",
+          "source_document": "Poknampham"
+        },
+        {
+          "row": 58055,
+          "english": "The path is rough, winding, and dim, beneath the vegetation and undergrowth.",
+          "romanstandard": "lambi asi pāmbi-singbi amasung pāmbigi makhāda akanba, akoiba amasung mamsinba oi .",
+          "source_document": "A Thousand Splendid Suns by Khaled Hosseini.pdf"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 28511, 48936, 58055",
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Literally plants (pāmbi, see term-plant) and greenery; also written pambi-singbi. 'Vegetation stress' is not attested.",
+      "verified": false
     }
   ],
   "cue_words": [
@@ -1507,7 +1620,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": ""
+      "notes": "",
+      "verified": false
     },
     {
       "id": "cue-how",
@@ -1542,7 +1656,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": ""
+      "notes": "",
+      "verified": false
     },
     {
       "id": "cue-which",
@@ -1577,7 +1692,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": ""
+      "notes": "",
+      "verified": false
     },
     {
       "id": "cue-any",
@@ -1612,7 +1728,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Means any / anyone / no one (1,119 rows), not 'which'. The router treats it as a selector over areas: 'is any area at high risk?' asks for the same ranking as 'which areas are at high risk?'."
+      "notes": "Means any / anyone / no one (1,119 rows), not 'which'. The router treats it as a selector over areas: 'is any area at high risk?' asks for the same ranking as 'which areas are at high risk?'.",
+      "verified": false
     },
     {
       "id": "cue-where",
@@ -1647,7 +1764,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Case endings attach: kadāida (where), kadāidagi (from where)."
+      "notes": "Case endings attach: kadāida (where), kadāidagi (from where).",
+      "verified": false
     },
     {
       "id": "cue-begin",
@@ -1692,7 +1810,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Verb stem hou- with endings: hougadage (should begin), hourakkhi (began). The bare stem hou- is not used: it also starts unrelated words (houjik = now, houi = grows)."
+      "notes": "Verb stem hou- with endings: hougadage (should begin), hourakkhi (began). The bare stem hou- is not used: it also starts unrelated words (houjik = now, houi = grows).",
+      "verified": false
     },
     {
       "id": "cue-first",
@@ -1727,7 +1846,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": ""
+      "notes": "",
+      "verified": false
     },
     {
       "id": "cue-this",
@@ -1778,7 +1898,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "masigi = of this, masina = by this; asi also follows a noun ('mapham asi' = this place)."
+      "notes": "masigi = of this, masina = by this; asi also follows a noun ('mapham asi' = this place).",
+      "verified": false
     },
     {
       "id": "cue-my",
@@ -1813,7 +1934,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": ""
+      "notes": "",
+      "verified": false
     },
     {
       "id": "cue-how-much",
@@ -1848,7 +1970,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Also 'what is the ...' of a quantity: row 15876 'What is the temperature?' = 'aying asā kayāno?'. kayā also means 'many' (row 17513)."
+      "notes": "Also 'what is the ...' of a quantity: row 15876 'What is the temperature?' = 'aying asā kayāno?'. kayā also means 'many' (row 17513).",
+      "verified": false
     },
     {
       "id": "cue-very",
@@ -1883,7 +2006,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": ""
+      "notes": "",
+      "verified": false
     },
     {
       "id": "cue-is",
@@ -1918,7 +2042,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Marks a Manipuri sentence; no intent rule uses it."
+      "notes": "Marks a Manipuri sentence; no intent rule uses it.",
+      "verified": false
     },
     {
       "id": "cue-here",
@@ -1953,7 +2078,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Literally 'in this place'."
+      "notes": "Literally 'in this place'.",
+      "verified": false
     },
     {
       "id": "cue-high",
@@ -1998,7 +2124,8 @@
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "khwāidagi wāngba = highest (rows 103610, 74627)."
+      "notes": "khwāidagi wāngba = highest (rows 103610, 74627).",
+      "verified": false
     }
   ]
 }

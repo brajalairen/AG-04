@@ -16,7 +16,7 @@ from satquery.agent.language import INTENTS, LATIN_MANIPURI, normalize
 from satquery.agri import query as agri_query
 from test_agri_api import client_for
 
-MEMBER_A = Path(__file__).resolve().parent.parent / "team" / "member-a-agronomy"
+MEMBER_A = Path(__file__).resolve().parent.parent / "Member_A"
 QUERIES = json.loads((MEMBER_A / "manipuri_queries.json").read_text(encoding="utf-8"))["queries"]
 LEXICON = json.loads((MEMBER_A / "agri_terms_manipuri.json").read_text(encoding="utf-8"))
 SELECTED = "demo-thoubal-chaobok"

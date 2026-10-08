@@ -2,7 +2,7 @@
 
 The engine stays the source of truth: every level, score, confidence value, reason (evidence) and warning in
 the Latin Manipuri answer is the engine's own, inserted unchanged. Latin Manipuri sentences come only from
-team/member-a-agronomy/manipuri_responses.json; a message without a usable template stays in English.
+Member_A/manipuri_responses.json; a message without a usable template stays in English.
 """
 
 import json

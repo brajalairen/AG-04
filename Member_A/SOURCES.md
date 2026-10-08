@@ -42,13 +42,13 @@ Date of this record: 2026-10-08. Nothing in this folder has yet been signed off 
 | File | Entries | Status |
 |---|---|---|
 | `manipuri_queries.json` | 8 queries | **Sourced**: 5 dataset sentences and 3 of Member A's examples. Not yet checked by a fluent speaker for meaning or intent mapping. |
-| `agri_terms_manipuri.json` | 40 terms, 51 Latin forms | **Sourced** (attested in the dataset). Alignment not yet checked by a fluent speaker. |
+| `agri_terms_manipuri.json` | 43 terms, 54 Latin forms | **Sourced** (attested in the dataset). Alignment not yet checked by a fluent speaker. |
 
 ### Not attested in the dataset (left out, not guessed)
 
-- **Agricultural terms:** infestation, pest outbreak, crop disease, plant disease, crop health, healthy crop, vegetation, vegetation stress, crop stress, water stress, damaged crop (as a noun phrase), high risk, moderate risk, early warning, field inspection.
+- **Agricultural terms:** infestation, pest outbreak, crop disease, plant disease, crop health, healthy crop, vegetation stress, crop stress, water stress, damaged crop (as a noun phrase), high risk, moderate risk, early warning, field inspection, cloudy weather (as a phrase; *leichil* "cloud" is attested), waterlogging, leaf folder, sheath blight, bacterial leaf blight, rice blast, brown planthopper. Each is absent from the corpus, occurs only outside agriculture (*outbreak* of violence, *blighted*), or occurs once (*early warning*, row 72484), which is too little to confirm a term.
 - **Native Manipuri word for humidity:** only the loanword *riletiba hayumiditi* appears.
-- **Query intents:** AREA_RISK_QUERY, AREA_SPECIFIC_RISK, PEST_RISK and CROP_HEALTH have no suitable dataset sentence (see `MEMBER_A_README.md`). Member A's examples now cover all of them except AREA_SPECIFIC_RISK.
+- **Query intents:** AREA_RISK_QUERY, AREA_SPECIFIC_RISK, PEST_RISK and CROP_HEALTH have no suitable dataset sentence (see `README.md`). Member A's examples now cover all of them except AREA_SPECIFIC_RISK.
 
 ### Corpus suitability (checked 2026-10-08)
 
@@ -63,7 +63,7 @@ Read-only count over the CSV export of the workbook (`CompiledDataEnglishToMeite
 | AG-04's question types | High-risk areas 0; why at risk 0; crop health 0; pest risk 0; weather risk to crops 0; risk in a named area 0 (3 loose matches); inspect first 1 (*ei kadāidagi hougadage?*); why prioritised 0 (*nangbu karigi khankhibano?* "Why have you been selected?" is the nearest) | The corpus cannot supply these questions |
 | Phrases it does attest | *khudongthiningngāida leibrā?* "at risk?" (row 100976); *hakchāng phabrā?* "is it healthy?" (row 62727); *ngasigi aying asā asi kamāina touri?* "what's the weather like today?" (row 3058) | Building blocks for a speaker, not sentences to compose from |
 
-**Verdict:** the corpus is suitable as a vocabulary resource: terms, spelling variants and attested phrases for the router's lexicon, plus a source a reviewer can check against. It is not a source of AG-04's questions or answers, because the domain sentences are not in it. For the same reason, a translation model fine-tuned on it would learn little of AG-04's wording, and its output would still need a fluent speaker's review. See `MEMBER_A_README.md` §11.
+**Verdict:** the corpus is suitable as a vocabulary resource: terms, spelling variants and attested phrases for the router's lexicon, plus a source a reviewer can check against. It is not a source of AG-04's questions or answers, because the domain sentences are not in it. For the same reason, a translation model fine-tuned on it would learn little of AG-04's wording, and its output would still need a fluent speaker's review. See `README.md` §11.
 
 ---
 
@@ -73,19 +73,47 @@ All sources were accessed on 2026-10-08. PDFs were downloaded and their text ext
 
 | # | Source | Publisher | URL | What was taken | Used in |
 |---|---|---|---|---|---|
-| S1 | *Advisory on blast disease (Magnaporthe oryzae) on rice crop*, F.No 3-6/2022-23, dated 22.07.2022, addressed to the Directors of Agriculture of all States/UTs | Directorate of Plant Protection, Quarantine & Storage (DPPQ&S), Ministry of Agriculture & Farmers Welfare, Government of India | https://ppqs.gov.in/sites/default/files/rice_blast_advisory.pdf | "Rice blast is favored by low temperatures (22-28°C), high relative humidity (>95%), dew deposits, leaf wetness for more than 10 hours, application of high nitrogen and aerobic soils." Also its IPM practices (field sanitation, crop rotation, certified seed, water level) and the instruction that fungicides follow the Registration Committee's label claim. | `verified_pest_rules.json` (rice_blast), `advisory.json` |
+| S1 | *Advisory on blast disease (Magnaporthe oryzae) on rice crop*, F.No 3-6/2022-23, dated 22.07.2022, addressed to the Directors of Agriculture of all States/UTs | Directorate of Plant Protection, Quarantine & Storage (DPPQ&S), Ministry of Agriculture & Farmers Welfare, Government of India | https://ppqs.gov.in/sites/default/files/rice_blast_advisory.pdf | "Rice blast is favored by low temperatures (22-28°C), high relative humidity (>95%), dew deposits, leaf wetness for more than 10 hours, application of high nitrogen and aerobic soils." Also its IPM practices (field sanitation, crop rotation, certified seed, water level) and the instruction that fungicides follow the Registration Committee's label claim. | `verified_agricultural_risk_rules.json` (rice_blast), `advisory.json` |
 | S2 | *Advisory on Brown Plant Hopper (Nilaparvata lugens) on rice crop*, July 2022 (day illegible in the scan) | DPPQ&S, Government of India | https://ppqs.gov.in/sites/default/files/rce_bph_advisory.pdf | Where BPH occurs, symptoms (hopperburn), IPM practices, and the instruction that pesticides follow the label claim. **No numeric weather threshold.** | `advisory.json` |
 | S3 | *Integrated Pest Management Package for Rice* (2014) | NCIPM, DPPQ&S and NIPHM | https://niphm.gov.in/IPMPackages/Rice.pdf | "High dosages of nitrogenous fertilizers, close spacing, and high relative humidity increases planthopper populations." **No numeric threshold.** | `advisory.json` |
 | S4 | Rice Knowledge Bank / Rice Doctor fact sheet: *Blast (Leaf and Collar)* | IRRI (with ACIAR and the University of Queensland) | http://www.knowledgebank.irri.org/training/fact-sheets/pest-management/diseases/item/blast-leaf-collar | Qualitative conditions ("low soil moisture, frequent and prolonged periods of rain shower, and cool temperature in the daytime"; dew from large day-night temperature differences), symptoms, management. **No numbers.** | `advisory.json` |
 | S5 | Rice Doctor fact sheet: *Blast (Node and Neck)* | IRRI | https://keyserver.lucidcentral.org/key-server/data/0e090d01-0209-460e-810c-0d060708030c/media/Html/Blast_(Node_and_Neck).htm | Neck and node symptoms; distinguishing them from stem borer whiteheads | `advisory.json` |
 | S6 | Rice Knowledge Bank fact sheet: *Planthopper* | IRRI | http://www.knowledgebank.irri.org/training/fact-sheets/pest-management/insects/item/planthopper | Where BPH occurs, symptoms, monitoring method and the "1 BPH per stem or less" action note, prevention. **No numeric weather threshold.** | `advisory.json` |
 | S7 | TNAU Agritech Portal, rice blast: *Other management* | Tamil Nadu Agricultural University | https://agritech.tnau.ac.in/crop_protection/rice_diseases/another%20methods_rice_1.html | "High relative humidity (93-99 per cent) Low night temperature (between 15-20 C or less than 26 C". **Cross-check only.** It disagrees with S1 on temperature; see below. | not used in any value |
+| S8 | Vennila S., J. Singh, P. Wahi, M. Bagri, D.K. Das and M. Srinivasa Rao (2016). *Web enabled weather based prediction for insect pests of rice*, Technical Bulletin 39, 50 p. | ICAR-National Research Centre for Integrated Pest Management (NICRA project) | https://nriipm.res.in/NCIPMPDFs/Publication/InsectPestsRice_.pdf | Table 5, "Weather based prediction for forewarning BPH": location-specific rules, for example Chinsurah (WB) high severity when "Tmax (33-34), Tmin (22-25), RF (0-10), RHI (89-92), RHII (55-65) and SSH (6-9)" with "Greater than four" criteria met. "Weather criteria is based on weekly means"; "Pest severity is based on the light trap catches of BPH (nos.) / week." Also: "high relative humidity (>85%) favoured the population buildup of N. lugens" at Thanjavur (TN). | Documented only; not encodable in the engine (see §3) |
+| S9 | TNAU Agritech Portal, *Pest of paddy: Brown plant hopper* | Tamil Nadu Agricultural University | https://agritech.tnau.ac.in/crop_protection/rice/crop_prot_crop_insectpest%20_cereals_paddy_12.html | "ETL: 1 hopper/ tiller in the absence of predatory spider and 2 hoppers /tiller when spider is present at 1/hill." Also its non-chemical practices (spacing, alternate wetting and drying, avoiding excess nitrogen, light or yellow pan traps). Its insecticide list and doses were **not** copied. | `advisories.md` (field scouting) |
+| S10 | Kaundal R., A.S. Kapoor and G.P.S. Raghava (2006). *Machine learning techniques in disease forecasting: a case study on rice blast prediction*. BMC Bioinformatics 7: 485. doi:10.1186/1471-2105-7-485 | BioMed Central (authors at IMTECH Chandigarh and CSK HPAU Palampur) | https://pmc.ncbi.nlm.nih.gov/articles/PMC1647291/ | Leaf-blast models from weekly maximum and minimum temperature, maximum and minimum RH, rainfall and rainy days per week (Himachal Pradesh): "rainfall was most influential in predicting the disease followed by rainy days/week, minimum relative humidity, maximum relative humidity, minimum temperature and maximum temperature". Predictors and regression models, **not a threshold rule**. | Not used in any value |
 
 Research papers on BPH and weather (correlation studies from Bangladesh, Korea and India, found by web search) were **not** used. They report the conditions seen during particular outbreak periods, not decision thresholds.
 
+**Found but not read (so not used):** Padmanabhan's *Studies on forecasting outbreaks of blast disease of rice*, Proceedings of the Indian Academy of Sciences, Section B, vol. 62 no. 3, pp. 117–129 (https://www.ias.ac.in/public/Volumes/secb/062/03/0117-0129.pdf). The server returned HTTP 403 on 2026-10-08. Search summaries attribute minimum-temperature and RH ≥ 90% forecasting rules to it, but a summary is not the source. Someone with access should read the paper before any of its values are used.
+
+Accessed on 2026-10-08: S8, S9 and S10 (S8 as a downloaded PDF, text extracted with pdftotext).
+
 ---
 
-## 3. Thresholds in `verified_pest_rules.json`
+## 3. Thresholds in `verified_agricultural_risk_rules.json`
+
+### Summary by verification status
+
+**VERIFIED:** none. No rule has been checked by a named agronomist, so no rule is presented as scientifically validated.
+
+**PLACEHOLDER / NEEDS HUMAN VERIFICATION:**
+
+| Field | `rice_blast` | `brown_planthopper` | Risk model |
+|---|---|---|---|
+| Source | S1 (DPPQ&S, Government of India) | none for the encoded values; S8 and S9 documented | none |
+| URL | https://ppqs.gov.in/sites/default/files/rice_blast_advisory.pdf | — (S8, S9 above) | — |
+| Publication/title | Advisory on blast disease (Magnaporthe oryzae) on rice crop, 22.07.2022 | — | `satquery/agri/assets/risk_model.json` (engine default) |
+| Relevant finding | Blast favoured by 22–28 °C, RH > 95%, leaf wetness > 10 h | S8: location-specific weekly multi-criteria rules (none for Manipur). S9: field ETL 1 hopper/tiller | — |
+| Crop | rice | rice | all monitored areas |
+| Pest/disease | rice blast (*Magnaporthe oryzae*) | brown planthopper (*Nilaparvata lugens*) | — |
+| Applicability | National, kharif, all growth stages; not Manipur-specific | Placeholder only | Operating choices |
+| Date accessed | 2026-10-08 | 2026-10-08 (S8, S9) | — |
+| Verification status | Sourced, PLACEHOLDER: the two mapping choices below need an agronomist | PLACEHOLDER: values unsourced | PLACEHOLDER: values unchanged |
+
+Each rule's `applicability` and `limitations` fields in the JSON say the same. The engine stores them and never scores them.
+
 
 The file uses the engine's own schema (`satquery/agri/config.py`) and loads with the engine's loader (`python team/check_deliverables.py`). File status: **PLACEHOLDER**.
 
@@ -121,7 +149,14 @@ The candidate rule separates areas where the placeholder could not. That says no
 
 - S2, S3 and S6 describe BPH qualitatively (submerged fields, shade, high humidity, excess nitrogen, dense canopy) but give **no numeric temperature or humidity threshold**.
 - The original development values (daily mean 25–32 °C, daily mean RH ≥ 80%) are therefore kept **unchanged and unsourced**, with an empty `sources` list, so that no source appears to back them.
-- **Needed:** a published threshold from ICAR-NRRI, ICAR-IIRR, an SAU (for example CAU Imphal) or a KVK, or a decision by the Department of Agriculture.
+- **ICAR-NCIPM (S8)** does publish weather rules for BPH, but they do not fit this engine:
+  - they are tied to six locations, none in the North-East;
+  - they use weekly means, morning and evening RH, sunshine hours and wind speed;
+  - they count how many of five or six criteria are met.
+
+  The engine tests daily conditions, all of which must hold. Copying, say, the Chinsurah rule in as daily conditions would change what the rule means, so it was not done.
+- **TNAU's ETL (S9)** is a count of hoppers on the plant, made in the field. Weather data cannot measure it. It is in `advisories.md` as scouting guidance.
+- **Needed:** a published threshold that fits Manipur and can be expressed as daily conditions. It could come from ICAR-NRRI, ICAR-IIRR, an SAU (for example CAU Imphal) or a KVK, or the Department of Agriculture could decide one. Alternatively, the engine could be extended to support weekly, k-of-n rules like S8's.
 
 ### Risk model (`verified_risk_model.json`): PLACEHOLDER, values unchanged
 
@@ -131,9 +166,9 @@ The file gives the agronomist one place to record reviewed values: change a valu
 
 ---
 
-## 4. `advisory.json`
+## 4. `advisory.json` and `advisories.md`
 
-Every item names its source (S1–S6) and URL. Deliberately left out:
+`advisories.md` is the short, readable version of `advisory.json`, with the field-scouting thresholds of S6 and S9. Every item names its source (S1–S6, S9) and URL. Deliberately left out:
 - fungicide and insecticide names and doses (S1 and S2 list them; chemical advice is left to the Department of Agriculture / KVK);
 - bio-agent doses;
 - all phone numbers and e-mail addresses (those in S1 and S2 are addressed to state officials, not farmers).
@@ -147,6 +182,6 @@ The one "general" item states AG-04 project policy and is labelled as such, not 
 1. **Fluent speaker:** check each query and term against its evidence rows. Fill `verified_by` and `verified_on` per entry, and set the file `status` to `VERIFIED` once every entry is checked. Correct or remove anything wrong.
 2. **Agronomist (Department of Agriculture, KVK or CAU):**
    - Read S1 and decide on the two mapping assumptions for blast (daily mean, and the RH ≥ 95% leaf-wetness proxy).
-   - Then add `verified_by` and `verified_on` to S1 in `verified_pest_rules.json` and set `rice_blast` to `VERIFIED`.
+   - Then add `verified_by` and `verified_on` to S1 in `verified_agricultural_risk_rules.json` and set `rice_blast` to `VERIFIED`.
    - Supply a sourced BPH threshold, or keep BPH as PLACEHOLDER.
-   - Review `advisory.json`.
+   - Review `advisory.json` and `advisories.md`.

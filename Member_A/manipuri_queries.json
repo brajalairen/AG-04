@@ -1,6 +1,6 @@
 {
   "status": "DRAFT",
-  "note": "Latin-script (romanised) Manipuri queries; nothing was composed by the assistant or machine-translated. mni-001..005 are copied VERBATIM from CompiledDataEnglishToMeitei.xlsx (the dataset's human translation of english_meaning; row in dataset_ref). mni-006..008 are Member A's own example questions from the integration requests of 2026-10-08 (provenance in 'source'). DRAFT: verified_by/verified_on stay empty until a fluent speaker confirms each text and its intent mapping. Query types with no sourced sentence yet (AREA_SPECIFIC_RISK: 'Show me the risk in [area]', 'Why was [area] prioritized?') are listed in MEMBER_A_README.md section 5.",
+  "note": "Latin-script (romanised) Manipuri queries; nothing was composed by the assistant or machine-translated. mni-001..005 are copied VERBATIM from CompiledDataEnglishToMeitei.xlsx (the dataset's human translation of english_meaning; row in dataset_ref). mni-006..008 are Member A's own example questions from the integration requests of 2026-10-08 (provenance in 'source'). DRAFT: verified_by/verified_on stay empty until a fluent speaker confirms each text and its intent mapping. Query types with no sourced sentence yet (AREA_SPECIFIC_RISK: 'Show me the risk in [area]', 'Why was [area] prioritized?') are listed in Member_A/README.md section 5.",
   "queries": [
     {
       "id": "mni-001",
@@ -18,7 +18,8 @@
       },
       "verified_by": null,
       "verified_on": null,
-      "notes": "The same Manipuri sentence is given independently for 'Where do I begin?' (row 58191, a different source document). AG-04's English router already treats 'where should we start' as an inspection cue. Uses ei (I); a 'we' form is not attested."
+      "notes": "The same Manipuri sentence is given independently for 'Where do I begin?' (row 58191, a different source document). AG-04's English router already treats 'where should we start' as an inspection cue. Uses ei (I); a 'we' form is not attested.",
+      "verified": false
     },
     {
       "id": "mni-002",
@@ -36,7 +37,8 @@
       },
       "verified_by": null,
       "verified_on": null,
-      "notes": "masi = this; khudongthiningngāi = risk / danger. Proposed use: asked with a monitored area selected on the map, it reads 'How is this (area) at risk?'. General-domain sentence: a fluent speaker should confirm that reading."
+      "notes": "masi = this; khudongthiningngāi = risk / danger. Proposed use: asked with a monitored area selected on the map, it reads 'How is this (area) at risk?'. General-domain sentence: a fluent speaker should confirm that reading.",
+      "verified": false
     },
     {
       "id": "mni-003",
@@ -54,7 +56,8 @@
       },
       "verified_by": null,
       "verified_on": null,
-      "notes": "mapham = area. Proposed use: asked with a monitored area selected, AG-04 answers with that area's risk and reasons. General-domain sentence ('safe' in a general sense): a fluent speaker should confirm it fits an agricultural-risk question."
+      "notes": "mapham = area. Proposed use: asked with a monitored area selected, AG-04 answers with that area's risk and reasons. General-domain sentence ('safe' in a general sense): a fluent speaker should confirm it fits an agricultural-risk question.",
+      "verified": false
     },
     {
       "id": "mni-004",
@@ -72,7 +75,8 @@
       },
       "verified_by": null,
       "verified_on": null,
-      "notes": "aying asā = weather. Maps to the weather answer for a drawn area."
+      "notes": "aying asā = weather. Maps to the weather answer for a drawn area.",
+      "verified": false
     },
     {
       "id": "mni-005",
@@ -90,13 +94,14 @@
       },
       "verified_by": null,
       "verified_on": null,
-      "notes": "hayeng = tomorrow; nong = rain. A forecast question; AG-04's weather answer covers the forecast days."
+      "notes": "hayeng = tomorrow; nong = rain. A forecast question; AG-04's weather answer covers the forecast days.",
+      "verified": false
     },
     {
       "id": "mni-006",
       "language": "mni",
       "script": "Latn",
-      "text": "Kanagumba area high risk da lei?",
+      "text": "Karamba areada high risk da lei?",
       "english_meaning": "Which areas are at high risk?",
       "intent": "AREA_RISK_QUERY",
       "area": null,
@@ -104,11 +109,18 @@
         "type": "member_a_example",
         "given_on": "2026-10-08",
         "document": "Member A integration requests to the assistant, 2026-10-08 (routing request; Latin Manipuri response request)",
-        "quote": "\"Kanagumba area high risk da lei?\" should resolve to the same intent as its English equivalent: \"Which areas are at high risk?\""
+        "quote": "\"Kanagumba area high risk da lei?\" should resolve to the same intent as its English equivalent: \"Which areas are at high risk?\"",
+        "correction": {
+          "given_on": "2026-10-08",
+          "by": "Member A",
+          "previous_text": "Kanagumba area high risk da lei?",
+          "note": "Member A corrected the wording to 'Karamba areada high risk da lei?' (karamba = which, attested in dataset row 99907; areada = area + locative -da). The quote above is the original request."
+        }
       },
       "verified_by": null,
       "verified_on": null,
-      "notes": "Code-mixed: 'area' and 'high risk' are English words, as Member A wrote them. Not in the corpus (no corpus sentence asks which areas are at risk)."
+      "notes": "Code-mixed: 'area' and 'high risk' are English words, as Member A wrote them. Corrected by Member A from 'Kanagumba area high risk da lei?' (see source.correction). Not in the corpus.",
+      "verified": false
     },
     {
       "id": "mni-007",
@@ -126,7 +138,8 @@
       },
       "verified_by": null,
       "verified_on": null,
-      "notes": "Code-mixed ('area', 'pest risk'). Member A gave the intent, not an English gloss: english_meaning follows the task's 'Is there pest risk here?'; yamna (very/much, a cue word) suggests 'much pest risk' and a speaker should confirm the gloss. Asked with a monitored area selected."
+      "notes": "Code-mixed ('area', 'pest risk'). Member A gave the intent, not an English gloss: english_meaning follows the task's 'Is there pest risk here?'; yamna (very/much, a cue word) suggests 'much pest risk' and a speaker should confirm the gloss. Asked with a monitored area selected.",
+      "verified": false
     },
     {
       "id": "mni-008",
@@ -144,7 +157,8 @@
       },
       "verified_by": null,
       "verified_on": null,
-      "notes": "Code-mixed ('field', 'crop condition'). Member A gave the target (Crop Health Analysis), not an English gloss: english_meaning is the closest English question AG-04 already answers with NDVI. Needs a drawn area or an image."
+      "notes": "Code-mixed ('field', 'crop condition'). Member A gave the target (Crop Health Analysis), not an English gloss: english_meaning is the closest English question AG-04 already answers with NDVI. Needs a drawn area or an image.",
+      "verified": false
     }
   ]
 }

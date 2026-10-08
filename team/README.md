@@ -4,7 +4,7 @@ Everyone works in **their own folder, on their own branch**, so no two people ev
 
 | Member | Folder | Branch | Deliverables |
 |---|---|---|---|
-| A: Manipuri and agronomy | `team/member-a-agronomy/` | `feature/manipuri-agronomy` | `manipuri_queries.json`, `agri_terms_manipuri.json`, `verified_pest_rules.json`, `verified_risk_model.json` (if reviewed), `advisory.json` (only verified content), `SOURCES.md` |
+| A: Manipuri and agronomy | `Member_A/` (formats: `team/member-a-agronomy/README.md`) | `Manipuri-Integration` | `manipuri_queries.json`, `agri_terms_manipuri.json`, `verified_agricultural_risk_rules.json`, `verified_risk_model.json` (if reviewed), `advisory.json` / `advisories.md` (only verified content), `SOURCES.md` |
 | B: Geography | `team/member-b-geo/` | `feature/district-boundaries` | `manipur_districts.geojson`, `SOURCES.md`, `geo_validation.md` |
 | C: UI/UX and QA | `team/member-c-qa/` | `feature/ui-qa` (a separate `feature/ui-fixes` branch only if code changes are proposed) | `UI_REVIEW.md`, `QA_REPORT.md`, `TEST_MATRIX.md`, `screenshots/` |
 | D: Pitch and demo | `team/member-d-pitch/` | `feature/pitch` | `AG04_Pitch.pptx`, `DEMO_SCRIPT.md`, `JUDGE_QA.md`, `media/` (large videos go to shared storage instead; put the link in `media/LINKS.md`) |

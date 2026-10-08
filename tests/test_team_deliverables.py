@@ -52,20 +52,20 @@ def test_the_shipped_templates_pass_only_as_templates(tmp_path):
 
 
 def test_thresholds_go_through_the_engines_own_loader(tmp_path):
-    write(tmp_path, "verified_pest_rules.json", pest_rules_dict())
+    write(tmp_path, checker.RULES_FILE, pest_rules_dict())
     report = run_a(tmp_path)
     assert report.errors == 0 and any("not fully VERIFIED" in w for w in messages(report, "WARN"))
 
     claimed = pest_rules_dict()
     claimed["pests"][0] |= {"status": "VERIFIED", "sources": [{"title": "A paper"}]}
-    write(tmp_path, "verified_pest_rules.json", claimed)
+    write(tmp_path, checker.RULES_FILE, claimed)
     assert any("rejected by the engine's loader" in e for e in messages(run_a(tmp_path), "ERROR"))
 
     verified = pest_rules_dict()
     verified["status"] = "VERIFIED"
     for pest in verified["pests"]:
         pest |= {"status": "VERIFIED", "sources": [VERIFIED_SOURCE]}
-    write(tmp_path, "verified_pest_rules.json", verified)
+    write(tmp_path, checker.RULES_FILE, verified)
     assert run_a(tmp_path).errors == 0
 
 
@@ -79,11 +79,18 @@ def test_queries_need_known_intents_scripts_and_verification(tmp_path):
     assert "q1: intent" in errors and "q2: script" in errors and "q3: AREA_SPECIFIC_RISK needs 'area'" in errors
     assert "q4: 'verified_by' missing" in errors and "q5: no provenance" in errors
 
+    # in a DRAFT file a missing reviewer is a warning, unless the entry itself claims to be verified
+    write(tmp_path, "manipuri_queries.json", {"status": "DRAFT", "queries": [
+        query(id="q6", verified_by=None, verified_on=None, verified=False),
+        query(id="q7", verified_by=None, verified_on=None, verified=True)]})
+    errors = " ".join(messages(run_a(tmp_path), "ERROR"))
+    assert "q6" not in errors and "q7: 'verified_by' missing" in errors and "q7: 'verified_on' missing" in errors
+
 
 def test_the_delivered_risk_model_changes_no_value_without_a_source():
     """verified_risk_model.json is the engine's own model until a reviewed value replaces one with its source."""
     from satquery.agri.config import load_risk_model
-    delivered = load_risk_model(ROOT / "team" / "member-a-agronomy" / "verified_risk_model.json")
+    delivered = load_risk_model(ROOT / "Member_A" / "verified_risk_model.json")
     engine = load_risk_model(ROOT / "satquery" / "agri" / "assets" / "risk_model.json")
     if not delivered.sources:
         assert delivered.status == "PLACEHOLDER"
@@ -91,7 +98,7 @@ def test_the_delivered_risk_model_changes_no_value_without_a_source():
 
 
 def test_the_delivered_queries_cover_the_question_types_and_say_where_they_came_from():
-    data = json.loads((ROOT / "team" / "member-a-agronomy" / "manipuri_queries.json").read_text(encoding="utf-8"))
+    data = json.loads((ROOT / "Member_A" / "manipuri_queries.json").read_text(encoding="utf-8"))
     assert {"AREA_RISK_QUERY", "AREA_EXPLANATION", "INSPECTION_PRIORITY", "CROP_HEALTH", "PEST_RISK",
             "WEATHER_RISK"} <= {q["intent"] for q in data["queries"]}
     assert all(q.get("dataset_ref") or q.get("source") for q in data["queries"])
