@@ -62,18 +62,19 @@ AG-04's intents are defined in `INTENTS` in `satquery/agent/language.py`. No new
 
 | # | Question type | AG-04 intent → existing behaviour | Query |
 |---|---|---|---|
-| 1 | Which areas are at high risk? | `AREA_RISK_QUERY` → risk ranking | mni-006 *Karamba areada high risk da lei?* (Member A) |
-| 2 | Why is this area at risk? | `AREA_EXPLANATION` → explain the selected area | mni-002 *masi karamna khudongthiningngāi oibano?*; mni-003 *masi sāphaba mapham ama oibrā?* (corpus) |
-| 3 | Which area should we inspect first? | `INSPECTION_PRIORITY` → inspection order | mni-001 *ei kadāidagi hougadage?* (corpus) |
-| 4 | How healthy are crops here? | `CROP_HEALTH` → NDVI crop health | mni-008 *Eigi field da crop condition kayano?* (Member A) |
-| 5 | Is there pest risk here? | `PEST_RISK` → the selected area's pest risk | mni-007 *Area asi da pest risk yamna lei-i?* (Member A) |
-| 6 | Is there weather-related crop risk? | `WEATHER_RISK` → weather forecast for a drawn area | mni-004 *aying asā karamna touri?*; mni-005 *hayeng nong chugādrā?* (corpus). These ask about the weather itself. |
+| 1 | Which areas are at high risk? | `AREA_RISK_QUERY` → risk ranking | mni-006 *Karmba area high risk ta lei?* (Member A) |
+| 2 | Why is this area at risk? | `AREA_EXPLANATION` → explain the selected area | mni-002 *Masida karamna khudongthiningngai oibano?*; mni-003 *Masi saphaba mapham oibra?* (corpus, edited by Member A) |
+| 3 | Which area should we inspect first? | `INSPECTION_PRIORITY` → inspection order | mni-001 *Ei kadaidagi hougadage?* (corpus) |
+| 4 | How healthy are crops here? | `CROP_HEALTH` → NDVI crop health | mni-008 *Eigi field da crop condition kamai touri?* (Member A) |
+| 5 | Is there pest risk here? | `PEST_RISK` → the selected area's pest risk | mni-007 *Area asi da pest risk yamna leibra?* (Member A) |
+| 6 | Is there weather-related crop risk? | `WEATHER_RISK` → weather forecast for a drawn area | mni-004 *Aying asa karamna touri?*; mni-005 *Hayeng nong chugadra?* (corpus). These ask about the weather itself. |
 | 7 | Show me the risk in [area]. | `AREA_SPECIFIC_RISK` → explain the named area | **none yet** |
 | 8 | Why was [area] prioritized? | `AREA_SPECIFIC_RISK` → explain the named area | **none yet** |
 
 **Where the sentences come from:**
-- **Corpus sentences** are copied as they are, with their row number and Meitei Mayek text in `dataset_ref`.
-- **Member A's sentences** quote the request they came from in `source`. mni-006 also records Member A's correction from *Kanagumba area…*.
+- **Corpus sentences** started as exact copies. `dataset_ref` keeps the published row (row number, `romanstandard`, `meiteiscript`).
+- **Member A's sentences** quote the request they came from in `source`.
+- **Member A's edits** of 2026-10-08 are recorded per entry in `edits`, with the previous and new text. Member A rewrote mni-002 and mni-003, and removed the macrons and capitalised mni-001, mni-004 and mni-005; the router reads these the same either way. Member A also revised mni-006 to mni-008. mni-002 and mni-003 carry Member A's own Meitei Mayek in `meiteiscript`.
 - **Nothing was composed by the assistant or machine-translated.**
 
 **Types 7 and 8** need a sentence from Member A or a fluent speaker; the corpus has none. The district names are already in the terms file: *bisanupura*, *kākching*, *imphāl*, *thoubāl*, *churāchandapura* and *jiribam*. A Latin Manipuri question that names a district therefore already resolves to that area. A worksheet of attested building blocks for these sentences is in section 10.

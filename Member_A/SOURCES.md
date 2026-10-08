@@ -26,7 +26,7 @@ Date of this record: 2026-10-08. Nothing in this folder has yet been signed off 
 ### How the entries were chosen
 
 - **Queries** (`manipuri_queries.json`):
-  - mni-001 to mni-005 are complete dataset sentences, copied as they are. I searched the dataset for questions that match an AG-04 intent and kept only sentences whose English meaning fits the intent.
+  - mni-001 to mni-005 began as complete dataset sentences, copied as they are. On 2026-10-08 Member A edited their wording; each entry's `edits` gives the previous text, and its `dataset_ref` keeps the published row. I searched the dataset for questions that match an AG-04 intent and kept only sentences whose English meaning fits the intent.
   - mni-006 to mni-008 are Member A's own example questions, given in the integration requests of 2026-10-08. They are not in the corpus. Each entry's `source.quote` repeats the request text. They are code-mixed (English words such as *area*, *pest risk* and *crop condition* inside Manipuri), as Member A wrote them.
   - Nothing was composed by the assistant, edited or machine-translated.
 - **Terms** (`agri_terms_manipuri.json`):

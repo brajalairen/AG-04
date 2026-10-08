@@ -1,12 +1,12 @@
 {
   "status": "DRAFT",
-  "note": "Latin-script (romanised) Manipuri queries; nothing was composed by the assistant or machine-translated. mni-001..005 are copied VERBATIM from CompiledDataEnglishToMeitei.xlsx (the dataset's human translation of english_meaning; row in dataset_ref). mni-006..008 are Member A's own example questions from the integration requests of 2026-10-08 (provenance in 'source'). DRAFT: verified_by/verified_on stay empty until a fluent speaker confirms each text and its intent mapping. Query types with no sourced sentence yet (AREA_SPECIFIC_RISK: 'Show me the risk in [area]', 'Why was [area] prioritized?') are listed in Member_A/README.md section 5.",
+  "note": "Latin-script (romanised) Manipuri queries; nothing was composed by the assistant or machine-translated. mni-001..005 are copied VERBATIM from CompiledDataEnglishToMeitei.xlsx (the dataset's human translation of english_meaning; row in dataset_ref). Member A edited the wording of several queries on 2026-10-08: each change is listed in the entry's 'edits' with the previous text, and a corpus entry keeps the published row in dataset_ref. mni-006..008 are Member A's own example questions from the integration requests of 2026-10-08 (provenance in 'source'). DRAFT: verified_by/verified_on stay empty until a fluent speaker confirms each text and its intent mapping. Query types with no sourced sentence yet (AREA_SPECIFIC_RISK: 'Show me the risk in [area]', 'Why was [area] prioritized?') are listed in Member_A/README.md section 5.",
   "queries": [
     {
       "id": "mni-001",
       "language": "mni",
       "script": "Latn",
-      "text": "ei kadāidagi hougadage?",
+      "text": "Ei kadaidagi hougadage?",
       "english_meaning": "Where should I begin?",
       "intent": "INSPECTION_PRIORITY",
       "area": null,
@@ -14,18 +14,29 @@
         "dataset": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard')",
         "row": 91825,
         "meiteiscript": "ꯑꯩ ꯀꯗꯥꯏꯗꯒꯤ ꯍꯧꯒꯗꯒꯦ?",
-        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx",
+        "romanstandard": "ei kadāidagi hougadage?",
+        "note": "Corpus row as published (romanstandard, meiteiscript). Member A edited the wording of this query; see 'edits'."
       },
+      "edits": [
+        {
+          "by": "Member A",
+          "on": "2026-10-08",
+          "previous_text": "ei kadāidagi hougadage?",
+          "new_text": "Ei kadaidagi hougadage?"
+        }
+      ],
+      "verified": false,
       "verified_by": null,
       "verified_on": null,
-      "notes": "The same Manipuri sentence is given independently for 'Where do I begin?' (row 58191, a different source document). AG-04's English router already treats 'where should we start' as an inspection cue. Uses ei (I); a 'we' form is not attested.",
-      "verified": false
+      "notes": "The same Manipuri sentence is given independently for 'Where do I begin?' (row 58191, a different source document). AG-04's English router already treats 'where should we start' as an inspection cue. Uses ei (I); a 'we' form is not attested."
     },
     {
       "id": "mni-002",
       "language": "mni",
       "script": "Latn",
-      "text": "masi karamna khudongthiningngāi oibano?",
+      "text": "Masida karamna khudongthiningngai oibano?",
+      "meiteiscript": "ꯃꯁꯤꯗ ꯀꯔꯝꯅ ꯈꯨꯗꯣꯡꯊꯤꯅꯤꯡꯉꯥꯏ ꯑꯣꯏꯕꯅꯣ?",
       "english_meaning": "How is it dangerous?",
       "intent": "AREA_EXPLANATION",
       "area": null,
@@ -33,18 +44,29 @@
         "dataset": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard')",
         "row": 100486,
         "meiteiscript": "ꯃꯁꯤ ꯀꯔꯝꯅ ꯈꯨꯗꯣꯡꯊꯤꯅꯤꯡꯉꯥꯏ ꯑꯣꯏꯕꯅꯣ?",
-        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx",
+        "romanstandard": "masi karamna khudongthiningngāi oibano?",
+        "note": "Corpus row as published (romanstandard, meiteiscript). Member A edited the wording of this query; see 'edits'."
       },
+      "edits": [
+        {
+          "by": "Member A",
+          "on": "2026-10-08",
+          "previous_text": "masi karamna khudongthiningngāi oibano?",
+          "new_text": "Masida karamna khudongthiningngai oibano?"
+        }
+      ],
+      "verified": false,
       "verified_by": null,
       "verified_on": null,
-      "notes": "masi = this; khudongthiningngāi = risk / danger. Proposed use: asked with a monitored area selected on the map, it reads 'How is this (area) at risk?'. General-domain sentence: a fluent speaker should confirm that reading.",
-      "verified": false
+      "notes": "masi = this; khudongthiningngāi = risk / danger. Proposed use: asked with a monitored area selected on the map, it reads 'How is this (area) at risk?'. General-domain sentence: a fluent speaker should confirm that reading."
     },
     {
       "id": "mni-003",
       "language": "mni",
       "script": "Latn",
-      "text": "masi sāphaba mapham ama oibrā?",
+      "text": "Masi saphaba mapham oibra?",
+      "meiteiscript": "ꯃꯁꯤ ꯁꯥꯐꯕ ꯃꯐꯝ ꯑꯣꯏꯕ꯭ꯔꯥ?",
       "english_meaning": "Is this a safe area?",
       "intent": "AREA_EXPLANATION",
       "area": null,
@@ -52,18 +74,28 @@
         "dataset": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard')",
         "row": 15525,
         "meiteiscript": "ꯃꯁꯤ ꯁꯥꯐꯕ ꯃꯐꯝ ꯑꯃ ꯑꯣꯏꯕ꯭ꯔꯥ?",
-        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx",
+        "romanstandard": "masi sāphaba mapham ama oibrā?",
+        "note": "Corpus row as published (romanstandard, meiteiscript). Member A edited the wording of this query; see 'edits'."
       },
+      "edits": [
+        {
+          "by": "Member A",
+          "on": "2026-10-08",
+          "previous_text": "masi sāphaba mapham ama oibrā?",
+          "new_text": "Masi saphaba mapham oibra?"
+        }
+      ],
+      "verified": false,
       "verified_by": null,
       "verified_on": null,
-      "notes": "mapham = area. Proposed use: asked with a monitored area selected, AG-04 answers with that area's risk and reasons. General-domain sentence ('safe' in a general sense): a fluent speaker should confirm it fits an agricultural-risk question.",
-      "verified": false
+      "notes": "mapham = area. Proposed use: asked with a monitored area selected, AG-04 answers with that area's risk and reasons. General-domain sentence ('safe' in a general sense): a fluent speaker should confirm it fits an agricultural-risk question."
     },
     {
       "id": "mni-004",
       "language": "mni",
       "script": "Latn",
-      "text": "aying asā karamna touri?",
+      "text": "Aying asa karamna touri?",
       "english_meaning": "How is the weather?",
       "intent": "WEATHER_RISK",
       "area": null,
@@ -71,18 +103,28 @@
         "dataset": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard')",
         "row": 29434,
         "meiteiscript": "ꯑꯌꯤꯡ ꯑꯁꯥ ꯀꯔꯝꯅ ꯇꯧꯔꯤ?",
-        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx",
+        "romanstandard": "aying asā karamna touri?",
+        "note": "Corpus row as published (romanstandard, meiteiscript). Member A edited the wording of this query; see 'edits'."
       },
+      "edits": [
+        {
+          "by": "Member A",
+          "on": "2026-10-08",
+          "previous_text": "aying asā karamna touri?",
+          "new_text": "Aying asa karamna touri?"
+        }
+      ],
+      "verified": false,
       "verified_by": null,
       "verified_on": null,
-      "notes": "aying asā = weather. Maps to the weather answer for a drawn area.",
-      "verified": false
+      "notes": "aying asā = weather. Maps to the weather answer for a drawn area."
     },
     {
       "id": "mni-005",
       "language": "mni",
       "script": "Latn",
-      "text": "hayeng nong chugādrā?",
+      "text": "Hayeng nong chugadra?",
       "english_meaning": "Will it rain tomorrow?",
       "intent": "WEATHER_RISK",
       "area": null,
@@ -90,18 +132,28 @@
         "dataset": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard')",
         "row": 29686,
         "meiteiscript": "ꯍꯌꯦꯡ ꯅꯣꯡ ꯆꯨꯒꯥꯗ꯭ꯔꯥ?",
-        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        "source_document": "fresh_eng_meit_datasets_AZURE.xlsx",
+        "romanstandard": "hayeng nong chugādrā?",
+        "note": "Corpus row as published (romanstandard, meiteiscript). Member A edited the wording of this query; see 'edits'."
       },
+      "edits": [
+        {
+          "by": "Member A",
+          "on": "2026-10-08",
+          "previous_text": "hayeng nong chugādrā?",
+          "new_text": "Hayeng nong chugadra?"
+        }
+      ],
+      "verified": false,
       "verified_by": null,
       "verified_on": null,
-      "notes": "hayeng = tomorrow; nong = rain. A forecast question; AG-04's weather answer covers the forecast days.",
-      "verified": false
+      "notes": "Hayeng = tomorrow; nong = rain. A forecast question; AG-04's weather answer covers the forecast days."
     },
     {
       "id": "mni-006",
       "language": "mni",
       "script": "Latn",
-      "text": "Karamba areada high risk da lei?",
+      "text": "Karmba area high risk ta lei?",
       "english_meaning": "Which areas are at high risk?",
       "intent": "AREA_RISK_QUERY",
       "area": null,
@@ -109,24 +161,32 @@
         "type": "member_a_example",
         "given_on": "2026-10-08",
         "document": "Member A integration requests to the assistant, 2026-10-08 (routing request; Latin Manipuri response request)",
-        "quote": "\"Kanagumba area high risk da lei?\" should resolve to the same intent as its English equivalent: \"Which areas are at high risk?\"",
-        "correction": {
-          "given_on": "2026-10-08",
-          "by": "Member A",
-          "previous_text": "Kanagumba area high risk da lei?",
-          "note": "Member A corrected the wording to 'Karamba areada high risk da lei?' (karamba = which, attested in dataset row 99907; areada = area + locative -da). The quote above is the original request."
-        }
+        "quote": "\"Kanagumba area high risk da lei?\" should resolve to the same intent as its English equivalent: \"Which areas are at high risk?\""
       },
+      "edits": [
+        {
+          "by": "Member A",
+          "on": "2026-10-08",
+          "previous_text": "Kanagumba area high risk da lei?",
+          "new_text": "Karamba areada high risk da lei?"
+        },
+        {
+          "by": "Member A",
+          "on": "2026-10-08",
+          "previous_text": "Karamba areada high risk da lei?",
+          "new_text": "Karmba area high risk ta lei?"
+        }
+      ],
+      "verified": false,
       "verified_by": null,
       "verified_on": null,
-      "notes": "Code-mixed: 'area' and 'high risk' are English words, as Member A wrote them. Corrected by Member A from 'Kanagumba area high risk da lei?' (see source.correction). Not in the corpus.",
-      "verified": false
+      "notes": "Code-mixed: 'area' and 'high risk' are English words, as Member A wrote them. Wording revised twice by Member A on 2026-10-08 (see 'edits'). Not in the corpus."
     },
     {
       "id": "mni-007",
       "language": "mni",
       "script": "Latn",
-      "text": "Area asi da pest risk yamna lei-i?",
+      "text": "Area asi da pest risk yamna leibra?",
       "english_meaning": "Is there pest risk in this area?",
       "intent": "PEST_RISK",
       "area": null,
@@ -136,16 +196,24 @@
         "document": "Member A integration requests to the assistant, 2026-10-08 (routing request; Latin Manipuri response request)",
         "quote": "User: \"Area asi da pest risk yamna lei-i?\" Internal intent: PEST_RISK_QUERY"
       },
+      "edits": [
+        {
+          "by": "Member A",
+          "on": "2026-10-08",
+          "previous_text": "Area asi da pest risk yamna lei-i?",
+          "new_text": "Area asi da pest risk yamna leibra?"
+        }
+      ],
+      "verified": false,
       "verified_by": null,
       "verified_on": null,
-      "notes": "Code-mixed ('area', 'pest risk'). Member A gave the intent, not an English gloss: english_meaning follows the task's 'Is there pest risk here?'; yamna (very/much, a cue word) suggests 'much pest risk' and a speaker should confirm the gloss. Asked with a monitored area selected.",
-      "verified": false
+      "notes": "Code-mixed ('area', 'pest risk'). Member A gave the intent, not an English gloss: english_meaning follows the task's 'Is there pest risk here?'; yamna (very/much, a cue word) suggests 'much pest risk' and a speaker should confirm the gloss. Asked with a monitored area selected."
     },
     {
       "id": "mni-008",
       "language": "mni",
       "script": "Latn",
-      "text": "Eigi field da crop condition kayano?",
+      "text": "Eigi field da crop condition kamai touri?",
       "english_meaning": "How is the crop condition in my field?",
       "intent": "CROP_HEALTH",
       "area": null,
@@ -155,10 +223,19 @@
         "document": "Member A integration requests to the assistant, 2026-10-08 (routing request; Latin Manipuri response request)",
         "quote": "Latin Manipuri: \"Eigi field da crop condition kayano?\" → Crop Health Analysis"
       },
+      "edits": [
+        {
+          "by": "Member A",
+          "on": "2026-10-08",
+          "previous_text": "Eigi field da crop condition kayano?",
+          "new_text": "Eigi field da crop condition kamai touri?",
+          "note": "Member A typed 'kamai twwi?' and confirmed it was a typo for 'kamai touri?'."
+        }
+      ],
+      "verified": false,
       "verified_by": null,
       "verified_on": null,
-      "notes": "Code-mixed ('field', 'crop condition'). Member A gave the target (Crop Health Analysis), not an English gloss: english_meaning is the closest English question AG-04 already answers with NDVI. Needs a drawn area or an image.",
-      "verified": false
+      "notes": "Code-mixed ('field', 'crop condition'). Member A gave the target (Crop Health Analysis), not an English gloss: english_meaning is the closest English question AG-04 already answers with NDVI. Needs a drawn area or an image."
     }
   ]
 }

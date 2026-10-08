@@ -21,8 +21,15 @@ def client(tmp_path, monkeypatch):
 @pytest.mark.parametrize("entry", WITH_SCRIPT, ids=[q["id"] for q in WITH_SCRIPT])
 def test_the_dataset_meitei_mayek_reads_as_its_latin_twin(entry):
     meitei = entry["dataset_ref"]["meiteiscript"]
-    assert to_latin(meitei) == entry["text"]
+    corpus_latin = entry["dataset_ref"].get("romanstandard", entry["text"])  # an edited query keeps its corpus row
+    assert to_latin(meitei) == corpus_latin
     assert normalize(meitei).as_dict() == normalize(entry["text"]).as_dict()
+
+
+@pytest.mark.parametrize("entry", [q for q in QUERIES if q.get("meiteiscript")])
+def test_member_as_own_meitei_mayek_reads_as_the_query(entry):
+    assert fold(to_latin(entry["meiteiscript"])) == fold(entry["text"])  # case and accents aside
+    assert normalize(entry["meiteiscript"]).as_dict() == normalize(entry["text"]).as_dict()
 
 
 @pytest.mark.parametrize("entry", WITH_SCRIPT, ids=[q["id"] for q in WITH_SCRIPT])
