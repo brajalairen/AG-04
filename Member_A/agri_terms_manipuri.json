@@ -36,13 +36,19 @@
           "row": 88970,
           "english": "The crop failed due to failure of rain.",
           "romanstandard": "nong chudabana maram oiduna mahei marong adu māi pākkhide.",
-          "source_document": "wonder.pdf"
+          "source_document": "wonder.pdf",
+          "member_a_correction": {
+            "by": "Member A",
+            "on": "2026-10-08",
+            "text": "nong chudabana maram oiduna mahei marong adu mangkhi.",
+            "note": "Member A's better rendering; romanstandard above is the corpus row as published."
+          }
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Plural mahei-marongsing. Also written maheimarong / mahei marong. 81 of the 97 rows whose English contains 'crop(s)' contain this form.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-rice",
@@ -75,10 +81,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Row 17464 gives the distinction: 'Rice in the husk is known as paddy' = 'makuda leiba cheng asi phou hāina khangnei'. Cooked rice is a different word in the dataset (chāk, chagang: rows 2310, 3462); do not use those for the crop.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-paddy",
@@ -111,10 +117,10 @@
           "source_document": "wonder.pdf"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "phougi = of paddy. Row 88831: 'paddy crop' = 'phougi mahei marong'.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-paddy-field",
@@ -141,10 +147,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-field",
@@ -183,10 +189,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "86 of the 97 rows containing loubuk have 'field(s)' in the English. lampāk is also translated 'field' (rows 99363, 15333) but in the sense of an open ground; loubuk is the farm-field word.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-farming",
@@ -225,10 +231,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Also louu alone. 'farmland' is attested as 'louu-singugi lam' (row 16288).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-farmer",
@@ -261,10 +267,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Plural loumising. 322 of the 339 rows with 'farmer(s)' in the English contain loumi.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-harvest",
@@ -297,10 +303,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "The verb 'to harvest' is attested as lok- (lokpa, loklaba): row 64887 'the harvested crops' = 'loklaba maheimarongsing'.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-seed",
@@ -333,10 +339,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Plural marusing. Homograph: maru also means 'important / main' (maruoiba), so maru alone is ambiguous outside a farming context.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-soil",
@@ -379,10 +385,10 @@
           "source_document": "Poknampham"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Two words are attested. leihao: soil as material (row 104417 'The soil is sandy here'). leipāk (also leipak): land/soil, used for 'soil conservation' and 'soil health' in news text (rows 72284, 49401); it also means 'land/country'. A fluent speaker should choose the preferred word for agricultural soil.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-plant",
@@ -415,10 +421,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Plural pāmbising.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-pest",
@@ -455,10 +461,10 @@
           "source_document": "THE SANGAI EXPRESS MULTIPLE FILESThoungamba"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "tin-kāng (also written tin kāng / tinkāng / tin-kang) is the general 'insect / bug' word; row 92419 uses it for 'pest' and row 46675 for pests of an orange crop. pesat is the English loanword, used in 'Integrated Pest Management' (row 64400). 'Infestation' and 'pest outbreak' are NOT attested (see Member_A/README.md).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-insect",
@@ -497,10 +503,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "tin-kāng is also used for 'insects' (row 31824).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-disease",
@@ -539,10 +545,10 @@
           "source_document": "Poknampham"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Plural lāināsing. Most dataset rows are about human disease; rows 92419 and 46675 use it next to pests in a crop context. 'Crop disease' / 'plant disease' are NOT attested as phrases.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-infection",
@@ -579,10 +585,10 @@
           "source_document": "en-mni-Mtei Test.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "English loanword. All dataset examples are medical, none agricultural: a speaker should confirm before using it for plant infection.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-rain",
@@ -625,10 +631,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "nong = rain; nong chuba = rain falling (rainfall).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-weather",
@@ -661,10 +667,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Also written aying-asā / aing-asā.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-temperature",
@@ -707,10 +713,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "aying asā (literally 'cold-hot') is used for both 'weather' and 'temperature' in the dataset; the loanword temparechara is also attested (row 103481).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-humidity",
@@ -737,10 +743,10 @@
           "source_document": "Thoungamba (THE SANGAI EXPRESS)"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "English loanword from newspaper weather reports. No native Manipuri word for humidity is attested in the dataset.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-drought",
@@ -773,10 +779,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Also written ikang.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-flood",
@@ -819,10 +825,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Literally 'water flood'. Both spellings are attested.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-storm",
@@ -855,10 +861,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Row 13984: 'All crop was ruined in storm'.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-damage",
@@ -891,10 +897,10 @@
           "source_document": "Poknampham"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Noun. Dataset examples are about objects and buildings, not crops. For crops see term-ruined.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-ruined",
@@ -927,10 +933,10 @@
           "source_document": "A Thousand Splendid Suns by Khaled Hosseini.pdf"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Rows 13984 and 67509 use it for crops ruined by storm and hailstorm. A noun phrase for 'damaged crop' is NOT attested.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-soil-health",
@@ -957,10 +963,10 @@
           "source_document": "Poknampham"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "From Poknampham news text (romanised without macrons). phibam = condition/state. 'Crop health', 'healthy crop', 'vegetation', 'vegetation stress', 'crop stress' and 'water stress' are NOT attested.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-risk",
@@ -999,10 +1005,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "One word for both 'risk' and 'danger'. 'khudongthiningngāi oiba' = risky / dangerous; 'khudongthiningngāi oire' = is at risk (row 98175). The loanword risak appears in news and finance text.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-low-risk",
@@ -1023,10 +1029,10 @@
           "source_document": "en-mni-Mtei Test.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Single attestation (row 80425). 'High risk' and 'moderate risk' are NOT attested.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-safe",
@@ -1060,10 +1066,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "The opposite of risk: 'Is this a safe area?' = 'masi sāphaba mapham ama oibrā?' (row 15525).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-warning",
@@ -1090,10 +1096,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "In 151 of the 230 rows with 'warn*' in the English. 'cheksinwā pikhi' = warned. 'Early warning' is NOT attested.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-affected-area",
@@ -1130,10 +1136,10 @@
           "source_document": "mni-Mtei-en Test.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Row 75948: 'flood-affected areas' = 'eesing eechaona sokhallaba ... maphamsing'. Row 99907: 'Which crops are affected?' = 'karamba mahei-marongsingda sokhallibano?'.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-inspection",
@@ -1160,10 +1166,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Past tense: row 102771 'We inspected the place.' = 'eikhoina mapham adu yengsinkhi.'. The loanword insapeksan is also attested (row 82820). 'Field inspection' is NOT attested.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-priority",
@@ -1196,10 +1202,10 @@
           "source_document": "The Sangai Express"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Only the English loanword is attested (also spelled paraioriti). Row 66779: 'top priority' = 'ahānba parāioriti' (ahānba = first).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-area",
@@ -1233,10 +1239,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Plural maphamsing.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-district",
@@ -1280,10 +1286,10 @@
           "source_document": "THE SANGAI EXPRESS Thoungamba"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "",
-      "verified": false
+      "verified": true
     },
     {
       "id": "place-manipur",
@@ -1310,10 +1316,10 @@
           "source_document": "THE SANGAI EXPRESS Thoungamba"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Case endings attach: manipuragi (of), manipurada (in).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "place-bishnupur",
@@ -1323,6 +1329,10 @@
         {
           "script": "Latn",
           "text": "bisanupura"
+        },
+        {
+          "script": "Latn",
+          "text": "bishnupur"
         }
       ],
       "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 64989, 46167",
@@ -1338,11 +1348,23 @@
           "english": "30k pari abandoned in Bishnupur amid unrest",
           "romanstandard": "lanpham amagi marakta bisanupurada pari 30ki paudam thadokkhi.",
           "source_document": "Poknampham"
+        },
+        {
+          "row": 31726,
+          "english": "Shri Moirangthem Kunjahari Singh, aged about 57 years, S/o M. Apabi Singh of Ngaikhong Khullen Bazar Mayai, P.O. & P.S. Bishnupur, Bishnupur District, Manipur – 795126.",
+          "romanstandard": "Shri Moirangthem Kunjahari Singh, chaorakna chahi 57 rom suraba, apokpagi ming M. Apabi Singh, leifam na Ngaikhong Khullen Bazar Mayai, P.O. amasung P.S. Bishnupur, Bishnupur district, Manipur-795126",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 31729,
+          "english": "3. Shri Yanglem Prem Singh, aged about 55 years, S/o Late Yanglem Mohendro Singh of Bishnupur Ward No. IV, P.O. & P.S. Bishnupur, Bishnupur District, Manipur-795126.",
+          "romanstandard": "3. Shri Yanglem Prem Singh, chaorakna chahi 55 rom suraba, apokpagi ming leikhidraba Yanglem Mohendro Singh, leifam na Bishnupur Ward No. IV, P.O. amasung P.S. Bishnupur, Bishnupur District, Manipur-795126.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "Also bishnupur; bisanupurada = in Bishnupur.",
+      "notes": "Also bishnupur; bisanupurada = in Bishnupur. The spelling bishnupur (as in Member A's mni-009 and mni-010) added 2026-10-08, rows 31726, 31729.",
       "verified": false
     },
     {
@@ -1374,10 +1396,10 @@
           "source_document": "THE SANGAI EXPRESS Thoungamba"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "",
-      "verified": false
+      "verified": true
     },
     {
       "id": "place-kakching",
@@ -1414,10 +1436,10 @@
           "source_document": "Poknampham"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "",
-      "verified": false
+      "verified": true
     },
     {
       "id": "place-imphal",
@@ -1448,10 +1470,10 @@
           "source_document": "The Sangai Express"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "'Imphal West' is attested as 'imphal wesat' (row 18143, with locative -ta).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "place-jiribam",
@@ -1478,10 +1500,10 @@
           "source_document": "The Sangai Express (multiple files) Thoungamba"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "",
-      "verified": false
+      "verified": true
     },
     {
       "id": "place-churachandpur",
@@ -1508,10 +1530,10 @@
           "source_document": "The Sangai Express"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Also churachandapura.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-cloud",
@@ -1544,10 +1566,10 @@
         }
       ],
       "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 1625, 1671, 1736",
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Plural leichilsing. 'Cloudy weather' as a phrase is not attested; this is the word for cloud.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "term-vegetation",
@@ -1580,10 +1602,46 @@
         }
       ],
       "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 28511, 48936, 58055",
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
+      "notes": "Literally plants (pāmbi, see term-plant) and greenery; also written pambi-singbi. 'Vegetation stress' is not attested.",
+      "verified": true
+    },
+    {
+      "id": "term-condition",
+      "category": "crop_health",
+      "english": "condition / situation",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "phibam"
+        }
+      ],
+      "evidence": [
+        {
+          "row": 92018,
+          "english": "There was no such condition.",
+          "romanstandard": "asigumba phibam amatta leiramde.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 92029,
+          "english": "This is a very rare condition.",
+          "romanstandard": "masi yāmna tāngna thokpa phibam amani.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 17663,
+          "english": "My condition is like those fish",
+          "romanstandard": "eigi phibam asi ngāsingga mānnei",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 92018, 92029, 17663",
+      "verified": false,
       "verified_by": null,
       "verified_on": null,
-      "notes": "Literally plants (pāmbi, see term-plant) and greenery; also written pambi-singbi. 'Vegetation stress' is not attested.",
-      "verified": false
+      "notes": "Also phibham; typed fibam (Member A's mni-008 'cropki fibam' = crop condition). Added 2026-10-08 after Member A's review."
     }
   ],
   "cue_words": [
@@ -1618,10 +1676,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "",
-      "verified": false
+      "verified": true
     },
     {
       "id": "cue-how",
@@ -1631,6 +1689,10 @@
         {
           "script": "Latn",
           "text": "karamna"
+        },
+        {
+          "script": "Latn",
+          "text": "kamai"
         }
       ],
       "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 29434, 100908, 24619",
@@ -1652,11 +1714,29 @@
           "english": "How do you do?",
           "romanstandard": "nang karamna touribano?",
           "source_document": "little-women-louisa-may-alcott.pdf"
+        },
+        {
+          "row": 39484,
+          "english": "What's it like?",
+          "romanstandard": "kamāi touge adu?",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 39747,
+          "english": "I know how I am.",
+          "romanstandard": "ei khangnge ei kamāi tougese.",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 35046,
+          "english": "How was the game?",
+          "romanstandard": "Kamai toukhige sannabado?",
+          "source_document": "en_mni(meitei).xlsx"
         }
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "",
+      "notes": " kamai (as in Member A's mni-008 'kamai touri?') added 2026-10-08, rows 39484, 39747, 35046.",
       "verified": false
     },
     {
@@ -1690,10 +1770,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "",
-      "verified": false
+      "verified": true
     },
     {
       "id": "cue-any",
@@ -1726,10 +1806,10 @@
           "source_document": "wonder.pdf"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Means any / anyone / no one (1,119 rows), not 'which'. The router treats it as a selector over areas: 'is any area at high risk?' asks for the same ranking as 'which areas are at high risk?'.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "cue-where",
@@ -1762,10 +1842,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Case endings attach: kadāida (where), kadāidagi (from where).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "cue-begin",
@@ -1808,10 +1888,10 @@
           "source_document": "wonder.pdf"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Verb stem hou- with endings: hougadage (should begin), hourakkhi (began). The bare stem hou- is not used: it also starts unrelated words (houjik = now, houi = grows).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "cue-first",
@@ -1844,10 +1924,10 @@
           "source_document": "Delver_Magic_3.pdf"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "",
-      "verified": false
+      "verified": true
     },
     {
       "id": "cue-this",
@@ -1896,10 +1976,10 @@
           "source_document": "en_mni(meitei).xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "masigi = of this, masina = by this; asi also follows a noun ('mapham asi' = this place).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "cue-my",
@@ -1932,10 +2012,10 @@
           "source_document": "en_mni(meitei).xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "",
-      "verified": false
+      "verified": true
     },
     {
       "id": "cue-how-much",
@@ -1968,10 +2048,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Also 'what is the ...' of a quantity: row 15876 'What is the temperature?' = 'aying asā kayāno?'. kayā also means 'many' (row 17513).",
-      "verified": false
+      "verified": true
     },
     {
       "id": "cue-very",
@@ -2004,10 +2084,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "",
-      "verified": false
+      "verified": true
     },
     {
       "id": "cue-is",
@@ -2040,10 +2120,10 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Marks a Manipuri sentence; no intent rule uses it.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "cue-here",
@@ -2076,10 +2156,10 @@
           "source_document": "wonder.pdf"
         }
       ],
-      "verified_by": null,
-      "verified_on": null,
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
       "notes": "Literally 'in this place'.",
-      "verified": false
+      "verified": true
     },
     {
       "id": "cue-high",
@@ -2122,10 +2202,46 @@
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
         }
       ],
+      "verified_by": "Member A",
+      "verified_on": "2026-10-08",
+      "notes": "khwāidagi wāngba = highest (rows 103610, 74627).",
+      "verified": true
+    },
+    {
+      "id": "cue-that",
+      "concept": "marker",
+      "english": "that / the (determiner)",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "adu"
+        }
+      ],
+      "evidence": [
+        {
+          "row": 43535,
+          "english": "That is mine.",
+          "romanstandard": "adu eigine.",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 43084,
+          "english": "That is all.",
+          "romanstandard": "aduna loire.",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 7609,
+          "english": "the question.",
+          "romanstandard": "wāhang adu.",
+          "source_document": "Delver_Magic_3.pdf"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 43535, 43084, 7609",
+      "verified": false,
       "verified_by": null,
       "verified_on": null,
-      "notes": "khwāidagi wāngba = highest (rows 103610, 74627).",
-      "verified": false
+      "notes": "Marks a question as Manipuri only; no intent rule reads it (e.g. mni-009 'Bishnupur da risk adu eingonda utlo.'). Added 2026-10-08 after Member A's review."
     }
   ]
 }

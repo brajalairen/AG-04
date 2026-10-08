@@ -53,7 +53,8 @@ ENGLISH_WORDS = {
     "here": r"here|this|that|it|selected",
     "area": r"areas?|places?|districts?|villages?|regions?|locations?|zones?",
 }
-CONCEPTS = frozenset(ENGLISH_WORDS) | {"weather", "place", "exist"}  # "exist" (lei): only marks the language
+# "exist" (lei) and "marker" (adu, ...) only mark the question as Manipuri; no rule reads them.
+CONCEPTS = frozenset(ENGLISH_WORDS) | {"weather", "place", "exist", "marker"}
 ENGLISH_PATTERNS = {concept: re.compile(rf"\b(?:{words})\b") for concept, words in ENGLISH_WORDS.items()}
 # English function words: a question built on them is English, even if one word also exists in Manipuri.
 FUNCTION_WORDS = frozenset(
@@ -102,11 +103,13 @@ class _Form:
 # romanstandard writes a consonant cluster (Meitei Mayek apun iyek) both with and without a vowel: paraioriti and
 # prāioriti, hayumiditi and hyumiditi. A form matches either way.
 CLUSTER_VOWEL = re.compile(r"(?<=[bcdghjkmnpst])a(?=[lrwy])")
+# People also type ꯐ as f instead of ph (mafam for mapham, fibam for phibam): a form's ph matches either.
+PH = re.compile("ph")
 
 
 def _pattern(text: str) -> re.Pattern:
     parts = fold(text).split()
-    stem = r"[\s-]*".join(CLUSTER_VOWEL.sub("a?", re.escape(part)) for part in parts)
+    stem = r"[\s-]*".join(PH.sub("(?:ph|f)", CLUSTER_VOWEL.sub("a?", re.escape(part))) for part in parts)
     return re.compile(rf"\b{stem}" + (r"\w*" if len("".join(parts)) >= 5 else rf"{SHORT_FORM_ENDINGS}\b"))
 
 

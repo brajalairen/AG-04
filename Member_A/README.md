@@ -17,15 +17,17 @@ No second risk engine, model or application was built. The existing engine compu
 
 | File | What it holds | Count | Status |
 |---|---|---|---|
-| `manipuri_queries.json` | Latin Manipuri questions with their AG-04 intent | 10 | DRAFT: 5 corpus sentences, 3 of Member A's own examples, 2 AI-assistant drafts |
-| `agri_terms_manipuri.json` | Terms, and the question words the router uses, each with verbatim corpus evidence rows | 43 terms (54 forms), 14 cue words | DRAFT: attested in the corpus; alignment awaits a fluent speaker |
+| `manipuri_queries.json` | Latin Manipuri questions with their AG-04 intent | 10 | VERIFIED by Member A, 2026-10-08: 5 corpus sentences and 3 examples, all edited by Member A, and 2 AI-assistant drafts that Member A corrected |
+| `agri_terms_manipuri.json` | Terms, and the question words the router uses, each with verbatim corpus evidence rows | 44 terms, 15 cue words | DRAFT: 55 of 59 entries verified by Member A on 2026-10-08; 4 added afterwards await a check. All attested in the corpus; alignment awaits a fluent speaker |
 | `verified_agricultural_risk_rules.json` | Pest-weather rules in the engine's schema (`satquery/agri/assets/pest_rules.json`) | 2 rules | PLACEHOLDER: rice blast sourced (S1), brown planthopper unsourced |
 | `verified_risk_model.json` | Weights, level cut-points and scoring breakpoints, in the engine's schema | the engine's values, unchanged | PLACEHOLDER: no source supports a change |
-| `manipuri_responses.json` | Latin Manipuri answer templates (section 9) | 24 messages: 5 from Member A's sentences, 19 AI-assistant drafts | DRAFT: none checked by a fluent speaker |
+| `manipuri_responses.json` | Latin Manipuri answer templates (section 9) | 24 messages: 5 from Member A's sentences, 19 AI-assistant drafts | VERIFIED by Member A, 2026-10-08, after correcting them |
 | `advisories.md` / `advisory.json` | Field advisories, readable and structured | 2 pests, general guidance | DRAFT |
 | `SOURCES.md` | Every source, quotation, mapping choice, applicability and limitation; the corpus evaluation | — | — |
 
-**Nothing is VERIFIED.** Every `verified` flag is `false` and every `verified_by` / `verified_on` is empty, because no named fluent speaker or agronomist has checked the content yet. `team/check_deliverables.py` rejects an entry marked `verified: true` without a named reviewer and a date.
+**Language: verified by Member A, the team's fluent speaker, on 2026-10-08.** This covers all 10 queries and all 24 answer templates, and 55 of the 59 lexicon entries. Still waiting for Member A: `place-bishnupur` (spelling *bishnupur* added), `cue-how` (*kamai* added), `term-condition` (*phibam*) and `cue-that` (*adu*), which were added after the review so that Member A's own wording routes.
+
+**Agriculture: nothing is verified.** No agronomist has reviewed the rules, the risk model or the advisories. `team/check_deliverables.py` rejects an entry marked `verified: true` without a named reviewer and a date.
 
 The integration lead's format specification and templates stay in `team/member-a-agronomy/`.
 
@@ -68,27 +70,27 @@ AG-04's intents are defined in `INTENTS` in `satquery/agent/language.py`. No new
 | 4 | How healthy are crops here? | `CROP_HEALTH` → NDVI crop health | mni-008 *Eigi field da crop condition kamai touri?* (Member A) |
 | 5 | Is there pest risk here? | `PEST_RISK` → the selected area's pest risk | mni-007 *Area asi da pest risk yamna leibra?* (Member A) |
 | 6 | Is there weather-related crop risk? | `WEATHER_RISK` → weather forecast for a drawn area | mni-004 *Aying asa karamna touri?*; mni-005 *Hayeng nong chugadra?* (corpus). These ask about the weather itself. |
-| 7 | Show me the risk in [area]. | `AREA_SPECIFIC_RISK` → explain the named area | mni-009 *Bisanupura da risk adu utlo eingonda.* (AI-assistant draft) |
-| 8 | Why was [area] prioritized? | `AREA_SPECIFIC_RISK` → explain the named area | mni-010 *Bisanupurabu karigi priority pikhibano?* (AI-assistant draft) |
+| 7 | Show me the risk in [area]. | `AREA_SPECIFIC_RISK` → explain the named area | mni-009 *Bishnupur da risk adu eingonda utlo.* (AI draft, corrected by Member A) |
+| 8 | Why was [area] prioritized? | `AREA_SPECIFIC_RISK` → explain the named area | mni-010 *Bishnupurbu karigi priority pikhibano?* (AI draft, corrected by Member A) |
 
 **Where the sentences come from:**
 - **Corpus sentences** started as exact copies. `dataset_ref` keeps the published row (row number, `romanstandard`, `meiteiscript`).
 - **Member A's sentences** quote the request they came from in `source`.
 - **Member A's edits** of 2026-10-08 are recorded per entry in `edits`, with the previous and new text. Member A rewrote mni-002 and mni-003, and removed the macrons and capitalised mni-001, mni-004 and mni-005; the router reads these the same either way. Member A also revised mni-006 to mni-008. mni-002 and mni-003 carry Member A's own Meitei Mayek in `meiteiscript`.
-- **AI-assistant drafts:** at Member A's request of 2026-10-08, the AI assistant (Claude) drafted mni-009 and mni-010 and the 19 answer templates Member A had not written. Every Manipuri word in them was checked to occur in the corpus, and technical terms are kept in English as in Member A's sentences. Their `source` says they are drafts, and they stay unverified until a fluent speaker reviews them. They are not attested corpus sentences.
+- **AI-assistant drafts:** at Member A's request of 2026-10-08, the AI assistant (Claude) drafted mni-009 and mni-010 and the 19 answer templates Member A had not written. Every Manipuri word in them was checked to occur in the corpus, and technical terms are kept in English as in Member A's sentences. Their `source` says they began as drafts. Member A reviewed and corrected them and verified them on 2026-10-08. They are not attested corpus sentences.
 
-**Types 7 and 8** have AI-assistant drafts only, because the corpus has no such sentence; a fluent speaker should replace or confirm them. The district names are already in the terms file: *bisanupura*, *kākching*, *imphāl*, *thoubāl*, *churāchandapura* and *jiribam*. A Latin Manipuri question that names a district therefore already resolves to that area. A worksheet of attested building blocks for these sentences is in section 10.
+**Types 7 and 8** began as AI-assistant drafts, because the corpus has no such sentence. Member A corrected and verified them. The district names are already in the terms file: *bisanupura*, *kākching*, *imphāl*, *thoubāl*, *churāchandapura* and *jiribam*. A Latin Manipuri question that names a district therefore already resolves to that area. A worksheet of attested building blocks for these sentences is in section 10.
 
 ## 6. Terminology (`agri_terms_manipuri.json`)
 
-43 terms, each attested in the corpus, with 2–4 evidence rows quoted verbatim:
+44 terms, each attested in the corpus, with 2–4 evidence rows quoted verbatim:
 
 | Category | Terms |
 |---|---|
 | crop | crop, rice, paddy, paddy field, field, farming/cultivation, farmer, harvest, seed, soil, plant, vegetation |
 | pest / disease | pest, insect, disease, infection |
 | weather | rain, weather, temperature, relative humidity, drought, flood, storm, cloud |
-| crop health | damage, be ruined, soil health |
+| crop health | damage, be ruined, soil health, condition (*phibam*) |
 | risk / inspection | risk/danger, low risk, warning, affected area, inspection, priority, safe |
 | place | area, district, Manipur and the 7 demo districts |
 
@@ -144,7 +146,7 @@ Latin Manipuri / English question
 - **Templates, not a model:** AG-04's answers are written by code, so a Latin Manipuri question is answered by filling the templates in `manipuri_responses.json` with the engine's own values.
 - **Inserted unchanged:** level, score, confidence, the engine's reasons (the evidence, including pest-report counts), NDVI figures and the PLACEHOLDER/SAMPLE warnings.
 - **English fallback:** a message with no usable template stays in English, so a value or warning is never dropped. A template is unusable if it changes the `{slots}`, drops PLACEHOLDER or SAMPLE, or claims a confirmed diagnosis.
-- **Written so far:** all 24 templates. 5 come from Member A's sentences; 19 are AI-assistant drafts, built only from corpus-attested words, which a fluent speaker must review. A test checks that every template keeps exactly its English message's placeholders and warnings.
+- **Written so far:** all 24 templates. 5 come from Member A's sentences; 19 began as AI-assistant drafts built only from corpus-attested words. Member A reviewed all 24, corrected some, and verified them on 2026-10-08. A test checks that every template keeps exactly its English message's placeholders and warnings.
 - **Why mni-010 is explained, not listed:** "Why was Bishnupur prioritized?" is answered with Bishnupur's own rank and reasons (`AREA_SPECIFIC_RISK`). The inspection list shows only the top areas and may leave Bishnupur out. One concept rule does this: a question asking *why* about a named place is explained. The English router is unchanged; it still sends the English question to `INSPECTION_PRIORITY`.
 - **Weather answers stay English** for now; their values are unchanged.
 - **Override:** point `SATQUERY_MANIPURI_RESPONSES` at another templates file.
@@ -187,8 +189,7 @@ Run `python team/check_deliverables.py` afterwards.
 
 **Who still needs to do what:**
 - **Fluent Manipuri speaker:**
-  - check the 10 queries and 43 terms;
-  - review or rewrite the 19 AI-drafted answer templates and the 2 AI-drafted queries (mni-009, mni-010).
+  - done on 2026-10-08 (Member A), except the 4 lexicon entries added afterwards: `place-bishnupur` (spelling *bishnupur* added), `cue-how` (*kamai* added), `term-condition` (*phibam*) and `cue-that` (*adu*).
 - **Agronomist** (Department of Agriculture, Manipur; a KVK; or CAU Imphal):
   - decide the two blast mapping choices and sign off S1;
   - provide a BPH threshold that fits Manipur;
