@@ -1,6 +1,6 @@
 {
   "status": "DRAFT",
-  "note": "Latin-script (romanised) Manipuri queries; nothing was composed by the assistant or machine-translated. mni-001..005 are copied VERBATIM from CompiledDataEnglishToMeitei.xlsx (the dataset's human translation of english_meaning; row in dataset_ref). Member A edited the wording of several queries on 2026-10-08: each change is listed in the entry's 'edits' with the previous text, and a corpus entry keeps the published row in dataset_ref. mni-006..008 are Member A's own example questions from the integration requests of 2026-10-08 (provenance in 'source'). DRAFT: verified_by/verified_on stay empty until a fluent speaker confirms each text and its intent mapping. Query types with no sourced sentence yet (AREA_SPECIFIC_RISK: 'Show me the risk in [area]', 'Why was [area] prioritized?') are listed in Member_A/README.md section 5.",
+  "note": "Latin-script (romanised) Manipuri queries. mni-009 and mni-010 are AI-assistant drafts (see their 'source'); nothing else was composed by the assistant or machine-translated. mni-001..005 are copied VERBATIM from CompiledDataEnglishToMeitei.xlsx (the dataset's human translation of english_meaning; row in dataset_ref). Member A edited the wording of several queries on 2026-10-08: each change is listed in the entry's 'edits' with the previous text, and a corpus entry keeps the published row in dataset_ref. mni-006..008 are Member A's own example questions from the integration requests of 2026-10-08 (provenance in 'source'). DRAFT: verified_by/verified_on stay empty until a fluent speaker confirms each text and its intent mapping. Query types with no sourced sentence yet (AREA_SPECIFIC_RISK: 'Show me the risk in [area]', 'Why was [area] prioritized?') are listed in Member_A/README.md section 5.",
   "queries": [
     {
       "id": "mni-001",
@@ -236,6 +236,44 @@
       "verified_by": null,
       "verified_on": null,
       "notes": "Code-mixed ('field', 'crop condition'). Member A gave the target (Crop Health Analysis), not an English gloss: english_meaning is the closest English question AG-04 already answers with NDVI. Needs a drawn area or an image."
+    },
+    {
+      "id": "mni-009",
+      "language": "mni",
+      "script": "Latn",
+      "text": "Bisanupura da risk adu utlo eingonda.",
+      "english_meaning": "Show me the risk in Bishnupur.",
+      "intent": "AREA_SPECIFIC_RISK",
+      "area": "Bishnupur",
+      "source": {
+        "type": "assistant_draft",
+        "given_on": "2026-10-08",
+        "document": "Member A's request of 2026-10-08 to add 'Show me the risk in Bishnupur.' and 'Why was Bishnupur prioritized?'",
+        "note": "Latin Manipuri DRAFTED by the AI assistant (Claude) at Member A's request; NOT checked by a fluent speaker. Built from corpus-attested forms (see notes)."
+      },
+      "verified": false,
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "bisanupura = Bishnupur (term-place-bishnupur); 'risk' kept in English as in Member A's queries; 'utlo eingonda' = show me (corpus row 42264). Same intent as the English question in AG-04's router."
+    },
+    {
+      "id": "mni-010",
+      "language": "mni",
+      "script": "Latn",
+      "text": "Bisanupurabu karigi priority pikhibano?",
+      "english_meaning": "Why was Bishnupur prioritized?",
+      "intent": "AREA_SPECIFIC_RISK",
+      "area": "Bishnupur",
+      "source": {
+        "type": "assistant_draft",
+        "given_on": "2026-10-08",
+        "document": "Member A's request of 2026-10-08 to add 'Show me the risk in Bishnupur.' and 'Why was Bishnupur prioritized?'",
+        "note": "Latin Manipuri DRAFTED by the AI assistant (Claude) at Member A's request; NOT checked by a fluent speaker. Built from corpus-attested forms (see notes)."
+      },
+      "verified": false,
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Literally 'Why was Bishnupur given priority?': -bu (object), karigi = why (rows 26984, 101675), pikhibano = 'did ... give?' (rows 1911, 62249); 'priority' kept in English. Answered by explaining Bishnupur (its rank and the engine's reasons): the inspection list shows only the top areas and may not include it. AG-04's English router sends the English question to INSPECTION_PRIORITY instead."
     }
   ]
 }

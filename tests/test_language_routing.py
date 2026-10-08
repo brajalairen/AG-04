@@ -13,6 +13,7 @@ import pytest
 
 from satquery.agent.intents import classify, needs_weather, route_query
 from satquery.agent.language import INTENTS, LATIN_MANIPURI, normalize
+from satquery.agri import answer_language as mni
 from satquery.agri import query as agri_query
 from test_agri_api import client_for
 
@@ -34,6 +35,11 @@ def built(*entry_ids: str) -> str:
 
 def labelled(intent: str) -> str:
     return next(q["text"] for q in QUERIES if q["intent"] == intent)
+
+
+def opening(key: str) -> str:
+    """The Latin Manipuri wording a message starts with, up to its first slot (from Member A's templates file)."""
+    return mni.say(key, LATIN_MANIPURI, **{slot: "\0" for slot in mni.SLOT.findall(mni.MESSAGES[key])}).split("\0")[0]
 
 
 @pytest.fixture
@@ -72,14 +78,15 @@ def test_1_latin_manipuri_high_risk_question_goes_to_the_risk_engine(client):
         routed = route(client, query)
         assert (routed["route"], routed["intent"]) == ("agri", "AREA_RISK_QUERY"), routed
         found = ask(client, query)
-        assert found["intent"] == "rank" and found["answer"].startswith("Indicators suggest")
+        assert found["intent"] == "rank" and found["answer"].startswith(opening("ranking_head"))
 
 
 def test_2_latin_manipuri_why_risk_question_is_explained(client):
     selected = labelled("AREA_EXPLANATION")  # "How is it dangerous?" in the data file
     assert route(client, selected)["intent"] == "AREA_EXPLANATION"
     found = ask(client, selected, selected_area_id=SELECTED)
-    assert found["intent"] == "explain" and found["focus_area_id"] == SELECTED and "Why:" in found["answer"]
+    assert found["intent"] == "explain" and found["focus_area_id"] == SELECTED
+    assert mni.say("why", LATIN_MANIPURI) in found["answer"]
     named = built("place-bishnupur", "cue-why", "term-risk")
     assert normalize(named).entities == {"places": ["Bishnupur"]}
     assert route(client, named)["intent"] == "AREA_SPECIFIC_RISK"
@@ -90,7 +97,7 @@ def test_3_latin_manipuri_inspection_question_gets_the_inspection_order(client):
     query = labelled("INSPECTION_PRIORITY")
     assert route(client, query)["intent"] == "INSPECTION_PRIORITY"
     found = ask(client, query)
-    assert found["intent"] == "inspect" and found["answer"].startswith("Suggested order for field inspection")
+    assert found["intent"] == "inspect" and found["answer"].startswith(opening("inspect_head"))
 
 
 def test_4_latin_manipuri_crop_health_question_is_the_ndvi_analysis():
@@ -106,7 +113,7 @@ def test_5_latin_manipuri_pest_risk_question_reads_the_selected_area(client):
     routed = route(client, query)
     assert (routed["route"], routed["intent"], routed["language"]) == ("agri", "PEST_RISK", LATIN_MANIPURI)
     assert ask(client, query, selected_area_id=SELECTED)["focus_area_id"] == SELECTED
-    assert "Select one of the monitored areas" in ask(client, query)["answer"]
+    assert opening("select_area") in ask(client, query)["answer"]
 
 
 def test_latin_manipuri_weather_question_goes_to_the_weather_specialist(client):
@@ -163,4 +170,6 @@ def test_an_unclear_risk_or_manipuri_question_is_asked_to_rephrase_not_sent_to_i
     routed = route(client, query)
     assert routed["route"] == "agri" and routed["intent"] is None and "intent unclear" in routed["rule"]
     found = ask(client, query)
-    assert found["intent"] == "unmatched" and found["answer"] == agri_query.REPHRASE
+    manipuri = mni.say("rephrase", LATIN_MANIPURI, examples="; ".join(agri_query.EXAMPLES))
+    expected = manipuri if routed["language"] == LATIN_MANIPURI else agri_query.REPHRASE
+    assert found["intent"] == "unmatched" and found["answer"] == expected

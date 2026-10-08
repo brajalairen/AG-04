@@ -1,174 +1,198 @@
 {
   "status": "DRAFT",
-  "note": "Latin Manipuri answer templates, one per message of satquery/agri/answer_language.py (MESSAGES). 'english' is the message; write its Latin Manipuri in 'text', keeping every {slot} exactly (code fills them with the engine's own values: levels, scores, confidence, names, counts). A template whose slots differ, that drops PLACEHOLDER or SAMPLE from a warning, or that claims a confirmed diagnosis or outbreak is refused and the English message is shown instead. 'text': null = not written yet (English is shown). Nothing here is verified: the only sentences are the ones Member A gave in the task request; every other template is left for a fluent speaker to write. Do not machine-translate.",
+  "note": "Latin Manipuri answer templates, one per message of satquery/agri/answer_language.py (MESSAGES). 'english' is the message; 'text' is its Latin Manipuri, keeping every {slot} exactly (code fills them with the engine's own values: levels, scores, confidence, names, counts). A template whose slots differ, that drops PLACEHOLDER or SAMPLE from a warning, or that claims a confirmed diagnosis or outbreak is refused and the English message is shown instead. Nothing here is verified. 5 templates come from Member A's own sentences; the other 19 are AI-assistant drafts (see each 'source'), built only from words attested in the corpus, and wait for a fluent speaker's review.",
   "templates": {
     "area_risk": {
       "english": "Indicators suggest {level} risk for this area.",
       "text": "Area asi da risk {level} oirammi.",
       "source": "Adapted from Member A's 'Area asi da pest risk HIGH oirammi.' (2026-10-08): the word 'pest' left out for a general risk answer; a fluent speaker must confirm.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "area_pest_risk": {
       "english": "Indicators suggest {level} pest risk for this area.",
       "text": "Area asi da pest risk {level} oirammi.",
       "source": "Provided by Member A in the task request of 2026-10-08 (example answer sentence); slot added for the engine's value ('HIGH' -> {level}).",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "score": {
       "english": "Risk score: {score}.",
       "text": "Risk score asi {score} ni.",
       "source": "Provided by Member A in the task request of 2026-10-08 (example answer sentence); slot added for the engine's value ('71/100' -> {score}; the engine writes e.g. 71/100).",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "confidence": {
       "english": "Data confidence: {confidence}.",
       "text": "Data confidence {confidence} ni.",
       "source": "Provided by Member A in the task request of 2026-10-08 (example answer sentence); slot added for the engine's value ('LOW' -> {confidence}; the engine writes low, medium or high).",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "rank_position": {
       "english": "Rank #{rank} of {rank_of} assessed areas.",
-      "text": null,
-      "source": null,
+      "text": "Assess toukhiba area {rank_of}gi manungda rank #{rank} ni.",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "not_ranked": {
       "english": "Not ranked: not enough data.",
-      "text": null,
-      "source": null,
+      "text": "Rank toude: data mapung phāde.",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "why": {
       "english": "Why:",
-      "text": null,
-      "source": null,
+      "text": "Maramsing:",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "ranking_head": {
       "english": "Indicators suggest HIGH or CRITICAL risk in {count} of {total} monitored areas:",
-      "text": null,
-      "source": null,
+      "text": "Monitor touriba area {total}gi manungda {count}da indicatorsingna HIGH nattraga CRITICAL risk utli:",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "ranking_none": {
       "english": "No monitored area is at HIGH or CRITICAL risk by the current indicators. Highest:",
-      "text": null,
-      "source": null,
+      "text": "Houjikki indicatorsinggi matung inna monitor touriba area amattada HIGH nattraga CRITICAL risk leite. Khwāidagi wāngba:",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "no_estimate": {
       "english": "No monitored area has enough data for a risk estimate.",
-      "text": null,
-      "source": null,
+      "text": "Risk estimate tounaba data mapung phāba monitor touriba area amatta leite.",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "tally": {
       "english": "Moderate: {moderate}, low: {low}, not enough data: {no_data} of {total} monitored areas.",
-      "text": null,
-      "source": null,
+      "text": "Monitor touriba area {total}gi manungda: moderate {moderate}, low {low}, data mapung phādaba {no_data}.",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "inspect_head": {
       "english": "Suggested order for field inspection, by risk rank (decision support; the final choice rests with the Department):",
-      "text": null,
-      "source": null,
+      "text": "Risk rank matung inna field inspection tounaba paotāk (decision support khaktani; aroiba wārep adu Department gi mathakta lei):",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "inspect_none": {
       "english": "No monitored area has enough data for a risk estimate, so no inspection order can be suggested.",
-      "text": null,
-      "source": null,
+      "text": "Risk estimate tounaba data mapung phāba monitor touriba area amatta leite, maram aduna inspection paotāk piba ngamde.",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "not_ranked_list": {
       "english": "Not ranked for lack of data: {names}.",
-      "text": null,
-      "source": null,
+      "text": "Data mapung phādaba maram oiduna rank toudaba: {names}.",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "mainly": {
       "english": "mainly {drivers}",
-      "text": null,
-      "source": null,
+      "text": "maruoina {drivers}",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "caveat_placeholder": {
       "english": "PLACEHOLDER thresholds: prototype scores, not validated agricultural findings.",
-      "text": null,
-      "source": null,
+      "text": "PLACEHOLDER thresholds: prototype scoresingni, validate toukhiba agricultural findingsing natte.",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "caveat_sample": {
       "english": "Pest-report figures are SAMPLE DATA — Prototype Simulation.",
-      "text": null,
-      "source": null,
+      "text": "Pest-report figuresing asi SAMPLE DATA — Prototype Simulation ni.",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "caveat_decision": {
       "english": "Decision support only; the final assessment rests with the Department of Agriculture.",
-      "text": null,
-      "source": null,
+      "text": "Decision support khaktani; aroiba assessment adu Department of Agriculture gi mathakta lei.",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "verify_advice": {
       "english": "Field inspection and verification by an agricultural expert are recommended.",
       "text": "Field inspection amasung agricultural expert gi verification recommended.",
       "source": "Provided by Member A in the task request of 2026-10-08, verbatim.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "select_area": {
       "english": "Select one of the monitored areas on the map (or name it) to see why it is flagged. Assessing a newly drawn area is planned for a later phase.",
-      "text": null,
-      "source": null,
+      "text": "Area ama karigi flag toubage hāiba yengnaba map ta monitor touriba area ama khanbiyu (nattraga maming hāibiyu). Nouna draw touba area assess toubadi matungda phase amada toubagi plan leiri.",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "ambiguous_area": {
       "english": "'{phrase}' matches several monitored areas: {names}. Please name one.",
-      "text": null,
-      "source": null,
+      "text": "'{phrase}' asi monitor touriba area kayā amaga match touri: {names}. Ama khak maming hāibiyu.",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "no_area_match": {
       "english": "No monitored area matches this question. Monitored areas: {names}.",
-      "text": null,
-      "source": null,
+      "text": "Wāhang asiga match touba monitor touriba area amatta leite. Monitor touriba areasing: {names}.",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "rephrase": {
       "english": "This question could not be matched with confidence to a crop & pest risk question, so it was not sent to satellite image analysis either. The risk engine answers which areas are at high risk, why a named or selected area is flagged, and which areas to inspect first. For example: {examples}",
-      "text": null,
-      "source": null,
+      "text": "Wāhang asi crop & pest risk wāhang ama oina chumna khangba ngamde, maram aduna satellite image analysis dasu thākhide. Risk engine aduna karamba areasingda high risk leibage, maming hāiba nattraga khanba area ama karigi flag toubage, amasung karamba areasing ahānba yengsingadage hāiba wāhangsingda paokhum pi. Khudam oina: {examples}",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     },
     "crop_health_head": {
       "english": "Crop health of this area from satellite NDVI (an indicator of vegetation vigour, not a diagnosis):",
-      "text": null,
-      "source": null,
+      "text": "Satellite NDVI dagi area asigi crop health (pāmbi-singbigi hakchāng utpa indicator ama ni, diagnosis natte):",
+      "source": "DRAFT written by the AI assistant (Claude) on 2026-10-08 at Member A's request; NOT checked by a fluent speaker. Every Manipuri word in it occurs in CompiledDataEnglishToMeitei.csv (romanstandard); technical terms are kept in English, as in Member A's own templates. A fluent speaker must review it before verified_by/verified_on are filled.",
       "verified_by": null,
-      "verified_on": null
+      "verified_on": null,
+      "verified": false
     }
   }
 }

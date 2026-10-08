@@ -70,6 +70,8 @@ SHORT_FORM_ENDINGS = r"(?:sing|gi|ki|da|ta|dagi|tagi|na|bu|pu|ga|ka|su|di|ti|ni|
 
 # First match wins. A rule names the concepts it needs; the words that supplied them are quoted in the trace.
 RULES = (
+    # "why" about a named place (not about its pests): explain that place
+    ("AREA_SPECIFIC_RISK", lambda c: {"place", "why"} <= c and "pest" not in c),
     ("INSPECTION_PRIORITY", lambda c: "inspect" in c or ("where" in c and bool(c & {"begin", "first"}))
                                       or ({"which", "first"} <= c and bool(c & {"area", "place", "risk"}))),
     ("PEST_RISK", lambda c: "pest" in c and bool(c & {"risk", "here", "area", "place", "why", "how", "which", "high"})),

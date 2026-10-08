@@ -100,10 +100,31 @@ def test_a_template_that_drops_a_value_or_a_warning_or_claims_too_much_is_refuse
     assert not mni.usable("area_risk", "Rice blast confirm oirammi {level}.")      # a diagnosis the engine never makes
 
 
-def test_an_unwritten_template_falls_back_to_the_english_message():
-    missing = next(key for key, entry in TEMPLATES.items() if not entry["text"])
-    assert mni.say(missing, LATIN_MANIPURI, **{s: "x" for s in mni.SLOT.findall(mni.MESSAGES[missing])}) == \
-        mni.MESSAGES[missing].format(**{s: "x" for s in mni.SLOT.findall(mni.MESSAGES[missing])})
+def test_an_unwritten_template_falls_back_to_the_english_message(tmp_path, monkeypatch):
+    data = json.loads(mni.DEFAULT_RESPONSES.read_text(encoding="utf-8"))
+    data["templates"]["rank_position"]["text"] = None
+    path = tmp_path / "responses.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setenv("SATQUERY_MANIPURI_RESPONSES", str(path))
+    assert mni.say("rank_position", LATIN_MANIPURI, rank=2, rank_of=7) == "Rank #2 of 7 assessed areas."
+
+
+def test_every_message_has_a_usable_template_with_exactly_its_placeholders():
+    for key, english in mni.MESSAGES.items():
+        text = TEMPLATES[key]["text"]
+        assert text, key
+        assert sorted(mni.SLOT.findall(text)) == sorted(mni.SLOT.findall(english)), key  # none removed or added
+        assert mni.usable(key, text), key
+        assert TEMPLATES[key]["verified_by"] is None or TEMPLATES[key]["verified_on"], key  # no half-claimed check
+
+
+@pytest.mark.parametrize("query, extra", [(HIGH_RISK, {}), (PEST_RISK, {"selected_area_id": SELECTED}),
+                                          ("ei kadāidagi hougadage?", {})])
+def test_latin_manipuri_answers_no_longer_fall_back_to_english_messages(client, query, extra):
+    answer = ask(client, query, **extra)["answer"]
+    english = [text.split("{")[0] for text in mni.MESSAGES.values() if len(text.split("{")[0]) > 12]
+    assert not [text for text in english if text in answer]  # every message line is in Latin Manipuri
+    assert "PLACEHOLDER" in answer and "SAMPLE DATA — Prototype Simulation" in answer  # the warnings, word for word
 
 
 def test_the_data_file_lists_every_message_with_its_english_text():

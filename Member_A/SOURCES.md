@@ -28,7 +28,7 @@ Date of this record: 2026-10-08. Nothing in this folder has yet been signed off 
 - **Queries** (`manipuri_queries.json`):
   - mni-001 to mni-005 began as complete dataset sentences, copied as they are. On 2026-10-08 Member A edited their wording; each entry's `edits` gives the previous text, and its `dataset_ref` keeps the published row. I searched the dataset for questions that match an AG-04 intent and kept only sentences whose English meaning fits the intent.
   - mni-006 to mni-008 are Member A's own example questions, given in the integration requests of 2026-10-08. They are not in the corpus. Each entry's `source.quote` repeats the request text. They are code-mixed (English words such as *area*, *pest risk* and *crop condition* inside Manipuri), as Member A wrote them.
-  - Nothing was composed by the assistant, edited or machine-translated.
+  - mni-009 and mni-010, and 19 of the 24 answer templates in `manipuri_responses.json`, are **AI-assistant drafts** written at Member A's request on 2026-10-08. They are not corpus sentences. Each Manipuri word in them was checked to occur in the corpus, and they are labelled as drafts and unverified until a fluent speaker reviews them.
 - **Terms** (`agri_terms_manipuri.json`):
   1. For each English term, I listed the Latin-Manipuri words that co-occur with it across all rows (Dice co-occurrence score).
   2. I read the candidate rows by hand.
@@ -41,7 +41,8 @@ Date of this record: 2026-10-08. Nothing in this folder has yet been signed off 
 
 | File | Entries | Status |
 |---|---|---|
-| `manipuri_queries.json` | 8 queries | **Sourced**: 5 dataset sentences and 3 of Member A's examples. Not yet checked by a fluent speaker for meaning or intent mapping. |
+| `manipuri_queries.json` | 10 queries | **Sourced**: 5 dataset sentences (edited by Member A) and 3 of Member A's examples. **Drafted**: 2 by the AI assistant (mni-009, mni-010). None yet checked by a fluent speaker. |
+| `manipuri_responses.json` | 24 templates | 5 from Member A's sentences; 19 **AI-assistant drafts**. None yet checked by a fluent speaker. |
 | `agri_terms_manipuri.json` | 43 terms, 54 Latin forms | **Sourced** (attested in the dataset). Alignment not yet checked by a fluent speaker. |
 
 ### Not attested in the dataset (left out, not guessed)
@@ -179,8 +180,12 @@ The one "general" item states AG-04 project policy and is labelled as such, not 
 
 ## 5. What a reviewer needs to do
 
-1. **Fluent speaker:** check each query and term against its evidence rows. Fill `verified_by` and `verified_on` per entry, and set the file `status` to `VERIFIED` once every entry is checked. Correct or remove anything wrong.
-2. **Agronomist (Department of Agriculture, KVK or CAU):**
+1. **Fluent speaker:**
+   - Check each query and term against its evidence rows.
+   - Review or rewrite the AI-assistant drafts: mni-009, mni-010 and the 19 drafted answer templates. Their `source` field marks them.
+   - Fill `verified`, `verified_by` and `verified_on` per entry, and set the file `status` to `VERIFIED` once every entry is checked.
+   - Correct or remove anything wrong.
+2. **Agronomist (Department of Agriculture, Manipur; a KVK; or CAU Imphal).** No agronomist has reviewed anything yet, so every rule stays PLACEHOLDER. Do not fill a name, approval or date until that review has happened:
    - Read S1 and decide on the two mapping assumptions for blast (daily mean, and the RH ≥ 95% leaf-wetness proxy).
    - Then add `verified_by` and `verified_on` to S1 in `verified_agricultural_risk_rules.json` and set `rice_blast` to `VERIFIED`.
    - Supply a sourced BPH threshold, or keep BPH as PLACEHOLDER.
