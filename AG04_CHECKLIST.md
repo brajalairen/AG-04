@@ -222,6 +222,10 @@ All areas have 100% data completeness and *low* confidence, because the threshol
 ---
 
 ## Change log
+- **2026-10-08, team intake** (no application change):
+  - `team/` holds one folder per member with exact formats and templates, plus `team/check_deliverables.py`, which validates deliverables with the engine's own loaders.
+  - TEAM_TASKS.md now uses the agreed deliverables: A `manipuri_queries.json`, `agri_terms_manipuri.json`, verified thresholds, `advisory.json`, `SOURCES.md`; B `manipur_districts.geojson`, `SOURCES.md`, `geo_validation.md`; C `UI_REVIEW.md`, `QA_REPORT.md`, `TEST_MATRIX.md`; D `AG04_Pitch.pptx`, `DEMO_SCRIPT.md`, `JUDGE_QA.md`.
+  - Phase 4 and AG-01 have not started.
 - **2026-10-08, repository migration** (documentation only):
   - AG-04 (https://github.com/brajalairen/AG-04.git) is now `origin`, and `ag04-prototype` (Phases 1–3, `5c966f6`) is pushed to it.
   - The SatQuery-AI SIH repository was renamed locally to `sih-frozen`, with its push URL disabled. Nothing was pushed to it.

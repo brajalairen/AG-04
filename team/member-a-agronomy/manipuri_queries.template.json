@@ -1,0 +1,19 @@
+{
+  "status": "DRAFT",
+  "note": "Template. Copy to manipuri_queries.json. Replace every <...> with VERIFIED content only; delete entries you cannot verify. Do not invent Manipuri text.",
+  "queries": [
+    {
+      "id": "mni-001",
+      "language": "mni",
+      "script": "Mtei",
+      "text": "<verified Manipuri sentence in Meitei Mayek>",
+      "romanization": "<optional romanised form>",
+      "english_meaning": "Which areas are at high risk?",
+      "intent": "AREA_RISK_QUERY",
+      "area": null,
+      "verified_by": "<name of fluent speaker>",
+      "verified_on": "<YYYY-MM-DD>",
+      "notes": ""
+    }
+  ]
+}

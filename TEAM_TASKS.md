@@ -10,7 +10,7 @@
 
 Who owns what while Claude does the main implementation in this repository. Roles are a suggested split: help each other, but each person keeps a clear primary area. Update the **Status** and **Blocker** columns as you go. The master feature list is [AG04_CHECKLIST.md](AG04_CHECKLIST.md).
 
-**Hand-off rule:** put deliverables in `satquery/agri/assets/` (it now exists). The file schemas are enforced by `satquery/agri/config.py` and `satquery/agri/areas.py`. A wrong file fails to load, with a message saying which field is wrong. Check your thresholds file with `python -m satquery.agri thresholds`. Do not commit secrets, real personal data, or unverified "official" information.
+**Hand-off rule:** put deliverables **only in your own folder under `team/`** (see `team/README.md`), on your own branch. The integration lead moves reviewed files into `satquery/agri/assets/` or points the settings at them. The file schemas are enforced by `satquery/agri/config.py` and `satquery/agri/areas.py`. A wrong file fails to load, with a message saying which field is wrong. Check your files with `python team/check_deliverables.py` (thresholds and boundaries go through the engine's own loaders). Do not commit secrets, real personal data, or unverified "official" information.
 
 **How to hand in verified thresholds (Member A):**
 - Edit `satquery/agri/assets/pest_rules.json` (or a copy pointed to by `SATQUERY_AGRI_PEST_RULES`).
@@ -25,48 +25,53 @@ Who owns what while Claude does the main implementation in this repository. Role
 
 ## Member A: Manipuri + agronomy
 
-| Task | Deliverable | Status | Dependency | Blocker |
-|---|---|---|---|---|
-| Write 3–8 candidate Manipuri agricultural demo sentences and **verify at least 1** for the final demo. Example intents: "Which districts are at high pest risk?", "Why is Bishnupur flagged?", "What should farmers in Thoubal do?" | `mni_demo_queries.md`: for each sentence, the Meitei Mayek, Bengali-script and romanised forms, an English meaning, the intended intent, and who verified it | not started | None | None |
-| Build a lexicon of the key agri words and district names in each script | `mni_lexicon.json`: `{ "term": "...", "script": "mtei|beng|latn", "meaning": "...", "maps_to": "intent or district" }` | not started | Sentences above | None |
-| Write Manipuri answer headlines for the demo answers (short, 1 line each) | Section in `mni_demo_queries.md` | not started | Final intents (Phase 2) | None |
-| Verify pest-risk thresholds for **rice blast** (leaf/neck) and **brown planthopper**: temperature band, RH, hours of leaf wetness, days. Record the source of each number. **Urgent and demo-critical:** the live run on 2026-10-08 showed the PLACEHOLDER blast rule (8 h or more at RH ≥ 90%, mean 20–28 °C) held on 10 of 10 days in all 7 areas, so weather currently does not separate areas | `pest_rules_sources.md`, plus a VERIFIED `pest_rules.json` (format above) with each threshold cited (ICAR-NRRI, the Rice Knowledge Management Portal, a state agriculture university or KVK advisories, and so on) | not started | None | **Blocks the final demo's credibility** |
-| Review the risk-model weights (weather 0.5, NDVI 0.3, reports 0.2) and level cut-points (0.35 / 0.60 / 0.80) with the team, ideally with an extension officer | Comments, or a VERIFIED `risk_model.json` with sources | not started | None | None |
-| Write advisory content for each pest: symptoms, *why* it happens (the weather link), preventive/IPM steps, and when to call the DAO/KVK. Chemical advice stays conservative ("as advised by the DAO/KVK") | `advisory.json` (schema provided in Phase 2) | not started | None | None |
-| Verify crop/pest terminology and the crop calendar for Manipur valley and hill districts (what is in the field in October) | `terminology_notes.md` | not started | None | None |
-| Collect **verified** public contact points (district agriculture offices, KVKs, Kisan Call Centre) with a source link for each. Leave unverified ones blank | `contacts.json` | not started | None | None |
-
-## Member B: geo + data
+Folder `team/member-a-agronomy/` · branch `feature/manipuri-agronomy` · formats in that folder's `README.md`. Data, configuration and documentation only: do **not** modify the risk engine.
 
 | Task | Deliverable | Status | Dependency | Blocker |
 |---|---|---|---|---|
-| Source a trustworthy Manipur **district** boundary dataset. Check whether it has the current **16 districts** or the older 9-district structure. **Lead:** OpenStreetMap already places points in the post-2016 districts (Kakching, Jiribam; checked 2026-10-08). Its admin boundaries are ODbL-licensed and need checking against the official district list | `manipur_districts.geojson`: a WGS84 FeatureCollection. Each feature needs properties `id`, `name` and `boundary_source` (the dataset name and version); optional `district`, `state` and `note`. Load it with `python -m satquery.agri assess --areas manipur_districts.geojson`. Also `boundaries_provenance.md` (source URL, licence, date, structure, known limits) | not started | None | Dataset availability |
-| Optional: sub-division / block boundaries, from a trustworthy source only | `manipur_subdivisions.geojson` and provenance | not started | District file | Dataset availability |
-| Check the Copernicus quota on our account (dashboard) against the measured cost: **about 0.37 processing units per 30-day NDVI window for 60 km²**, 4 windows per area on the first run, then 1 per area per day (the baseline is cached). Open-Meteo: 1 call per area per 3 h | Note in `data_notes.md` | not started | None | None |
-| Help define the crop/vegetation features: what NDVI baseline window to use (the same 10-day window in previous years?), the cropland focus, and the valley vs hill split | Section in `data_notes.md` | not started | P0.4 design | None |
-| Review the **SAMPLE** pest-report scenario: plausible pests by area and season, counts, severity mix. The seeded generator exists; its inputs are in `satquery/agri/assets/sample_scenario.json`, with per-area pressure background / elevated / high | Edits to `sample_scenario.json`, or `sample_reports_spec.md` | not started | None | None |
-| QA: data ranges, units, timestamps, timezones (IST vs UTC), and that SAMPLE labels appear everywhere | Bug list in the team chat | not started | Phase 2 build | None |
+| **MOST URGENT.** Replace the PLACEHOLDER thresholds with sourced, verified rules (rice blast leaf/neck, brown planthopper, and others if relevant), each with threshold, unit, crop, pest, source, verifier, date, applicability and limits. In the 2026-10-08 live run the placeholder blast rule held on 10 of 10 days in all 7 areas, so weather does not separate areas yet. Keep anything unverifiable as PLACEHOLDER | `verified_pest_rules.json` (the schema of `satquery/agri/assets/pest_rules.json`); optionally `verified_risk_model.json` | not started | None | **Blocks the credibility of the ranking** |
+| 5–10 reliable Manipuri agricultural queries, each mapped to an AG-04 intent (`AREA_RISK_QUERY`, `AREA_EXPLANATION`, `INSPECTION_PRIORITY`, `CROP_HEALTH`, `PEST_RISK`, `WEATHER_RISK`, `AREA_SPECIFIC_RISK`) and verified by a fluent speaker | `manipuri_queries.json` | not started | None | None |
+| Agricultural terminology: crops, pests, diseases, weather, crop health, inspection/risk, place names | `agri_terms_manipuri.json` | not started | None | None |
+| Advisory content (symptoms, weather link, preventive/IPM steps, when to contact the Department or KVK), only where verified. No invented contacts or helplines | `advisory.json` | not started | None | None |
+| Sources and verification for everything above | `SOURCES.md` | not started | None | None |
 
-## Member C: product / UI / QA
+## Member B: Geography
 
-| Task | Deliverable | Status | Dependency | Blocker |
-|---|---|---|---|---|
-| Review the current SatQuery UI: what to keep (map, drawing, result card, trace drawer, voice input) and what to redesign for a government agricultural dashboard | `ux_review.md` with screenshots | not started | App running locally | None |
-| Sketch the dashboard information hierarchy: Manipur overview → risk map → priority areas → selected-area explanation → recommended action → ask the AI | Sketch or wireframe in `ux_review.md` | not started | None | None |
-| Browser QA of each phase: the demo flow, loading/error/empty states, light and dark themes, projector size (1280×720 and 1920×1080) | Bug list with steps to reproduce | not started | Each phase | None |
-| **Phase 3 dashboard QA:** start the server, open http://127.0.0.1:8000.<br>- Check the priority panel, the map (hover, click, dashed demo outlines), the drawer "Why is this area at risk?" and the three chips (high risk, why Bishnupur, inspect first).<br>- Try "Why is Imphal flagged?" (should ask which) and "Is there pest risk in this area?" with no area selected.<br>- Check dark mode, the satellite basemap and 1280×720.<br>- Stop the network and run with `SATQUERY_AGRI_OFFLINE=1`: the labels must say cached or offline | Bug list | not started | Phase 3 (done) | None |
-| Before the dashboard is built, review the risk engine's wording: run `python -m satquery.agri assess` and read the reasons and headlines in `runs/agri/assessment-*.json`. Are they clear to an agriculture officer? | Wording notes | not started | Phase 2 (done) | None |
-| Test the Phase 1 crop-health queries on a drawn rectangle over Manipur valley farmland: "What is the NDVI?", "How healthy is the crop here?", "Is vegetation stressed here?". Known-good rectangle: Thoubal–Kakching, W 93.95, S 24.45, E 94.03, N 24.52. Also try a cloudy area (e.g. south of Imphal: 93.90, 24.55, 93.98, 24.62) and check that the refusal reads well | QA notes | not started | Phase 1 (done) | Copernicus credentials in `.env` |
-
-## Member D: pitch / demo / optional AG-01
+Folder `team/member-b-geo/` · branch `feature/district-boundaries` · formats in that folder's `README.md`. No API is needed. Never invent or redraw boundaries, and do not modify the risk engine.
 
 | Task | Deliverable | Status | Dependency | Blocker |
 |---|---|---|---|---|
-| Pitch deck structured around **Technical Trust (35%)**, **Government Relevance (30%)** and **Industry Potential (35%)** | Deck | not started | None | None |
-| Main demo storyline (3–5 minutes), with exact clicks and queries. Phase 3 flow:<br>1. Opens on Manipur with the priority list.<br>2. Point at the PLACEHOLDER/SAMPLE strip.<br>3. "Which areas are high risk?"<br>4. Click #1, then "Why is this area at risk?" (score breakdown, NDVI vs 2023–25, day strips, sources).<br>5. "Which should we inspect first?"<br>6. Show a crop-health NDVI question on the Kakching rectangle (Phase 1).<br>7. Close with the honest limits | `demo_script.md` | not started | Phase 3 UI (done) | None |
-| Prepare answers to likely judge questions: data sources, why rules and not ML, accuracy, synthetic data, privacy, cost, scale, deployment, government adoption path. Facts from Phase 2:<br>- Hybrid design: satellite NDVI baseline (Copernicus Statistical API), model weather (Open-Meteo), SAMPLE reports, rule thresholds as reviewable data.<br>- The score is the visible sum of factor points; missing data lowers confidence instead of being filled in.<br>- Confidence is a rule-based label, not a probability.<br>- The future ML model learns only from verified inspections | `judge_qa.md` | not started | None | None |
-| Record backup demo videos after each stable milestone (end of Phase 4, Phase 5 and the final freeze) | Video files | not started | Stable builds | None |
-| **Only after P0/P1 are stable:** a time-boxed AG-01 investigation (rice leaf disease classifier, CPU-runnable, licence OK, tested on real photos). Drop it if it isn't credible | `ag01_findings.md` | not started | P0 and P1 stable | Time |
+| Current Manipur district boundaries from a named, citable dataset, WGS84, with properties `id`, `name`, `kind: district`, `boundary_source`, `district` and `state`. **Lead:** OpenStreetMap places points in the post-2016 districts (Kakching, Jiribam; checked 2026-10-08). It is ODbL-licensed and must be checked against the official list | `manipur_districts.geojson` | not started | None | Dataset availability |
+| Source, URL, version, access date, licence, administrative level, processing, limitations | `SOURCES.md` | not started | None | None |
+| District count and names, duplicates, geometry validity, CRS, bounds, simplification | `geo_validation.md` | not started | None | None |
+
+## Member C: UI/UX + QA
+
+Folder `team/member-c-qa/` · branch `feature/ui-qa` · formats and the full test list in that folder's `README.md`. Report bugs; do not change backend or risk-engine code. Code proposals go on a separate `feature/ui-fixes` branch for review.
+
+| Task | Deliverable | Status | Dependency | Blocker |
+|---|---|---|---|---|
+| UX review of the dashboard for a government audience: hierarchy, wording, readability from a projector, what to simplify | `UI_REVIEW.md` and screenshots | not started | Phase 3 (done) | None |
+| Test live, cached and offline data; cloudy imagery; missing NDVI or weather; SAMPLE data and PLACEHOLDER labels; questions (including ambiguous and unknown ones); map interactions; loading and error states; 1280×720, 1600×900 and the projector; light and dark | `TEST_MATRIX.md` | not started | Phase 3 (done) | None |
+| One entry per bug: ID, severity, page, steps, expected, actual, screenshot | `QA_REPORT.md` | not started | Testing above | None |
+
+## Member D: Pitch + demo
+
+Folder `team/member-d-pitch/` · branch `feature/pitch` · the facts to state accurately are in that folder's `README.md`. Never present SAMPLE data or PLACEHOLDER thresholds as validated findings, and never claim unbuilt features.
+
+| Task | Deliverable | Status | Dependency | Blocker |
+|---|---|---|---|---|
+| Deck around Technical Trust (35%), Government Relevance (30%) and Industry Potential (35%), matching the implemented product | `AG04_Pitch.pptx` | not started | None | None |
+| Demo storyline following the real product (dashboard, risk map, priority list, "Why is this area at risk?", agri questions, NDVI crop-health question, Manipuri query only if integrated, roadmap, honest limits) | `DEMO_SCRIPT.md` | not started | Phase 3 (done) | None |
+| Likely judge questions and accurate answers (data sources, rules not ML, SAMPLE data, placeholder thresholds, confidence, cost, scale, deployment, adoption path) | `JUDGE_QA.md` | not started | None | None |
+| Screenshots and a backup recording of the stable build; links to large videos in `media/LINKS.md` | `media/` | not started | Stable build | None |
+
+## Integration (Claude)
+
+- Reviews each member's branch: changed files, cited sources, `python team/check_deliverables.py`, full tests, typecheck and build. Then integrates through the existing configuration (`SATQUERY_AGRI_PEST_RULES`, `SATQUERY_AGRI_RISK_MODEL`, `SATQUERY_AGRI_AREAS`).
+- Never changes the risk method to fit a contribution, and never merges blindly.
+- Order: B's districts and A's thresholds as they arrive, then Manipuri, then C's QA on the integrated build, then Phase 4 demo hardening (only after approval).
+- AG-01 and other optional features have not started.
 
 ## Claude (implementation)
 
