@@ -150,19 +150,19 @@ def overview(snapshot: Snapshot) -> AgriOverview:
     summaries = [summarise(snapshot.areas[a.area_id], a) for a in snapshot.assessments]
     official = [s for s in summaries if s.official_boundary]
     demo = [s for s in summaries if s.kind == "demo"]
+    boundaries = agri_districts.load_boundaries()  # context outlines, never scored
     notes = []
     if demo:
         notes.append(f"{len(demo)} demo monitoring rectangle(s) over valley farmland: not administrative boundaries.")
     if official:
         notes.append(f"{len(official)} district(s) with administrative outlines from a named dataset.")
-    else:
+    elif not boundaries:  # when outlines are loaded, district_note says so; never claim both
         notes.append("Verified district boundaries are not loaded yet.")
     bounds = [s.bounds for s in summaries]
     view = (min(b[0] for b in bounds), min(b[1] for b in bounds), max(b[2] for b in bounds),
             max(b[3] for b in bounds)) if bounds else None
     status = snapshot.assessments[0].thresholds_status if snapshot.assessments else "PLACEHOLDER"
     states = sorted({p.state for a in snapshot.assessments for p in a.provenance})
-    boundaries = agri_districts.load_boundaries()
     districts = agri_districts.summarise(snapshot.assessments, snapshot.areas, boundaries)
     names = agri_districts.load_names()
     district_note = (

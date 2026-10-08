@@ -59,14 +59,18 @@ def test_a_zone_naming_an_unlisted_district_is_kept_not_dropped():
     assert extra["listed"] is False and extra["zone_ids"] == ["z1"]
 
 
-def test_verified_district_outlines_are_context_only(tmp_path, monkeypatch):
+def bishnupur_outline(tmp_path):
     path = tmp_path / "districts.geojson"
     path.write_text(json.dumps({"type": "FeatureCollection", "features": [{
         "type": "Feature", "geometry": {"type": "Polygon", "coordinates": [[[93.7, 24.6], [93.9, 24.6], [93.9, 24.75],
                                                                           [93.7, 24.75], [93.7, 24.6]]]},
         "properties": {"id": "mn-bishnupur", "name": "Bishnupur", "kind": "district", "district": "Bishnupur",
                        "state": "Manipur", "boundary_source": "Test boundaries v1"}}]}), encoding="utf-8")
-    monkeypatch.setenv("SATQUERY_AGRI_DISTRICTS", str(path))
+    return path
+
+
+def test_verified_district_outlines_are_context_only(tmp_path, monkeypatch):
+    monkeypatch.setenv("SATQUERY_AGRI_DISTRICTS", str(bishnupur_outline(tmp_path)))
     zones = demo_areas()
     summary = agri_districts.summarise(assess_areas(zones, sources()), {a.id: a for a in zones},
                                        agri_districts.load_boundaries())
@@ -82,6 +86,19 @@ def test_the_overview_carries_districts_mode_and_separate_threshold_statuses(tmp
     assert body["zone_count"] == 7 and len(body["districts"]) == 16
     assert "does not mean the whole district is affected" in body["district_note"]
     assert body["official_boundaries"] is False
+
+
+@pytest.mark.parametrize("loaded", [True, False])
+def test_the_overview_states_the_district_outline_status_one_way_only(tmp_path, monkeypatch, loaded):
+    if loaded:
+        monkeypatch.setenv("SATQUERY_AGRI_DISTRICTS", str(bishnupur_outline(tmp_path)))
+    else:
+        monkeypatch.delenv("SATQUERY_AGRI_DISTRICTS", raising=False)
+    body = TestClient(create_app(agri_service=service(tmp_path))).get("/api/agri/overview").json()
+    notes = f"{body['area_note']} {body['district_note']}"  # shown together in the Priority panel
+    assert ("verified boundaries loaded" in notes) is loaded
+    assert ("not loaded yet" in notes) is (not loaded)
+    assert body["official_boundaries"] is loaded
 
 
 def test_the_overview_says_when_it_shows_a_snapshot(tmp_path):

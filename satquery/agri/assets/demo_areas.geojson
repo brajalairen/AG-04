@@ -45,11 +45,11 @@
     },
     {
       "type": "Feature",
-      "properties": {"id": "demo-jiribam-kamaranga", "name": "Jiribam farmland near Kamaranga", "kind": "demo",
+      "properties": {"id": "demo-jiribam-sonapur", "name": "Jiribam farmland near Sonapur", "kind": "demo",
                      "district": "Jiribam", "state": "Manipur",
                      "boundary_source": "demo rectangle drawn by the team (not an administrative boundary)",
-                     "note": "Centre reverse-geocoded to Kamaranga, Jiribam district (OpenStreetMap)."},
-      "geometry": {"type": "Polygon", "coordinates": [[[93.08, 24.77], [93.16, 24.77], [93.16, 24.84], [93.08, 24.84], [93.08, 24.77]]]}
+                     "note": "Centre reverse-geocoded to Sonapur, Jiribam district (OpenStreetMap)."},
+      "geometry": {"type": "Polygon", "coordinates": [[[93.115, 24.76], [93.145, 24.76], [93.145, 24.79], [93.115, 24.79], [93.115, 24.76]]]}
     },
     {
       "type": "Feature",
