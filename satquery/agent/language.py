@@ -17,6 +17,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
+from satquery.agent.meitei_mayek import to_latin
+
 LATIN_MANIPURI, ENGLISH = "latin_manipuri", "english"
 DEFAULT_LEXICON = Path(__file__).resolve().parents[2] / "team" / "member-a-agronomy" / "agri_terms_manipuri.json"
 
@@ -95,9 +97,14 @@ class _Form:
     evidence: bool     # counts as evidence that the question is Manipuri
 
 
+# romanstandard writes a consonant cluster (Meitei Mayek apun iyek) both with and without a vowel: paraioriti and
+# prāioriti, hayumiditi and hyumiditi. A form matches either way.
+CLUSTER_VOWEL = re.compile(r"(?<=[bcdghjkmnpst])a(?=[lrwy])")
+
+
 def _pattern(text: str) -> re.Pattern:
     parts = fold(text).split()
-    stem = r"[\s-]*".join(re.escape(part) for part in parts)
+    stem = r"[\s-]*".join(CLUSTER_VOWEL.sub("a?", re.escape(part)) for part in parts)
     return re.compile(rf"\b{stem}" + (r"\w*" if len("".join(parts)) >= 5 else rf"{SHORT_FORM_ENDINGS}\b"))
 
 
@@ -165,7 +172,7 @@ class NormalizedQuery:
 
 def normalize(query: str) -> NormalizedQuery:
     """The language, common intent and entities of a question, from its words alone."""
-    text = fold(query)
+    text = fold(to_latin(query))  # Meitei Mayek is read in its Latin spelling, by the same lexicon
     status, forms = lexicon()
     hits = []  # (position, concept, matched words, form)
     for form in forms:

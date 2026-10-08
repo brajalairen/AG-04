@@ -144,6 +144,11 @@ question -> satquery/agent/language.py: words -> concepts -> common intent (+ la
 
 - **Lexicon:** `language.py` reads the terms (concept from `category`, or from an optional `concept` field) and the `cue_words` (why, how, which/any, where, begin, first, this, here, high) from `agri_terms_manipuri.json`. No Manipuri word is written in code.
 - **Path:** override the lexicon file with `SATQUERY_MANIPURI_LEXICON`.
+- **Meitei Mayek:** a question in Meitei Mayek is converted letter by letter to the `romanstandard` spelling (`satquery/agent/meitei_mayek.py`) and then read like a Latin one. The answer comes in Latin Manipuri. Checked against all 107,551 corpus rows:
+  - 96.2% of words convert to their `romanstandard` spelling, ignoring accents;
+  - 99.3% of the 2,070 rows that get an intent get the same one from Meitei Mayek.
+
+  The rest come from the corpus spelling one word several ways (*ee*/*i*, *ao*/*āu*, *parāioriti*/*prāioriti*), or from English words written phonetically in Meitei Mayek. Bengali script is not converted.
 - **Intents:** the intent names are the ones in this README. `INTENTS` in `language.py` maps each onto the existing behaviour, and `team/check_deliverables.py` uses the same table.
 - **Tests:** `tests/test_language_routing.py` routes every entry of `manipuri_queries.json` and checks that it reaches its labelled intent. New verified queries are covered automatically.
 - **Unverified label:** every Latin Manipuri routing rule says the lexicon is not yet verified, until the file's `status` is `VERIFIED`.
