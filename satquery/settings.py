@@ -65,6 +65,9 @@ class Settings:
     agri_areas: str = "demo"         # "demo" (the team's demo rectangles) or a GeoJSON file of monitored areas
     agri_offline: bool = False       # serve cached agricultural data only (no network), labelled CACHED
     agri_refresh_s: float = 1800.0   # how long one assessment of all areas is reused before it is recomputed
+    agri_mode: str = "live"          # "live" (falls back to the frozen snapshot when live data is incomplete) or "snapshot"
+    agri_snapshot: str = ""          # frozen snapshot file; empty means runs/agri/snapshot.json
+    agri_warmup: bool = True         # compute the first assessment in the background when the server starts
 
     @property
     def weather_enabled(self) -> bool:
@@ -107,4 +110,7 @@ def load_settings() -> Settings:
         agri_areas=env("SATQUERY_AGRI_AREAS", defaults.agri_areas),
         agri_offline=env("SATQUERY_AGRI_OFFLINE", "").strip().lower() in ("1", "true", "yes", "on"),
         agri_refresh_s=float(env("SATQUERY_AGRI_REFRESH_S", defaults.agri_refresh_s)),
+        agri_mode=env("SATQUERY_AGRI_MODE", defaults.agri_mode).strip().lower(),
+        agri_snapshot=env("SATQUERY_AGRI_SNAPSHOT", defaults.agri_snapshot),
+        agri_warmup=env("SATQUERY_AGRI_WARMUP", "1").strip().lower() not in ("0", "false", "no", "off"),
     )

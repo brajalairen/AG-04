@@ -10,7 +10,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-DataState = Literal["LIVE", "CACHED", "SAMPLE", "UNAVAILABLE"]
+# SNAPSHOT: from a frozen, known-good assessment file (Phase 4), never shown as live.
+DataState = Literal["LIVE", "CACHED", "SNAPSHOT", "SAMPLE", "UNAVAILABLE"]
 ThresholdStatus = Literal["PLACEHOLDER", "VERIFIED"]
 FactorStatus = Literal["ok", "partial", "unavailable"]
 RiskLevel = Literal["LOW", "MODERATE", "HIGH", "CRITICAL", "INSUFFICIENT_DATA"]

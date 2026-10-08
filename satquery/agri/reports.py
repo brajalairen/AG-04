@@ -5,7 +5,10 @@ up by this generator from `assets/sample_scenario.json`. Every report says `sour
 `synthetic: true` and carries the label "SAMPLE DATA — Prototype Simulation"; the set's provenance
 state is SAMPLE. They are never real government or field observations and must not be shown as such.
 
-Deterministic: the same scenario, areas and end date always produce the same reports.
+Deterministic and stable from day to day: an area's reports are seeded by the scenario and the area
+alone, and their dates are kept as days before the window's end. The same area therefore gets the
+same reports (count, pest, severity, place, how many days ago) every day, so a demo ranking does not
+reshuffle overnight, while the dates stay relative to today.
 """
 
 import json
@@ -49,13 +52,13 @@ def generate(areas: list[MonitoredArea], end: date, scenario: dict | None = None
     scenario = scenario or load_scenario()
     reports = []
     for area in areas:
-        rng = random.Random(f"{scenario['seed']}:{area.id}:{end.isoformat()}")
+        rng = random.Random(f"{scenario['seed']}:{area.id}")  # not the date: stable day to day
         level = scenario["pressure_levels"][scenario["area_pressure"].get(area.id, scenario["default_pressure"])]
         low, high = level["reports"]
         for n in range(rng.randint(low, high)):
             lon, lat = _point_inside(rng, area)
             observed = end - timedelta(days=rng.randrange(scenario["window_days"]))
-            reports.append(PestReport(id=f"sample-{area.id}-{end:%Y%m%d}-{n + 1}", area_id=area.id,
+            reports.append(PestReport(id=f"sample-{area.id}-{n + 1}", area_id=area.id,
                                       latitude=round(lat, 5), longitude=round(lon, 5),
                                       observed_on=observed.isoformat(), crop=scenario["crop"],
                                       pest=_pick(rng, scenario["pests"]), severity=_pick(rng, level["severity"])))

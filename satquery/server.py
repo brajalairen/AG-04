@@ -13,6 +13,7 @@ import re
 import threading
 import uuid
 from collections.abc import Callable
+from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
@@ -521,7 +522,16 @@ def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = ana
     store = UploadStore(directory=_uploads_dir(settings))
     upload_limit = settings.max_upload_mb * 1024 * 1024
     too_large = f"the file is larger than the {settings.max_upload_mb} MB upload limit (SATQUERY_MAX_UPLOAD_MB)"
-    app = FastAPI(title="SatQuery AI", description="Agentic remote-sensing analysis (SIH26167)")
+    @asynccontextmanager
+    async def lifespan(_app):
+        # AG-04: compute the first risk assessment in the background as the server starts, so the first
+        # dashboard request does not wait for it. Only a real server start runs this (not TestClient
+        # without `with`), and SATQUERY_AGRI_WARMUP=0 switches it off.
+        if settings.agri_warmup:
+            agri.warm_in_background()
+        yield
+
+    app = FastAPI(title="SatQuery AI", description="Agentic remote-sensing analysis (SIH26167)", lifespan=lifespan)
     app.add_middleware(CORSMiddleware, allow_origins=DEV_ORIGINS, allow_methods=["*"], allow_headers=["*"])
 
     @app.middleware("http")
