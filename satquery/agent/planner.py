@@ -45,6 +45,11 @@ def _has_nir(image: RasterImage) -> bool:
 
 
 def _single_optical(plan, intent, image, query):
+    if intent.task == "crop_health":
+        # NDVI is the evidence; the VLM is not asked, since a visual guess cannot measure vigour.
+        # `api.analyze` refuses images without red + NIR before planning, so this step always has them.
+        plan.add("optical.vegetation_health", [0], "primary evidence: NDVI from the red and near-infrared bands")
+        return
     if intent.task == "caption":
         plan.add("vlm.caption", [0], "describe the scene")
         if _has_nir(image):

@@ -90,6 +90,14 @@ class NoSarImagery(RetrievalError):
     status, code = 404, "no_sar_imagery"
 
 
+class OpticalUnusable(RetrievalError):
+    """The optical scene does not show enough of the selected area (cloud, shadow, no data) for an
+    optical-only measurement such as NDVI. Radar cannot measure NDVI, so there is no fallback, and no
+    value is estimated in its place."""
+
+    status, code = 422, "optical_unusable"
+
+
 class SarTemporalUnsupported(RetrievalError):
     """A radar question about change over time: two-date Sentinel-1 retrieval does not exist yet, and
     answering it with optical imagery instead would ignore what was asked."""

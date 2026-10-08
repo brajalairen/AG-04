@@ -69,6 +69,16 @@ def get_weather(settings: Settings) -> OpenMeteoWeather | None:
         return _WEATHER[key]
 
 
+CROP_HEALTH_WITHOUT_NIR = (
+    "Crop health is measured with NDVI, which needs red and near-infrared bands; this image has {bands}, so no "
+    "NDVI was computed and none was estimated. Draw a rectangle on the map to retrieve a Sentinel-2 scene (it "
+    "includes NIR), or upload a multispectral GeoTIFF with red and NIR bands.")
+CROP_HEALTH_ON_SAR = (
+    "Crop health is measured with NDVI from optical red and near-infrared bands; this is a radar (SAR) image, which "
+    "cannot measure NDVI, so no crop-health figure was computed or estimated. Draw a rectangle on the map to "
+    "retrieve a Sentinel-2 optical scene, or upload a multispectral GeoTIFF.")
+
+
 def _errors(issues: list[ValidationIssue]) -> list[ValidationIssue]:
     return [i for i in issues if i.severity == "error"]
 
@@ -151,8 +161,17 @@ def analyze(request: AnalysisRequest, settings: Settings | None = None, vlm: VLM
     else:
         intent = classify(request.query, config)
     trace.intent = intent
+    if intent.task == "crop_health" and config == "single_sar":
+        trace.validation.append(issue("crop_health_needs_optical", CROP_HEALTH_ON_SAR))
+        return reject()
     if intent.task not in COMPATIBLE_TASKS[config]:
         trace.validation.append(issue("task_input_mismatch", f"Task '{intent.task}' cannot run on input configuration '{config}'."))
+        return reject()
+    # NDVI needs red and near-infrared reflectance. Without them the question is refused, never handed
+    # to the VLM for a visual guess at "how healthy" the vegetation looks.
+    if intent.task == "crop_health" and (images[0].band("red") is None or images[0].band("nir") is None):
+        trace.validation.append(issue("missing_nir", CROP_HEALTH_WITHOUT_NIR.format(
+            bands=", ".join(trace.images[0].bands) or "none named"), image_index=0))
         return reject()
 
     trace.plan = build_plan(intent, config, images, request.query)

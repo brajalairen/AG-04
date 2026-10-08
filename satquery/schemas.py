@@ -11,7 +11,9 @@ from pydantic import BaseModel, Field
 Modality = Literal["optical", "sar"]
 # "area_only": a drawn area and no imagery, as for a weather question (D-029, optional capability).
 InputConfig = Literal["single_optical", "single_sar", "pair_cross_modal", "pair_bitemporal", "area_only"]
-TaskType = Literal["vqa", "caption", "grounding", "change_analysis", "cross_modal_analysis", "weather_forecast"]
+# "crop_health" (AG-04): vegetation vigour measured by NDVI from the red and NIR bands, never a VLM guess.
+TaskType = Literal["vqa", "caption", "grounding", "change_analysis", "cross_modal_analysis", "weather_forecast",
+                   "crop_health"]
 Severity = Literal["error", "warning"]
 StepStatus = Literal["ok", "failed", "skipped"]
 ResponseStatus = Literal["ok", "partial", "invalid_input", "error"]

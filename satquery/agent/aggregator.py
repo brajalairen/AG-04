@@ -38,7 +38,8 @@ def _places(regions: list[dict]) -> str:
 def aggregate(intent: Intent, ctx: ToolContext, results: list[StepResult], run_dir: Path):
     r = Results(results, ctx)
     compose = {"caption": _caption, "vqa": _vqa, "grounding": _grounding, "change_analysis": _change,
-               "cross_modal_analysis": _cross_modal, "weather_forecast": _weather}[intent.task]
+               "cross_modal_analysis": _cross_modal, "weather_forecast": _weather,
+               "crop_health": _crop_health}[intent.task]
     answer, confidence, overlays = compose(intent, r, ctx, run_dir)
     step_evidence = [e for s in results for e in s.evidence]
     failed = [s for s in results if s.status == "failed"]
@@ -84,6 +85,56 @@ def _vqa(intent, r, ctx, run_dir):
         return "", None, []
     answer = vqa.outputs["text"] + (_sar_context(r) if ctx.images[0].modality == "sar" else "")
     return answer, vqa.confidence, [_overlay_evidence(ctx.rgb(0), run_dir, "input", "input image (as analysed)", vqa.step_id, 0, ctx)]
+
+
+SINGLE_DATE_CAVEAT = ("This is one date: NDVI shows how green and vigorous the vegetation is, not why. Low NDVI can "
+                      "mean crop stress, but also settlements and roads, bare or harvested fields, young crops or "
+                      "another crop type; confirming stress or pest damage needs a comparison with the same season's "
+                      "baseline and a field check.")
+
+
+def _vigour_label(mean_ndvi: float, breaks) -> str:
+    sparse, low, dense = breaks
+    return ("high" if mean_ndvi >= dense else "moderate" if mean_ndvi >= low else "low" if mean_ndvi >= sparse
+            else "very low")
+
+
+def _crop_health(intent, r, ctx, run_dir):
+    """NDVI over clear land decides; nothing is estimated when too little clear land remains."""
+    step = r.get("optical.vegetation_health")
+    if not step:
+        return "", None, []
+    o, valid = step.outputs, ctx.valid(0)
+    unusable = (f" {_pct(1 - valid.mean())} of the image had no usable data (for example, masked cloud) and is not "
+                "counted." if not valid.all() else "")
+    if not o["assessable"]:
+        return (f"No crop-health figure was computed: only {o['land_pixels']} clear land pixels remain in the analysed "
+                f"area once water ({o['water_rule']}) and pixels without data are left out, too few for a reliable "
+                f"NDVI summary. No value was estimated in its place.{unusable}"), step.confidence, []
+
+    fractions, (sparse, low, dense) = o["class_fractions"], o["class_breaks"]
+    lines = [f"Mean NDVI {o['mean_ndvi']:.2f} over the clear land of this area: "
+             f"{_vigour_label(o['mean_ndvi'], o['class_breaks'])} vegetation vigour (heuristic classes).",
+             f"Vigour by NDVI: dense (≥ {dense:g}) {_pct(fractions['dense'])}, moderate ({low:g}–{dense:g}) "
+             f"{_pct(fractions['moderate'])}, low ({sparse:g}–{low:g}) {_pct(fractions['low'])}, bare or very sparse "
+             f"(< {sparse:g}) {_pct(fractions['bare_or_very_sparse'])} of the land; median {o['median_ndvi']:.2f}, "
+             f"10th–90th percentile {o['p10_ndvi']:.2f}–{o['p90_ndvi']:.2f}."]
+    low_vigour = r.mask(step, "low_vigour")
+    if fractions["low"] >= 0.01:
+        lines.append(f"Low-vigour vegetation is mainly in the {_places(mask_regions(low_vigour, valid=valid))}.")
+    notes = (f"Water ({o['water_rule']}, {_pct(o['water_fraction'])} of the area) is not counted as land."
+             if o["water_fraction"] > 0 else "") + unusable
+    if notes:
+        lines.append(notes.strip())
+    lines.append(SINGLE_DATE_CAVEAT)
+    class_map = r.mask(step, "vigour_class")
+    label = (f"NDVI vigour (brown < {sparse:g}, tan {sparse:g}–{low:g}, light green {low:g}–{dense:g}, "
+             f"green ≥ {dense:g}; water and cloud transparent)")
+    # The map stacks overlays in order, so the NDVI classes come last to sit above the input image.
+    overlays = [_overlay_evidence(ctx.rgb(0), run_dir, "input", "input image (as analysed)", step.step_id, 0, ctx),
+                Evidence(kind="overlay", label=label, image_index=0, source_step=step.step_id,
+                         file=ev.save_png(ev.vigour_map(class_map), run_dir / "ndvi.png", class_map >= 0))]
+    return "\n".join(lines), step.confidence, overlays
 
 
 # Water and vegetation on multispectral input: the spectral mask is the primary evidence (D-030).

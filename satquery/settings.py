@@ -51,6 +51,9 @@ class Settings:
     # the minimum. SatQuery operating heuristics, not scientific constants: tune them here.
     optical_max_affected_fraction: float = 0.20
     optical_min_clear_pixels: int = 256  # 16 x 16, the smallest image the pipeline analyses
+    # Crop health (AG-04): how many recent scenes may be judged by the area's own scene classification
+    # (one cheap band each) before the question is refused. Bands are downloaded for one scene only.
+    optical_max_scenes_checked: int = 4
 
     # --- weather forecasts (optional capability, D-029; not an SIH requirement) ---
     weather_provider: str = "open-meteo"  # "open-meteo" or "off"
@@ -91,6 +94,7 @@ def load_settings() -> Settings:
         copernicus_resolution_m=float(env("COPERNICUS_RESOLUTION_M", defaults.copernicus_resolution_m)),
         optical_max_affected_fraction=float(env("SATQUERY_OPTICAL_MAX_AFFECTED", defaults.optical_max_affected_fraction)),
         optical_min_clear_pixels=int(env("SATQUERY_OPTICAL_MIN_CLEAR_PIXELS", defaults.optical_min_clear_pixels)),
+        optical_max_scenes_checked=int(env("SATQUERY_OPTICAL_MAX_SCENES", defaults.optical_max_scenes_checked)),
         weather_provider=env("SATQUERY_WEATHER", defaults.weather_provider).strip().lower(),
         open_meteo_api_key=env("OPEN_METEO_API_KEY", defaults.open_meteo_api_key),
         weather_cache_ttl_s=float(env("SATQUERY_WEATHER_CACHE_TTL_S", defaults.weather_cache_ttl_s)),

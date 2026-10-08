@@ -59,27 +59,46 @@ export function SceneProvenance() {
   );
 }
 
-/** What the optical scene showed of the selected area for a water question (D-030): measured from
- *  Sentinel-2's own scene classification over the area, never the tile's catalogue cloud cover. */
+/** What the optical scene showed of the selected area for a water (D-030) or crop-health (AG-04)
+ *  question: measured from Sentinel-2's own scene classification over the area, never the tile's
+ *  catalogue cloud cover. Only water falls back to radar; radar cannot measure NDVI. */
 function OpticalCheck() {
   const quality = useAppStore((s) => s.opticalQuality);
   if (!quality) return null;
   const share = `${(quality.affected_fraction * 100).toFixed(1)}%`;
   const limit = `${Math.round(quality.max_affected_fraction * 100)}%`;
+  const water = quality.purpose !== "vegetation";
   return (
     <p className="mt-2 border-t border-line pt-2 text-[11px] leading-relaxed text-muted">
       {quality.usable ? (
         <>
           Optical check: {share} of your area is cloud, cloud shadow or no data (Sentinel-2 scene classification)
           {quality.masked ? "; those pixels were left out of the analysis." : "."}
+          {quality.scenes_checked.length > 1 && (
+            <>
+              {" "}
+              Clearer than the other recent scenes judged for your area:{" "}
+              {quality.scenes_checked
+                .slice(0, -1)
+                .map((c) => `${c.acquired} (${(c.affected_fraction * 100).toFixed(1)}% obscured)`)
+                .join(", ")}
+              .
+            </>
+          )}
         </>
-      ) : (
+      ) : water ? (
         <>
           Sentinel-2 L2A {quality.scene.acquired} was not used: {quality.reason}. Water was mapped with Sentinel-1
           radar instead.
         </>
+      ) : (
+        <>
+          Sentinel-2 L2A {quality.scene.acquired} was not used: {quality.reason}. No NDVI was estimated.
+        </>
       )}{" "}
-      <span className="text-faint">(Radar limit: {limit} of the area, a SatQuery heuristic.)</span>
+      <span className="text-faint">
+        ({water ? "Radar" : "Cloud"} limit: {limit} of the area, a SatQuery heuristic.)
+      </span>
     </p>
   );
 }

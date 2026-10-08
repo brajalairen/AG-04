@@ -166,5 +166,6 @@ export function taskLabel(task: string | null): string | null {
     change_analysis: "Change analysis",
     cross_modal_analysis: "Optical + SAR analysis",
     weather_forecast: "Weather forecast",
+    crop_health: "Crop health (NDVI)",
   }[task] ?? task;
 }

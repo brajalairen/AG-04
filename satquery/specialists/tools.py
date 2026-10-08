@@ -254,6 +254,77 @@ def spectral(ctx, idx, p: IndicesParams, step_id):
                       masks={"water": water, "vegetation": vegetation, "built_up_proxy": built_up_proxy})
 
 
+class VegetationHealthParams(Params):
+    """NDVI vigour classes: < sparse_below bare or very sparse, then low, moderate, and dense from dense_from.
+    The breaks are a general heuristic, not calibrated for a crop type, growth stage or season."""
+    ndwi_water_threshold: float = Field(0.0, ge=-0.5, le=0.5)
+    sparse_below: float = Field(0.2, ge=0.0, le=0.5)
+    low_below: float = Field(0.4, ge=0.1, le=0.8)
+    dense_from: float = Field(0.6, ge=0.2, le=0.95)
+    min_land_pixels: int = Field(64, ge=1, le=1_000_000)
+
+    @model_validator(mode="after")
+    def _ordered(self):
+        if not self.sparse_below < self.low_below < self.dense_from:
+            raise ValueError("vigour breaks must satisfy sparse_below < low_below < dense_from")
+        return self
+
+
+VIGOUR_CLASSES = ("bare_or_very_sparse", "low", "moderate", "dense")
+
+
+def vegetation_health(ctx, idx, p: VegetationHealthParams, step_id):
+    """Crop health as NDVI over the clear LAND of the analysed area.
+
+    Water (NDWI > threshold; NDVI < 0 when there is no green band) and nodata, including masked
+    cloud, are left out, so a lake or a cloud cannot drag the figure down. Nothing is estimated when
+    too few land pixels remain.
+    """
+    image = ctx.images[idx[0]]
+    red, green, nir = image.band("red"), image.band("green"), image.band("nir")
+    if red is None or nir is None:
+        return ToolOutput(outputs={}, skipped_reason="image has no red and near-infrared bands, so NDVI cannot be computed")
+    with np.errstate(divide="ignore", invalid="ignore"):
+        ndvi = (nir - red) / (nir + red)
+        ndwi = (green - nir) / (green + nir) if green is not None else None
+    valid = ctx.valid(idx[0]) & np.isfinite(ndvi)
+    water = valid & ((np.nan_to_num(ndwi, nan=-1.0) > p.ndwi_water_threshold) if ndwi is not None
+                     else (np.nan_to_num(ndvi, nan=0.0) < 0))
+    land = valid & ~water
+    land_pixels = int(land.sum())
+    analysed = int(ctx.valid(idx[0]).sum())
+    outputs = {"land_pixels": land_pixels, "water_fraction": round(float(water.sum()) / analysed, 4) if analysed else 0.0,
+               "water_rule": f"NDWI > {p.ndwi_water_threshold:g}" if ndwi is not None else "NDVI < 0 (no green band)",
+               "assessable": land_pixels >= p.min_land_pixels}
+    if not outputs["assessable"]:
+        return ToolOutput(outputs=outputs, masks={"land": land})
+
+    values = ndvi[land]
+    edges = (p.sparse_below, p.low_below, p.dense_from)
+    classes = np.digitize(values, edges)  # 0 sparse, 1 low, 2 moderate, 3 dense
+    fractions = {name: round(float(np.mean(classes == i)), 4) for i, name in enumerate(VIGOUR_CLASSES)}
+    vegetated = values[values >= p.sparse_below]
+    outputs |= {
+        "mean_ndvi": round(float(values.mean()), 3), "median_ndvi": round(float(np.median(values)), 3),
+        "p10_ndvi": round(float(np.percentile(values, 10)), 3), "p90_ndvi": round(float(np.percentile(values, 90)), 3),
+        "mean_ndvi_vegetated": round(float(vegetated.mean()), 3) if vegetated.size else None,
+        "class_fractions": fractions, "class_breaks": list(edges),
+    }
+    class_map = np.full(ndvi.shape, -1, np.int8)
+    class_map[land] = classes
+    low_vigour = land & (class_map == 1)
+    evidence = [Evidence(kind="metric", label="mean NDVI (clear land)", image_index=idx[0], value=outputs["mean_ndvi"],
+                         source_step=step_id),
+                Evidence(kind="metric", label=f"dense vegetation share (NDVI >= {p.dense_from:g})", image_index=idx[0],
+                         value=fractions["dense"], fraction=fractions["dense"], source_step=step_id)]
+    confidence = Confidence(value=None, method="not estimated: NDVI = (NIR - red) / (NIR + red) is computed directly "
+                            "from surface reflectance; the vigour classes "
+                            f"({p.sparse_below:g} / {p.low_below:g} / {p.dense_from:g}) are a general heuristic, not "
+                            "calibrated for crop type, growth stage or season")
+    return ToolOutput(outputs=outputs, evidence=evidence, confidence=confidence,
+                      masks={"land": land, "low_vigour": low_vigour, "vigour_class": class_map})
+
+
 def change_map(ctx, idx, p: ChangeMapParams, step_id):
     mask, info = ra.change_map(ctx.images[idx[0]], ctx.images[idx[1]], p.min_region_px)
     out = _mask_output(mask, "change (deterministic)", idx[1], step_id, info, valid=ctx.valid(idx[0], idx[1]))
@@ -399,6 +470,8 @@ REGISTRY: dict[str, Tool] = {tool.name: tool for tool in [
     Tool("sar.water_mask", "SAR low-backscatter water mask (Otsu, heuristic)", WaterMaskParams, sar_water),
     Tool("sar.bright_mask", "SAR strong-scatterer mask (candidate built-up, heuristic)", BrightMaskParams, sar_bright),
     Tool("optical.spectral_indices", "NDVI/NDWI masks when NIR is available", IndicesParams, spectral),
+    Tool("optical.vegetation_health", "Crop health: NDVI statistics and vigour classes over clear land (red + NIR)",
+         VegetationHealthParams, vegetation_health),
     Tool("change.map", "Deterministic change map (change vector / log-ratio + Otsu)", ChangeMapParams, change_map),
     Tool("change.compare_areas", "Compare a class's area between two dates", CompareParams, compare_areas),
     Tool("fusion.cross_modal", "Combine optical and SAR masks with an agreement score", FusionParams, cross_modal),

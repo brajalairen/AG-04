@@ -33,6 +33,7 @@ MIRRORED = {
     "WeatherInfo": server.WeatherInfo,
     "RouteResult": server.RouteResult,
     "OpticalQualityInfo": server.OpticalQualityInfo,
+    "SceneCheck": server.SceneCheck,
 }
 
 

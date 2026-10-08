@@ -12,7 +12,9 @@ export type TaskType =
   | "grounding"
   | "change_analysis"
   | "cross_modal_analysis"
-  | "weather_forecast";
+  | "weather_forecast"
+  /** AG-04: vegetation vigour from NDVI (red + NIR), never a VLM guess. */
+  | "crop_health";
 export type Severity = "error" | "warning";
 export type StepStatus = "ok" | "failed" | "skipped";
 export type ResponseStatus = "ok" | "partial" | "invalid_input" | "error";
@@ -265,9 +267,11 @@ export interface CrossModalInfo {
   explanation: string;
 }
 
-/** How much of the selected area an optical scene shows, and whether it was usable for a water
- *  question. Mirrors satquery.server.OpticalQualityInfo. Never the tile's catalogue cloud cover. */
+/** How much of the selected area an optical scene shows, and whether it was usable for a water or
+ *  crop-health question. Mirrors satquery.server.OpticalQualityInfo. Never the tile's catalogue cloud cover. */
 export interface OpticalQualityInfo {
+  /** What the check was for. Only water has a radar fallback; radar cannot measure NDVI. */
+  purpose: "water" | "vegetation";
   /** The optical scene that was assessed. */
   scene: SceneMetadata;
   pixels: number;
@@ -284,6 +288,15 @@ export interface OpticalQualityInfo {
   method: string;
   /** The affected pixels were left out of the optical analysis. */
   masked: boolean;
+  /** Crop health: every date judged for the area, in the order tried; the last one is the scene used. */
+  scenes_checked: SceneCheck[];
+}
+
+/** One Sentinel-2 date judged for a crop-health question by the area's own scene classification. */
+export interface SceneCheck {
+  acquired: string;
+  /** Cloud, cloud shadow or no data, as a share of the selected area. */
+  affected_fraction: number;
 }
 
 export interface FetchImageryResult {

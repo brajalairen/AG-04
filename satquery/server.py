@@ -25,8 +25,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, model_validator
 
 from satquery import geo
-from satquery.agent.intents import (find_target, needs_multiple_dates, needs_optical_and_sar, needs_sar_only,
-                                    route_query)
+from satquery.agent.intents import (find_target, needs_crop_health, needs_multiple_dates, needs_optical_and_sar,
+                                    needs_sar_only, route_query)
 from satquery.api import analyze, answer_weather
 from satquery.evidence import save_png
 from satquery.examples import EXAMPLE_QUERIES, EXAMPLES_DIR, load_scenarios
@@ -249,10 +249,19 @@ class CrossModalInfo(BaseModel):
     explanation: str
 
 
+class SceneCheck(BaseModel):
+    """One Sentinel-2 date judged for a crop-health question by the selected area's own scene classification."""
+
+    acquired: str
+    affected_fraction: float  # cloud, cloud shadow or no data, over the selected area
+
+
 class OpticalQualityInfo(BaseModel):
     """How much of the selected area an optical scene shows, by Sentinel-2's own scene classification,
-    and whether it was usable for a water question (D-030). Never the catalogue's tile cloud cover."""
+    and whether it was usable for a water (D-030) or crop-health (AG-04) question. Never the catalogue's
+    tile cloud cover."""
 
+    purpose: Literal["water", "vegetation"] = "water"  # what the check was for; only water has a radar fallback
     scene: dict  # SceneMetadata of the optical scene that was assessed
     pixels: int
     clear_pixels: int
@@ -264,6 +273,8 @@ class OpticalQualityInfo(BaseModel):
     reason: str | None = None  # why the optical scene was not used
     method: str
     masked: bool = False  # the affected pixels were left out of the optical analysis
+    # Crop health: every date judged for the area, in the order tried; the last one is the scene used.
+    scenes_checked: list[SceneCheck] = Field(default_factory=list)
 
 
 class FetchImageryResult(BaseModel):
@@ -275,7 +286,8 @@ class FetchImageryResult(BaseModel):
     the nearest Sentinel-1 scene answers instead. `images` lists every scene to analyse: oldest first,
     or optical then SAR. `upload` and `metadata` are the most recent scene (the optical one for a
     sensor pair), as they were before multi-scene retrieval existed, so a single-date client reads
-    them unchanged. `optical_quality` is present whenever a water question's optical scene was assessed.
+    them unchanged. `optical_quality` is present whenever a water or crop-health question's optical scene
+    was assessed.
     """
 
     mode: Literal["single", "temporal", "cross_modal", "sar", "sar_fallback"] = "single"
@@ -667,6 +679,11 @@ def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = ana
                                           days_back=request.days_back, max_cloud=request.max_cloud)
                 metadata = scene.metadata.as_dict()
                 metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+            # A crop-health question is measured by NDVI on the clear pixels of the area, and refused when
+            # too little of it is visible: radar cannot measure NDVI. Checked before water, as the
+            # analysis does ("is the vegetation around the lake healthy?" is a crop-health question).
+            if needs_crop_health(request.query):
+                return fetch_vegetation_scene(provider, cache_folder, metadata, request, bands, current)
             # A water question checks what the optical scene really shows over the selected area, and
             # falls back to radar when too little of it is visible. Other questions are unchanged.
             if target == "water":
@@ -681,19 +698,15 @@ def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = ana
                                   images=[FetchedScene(role="single", upload=upload, metadata=metadata)],
                                   cached=bool(metadata.get("cached")))
 
-    def fetch_water_scene(provider, folder: Path, metadata: dict, current: Settings) -> FetchImageryResult:
-        """A water question on one optical scene (D-030).
+    def assess_optical(provider, folder: Path, metadata: dict, current: Settings,
+                       purpose: str) -> tuple[OpticalQualityInfo, Path | None, bool]:
+        """Sentinel-2's own scene classification (SCL) of the selected area, on the scene's grid (D-030).
 
-        Sentinel-2 first. Its scene classification, on the same grid, says how much of the SELECTED
-        AREA is cloud, cloud shadow or no data. Usable: the clear pixels are analysed with NDWI (the
-        affected ones become nodata). Not usable: the nearest Sentinel-1 scene is retrieved, only
-        then, and the water map comes from radar. Every file is cached beside the optical scene.
+        Returns the verdict, the file to analyse (the scene, or a copy with cloud, shadow and no-data
+        pixels set to nodata) or None when the scene is unusable, and whether the check was cached.
         """
-        from datetime import date
-
         from satquery.providers import quality
         from satquery.providers.copernicus import check_same_grid
-        from satquery.providers.errors import NoSarImagery
 
         bbox, acquired = metadata["bbox_wgs84"], metadata["acquired"]
         scene_path, scl_path = folder / "scene.tif", folder / "scl.tif"
@@ -705,21 +718,128 @@ def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = ana
             partial.replace(scl_path)
         assessed = quality.assess(scl_path, max_affected_fraction=current.optical_max_affected_fraction,
                                   min_clear_pixels=current.optical_min_clear_pixels)
-        info = OpticalQualityInfo(scene=metadata, **assessed.as_dict())
+        info = OpticalQualityInfo(scene=metadata, purpose=purpose, **assessed.as_dict())
+        if not assessed.usable:
+            return info, None, cached
+        analysed = scene_path
+        if assessed.affected_fraction > 0:
+            analysed = folder / "scene-clear.tif"
+            if not analysed.is_file():
+                partial = folder / "scene-clear.partial.tif"
+                quality.mask_affected(scene_path, scl_path, partial).replace(analysed)
+            info.masked = True
+        return info, analysed, cached
 
-        if assessed.usable:
-            analysed = scene_path
-            if assessed.affected_fraction > 0:
-                analysed = folder / "scene-clear.tif"
-                if not analysed.is_file():
-                    partial = folder / "scene-clear.partial.tif"
-                    quality.mask_affected(scene_path, scl_path, partial).replace(analysed)
-                info.masked = True
-            name = f"Sentinel-2 L2A {acquired}" + (" (cloud-masked)" if info.masked else "")
-            upload = _register(store, analysed, name, "optical", acquired, current)
-            return FetchImageryResult(mode="single", upload=upload, metadata=metadata,
-                                      images=[FetchedScene(role="single", upload=upload, metadata=metadata)],
-                                      optical_quality=info, cached=cached)
+    def single_optical_result(analysed: Path, metadata: dict, info: OpticalQualityInfo, cached: bool,
+                              current: Settings) -> FetchImageryResult:
+        acquired = metadata["acquired"]
+        name = f"Sentinel-2 L2A {acquired}" + (" (cloud-masked)" if info.masked else "")
+        upload = _register(store, analysed, name, "optical", acquired, current)
+        return FetchImageryResult(mode="single", upload=upload, metadata=metadata,
+                                  images=[FetchedScene(role="single", upload=upload, metadata=metadata)],
+                                  optical_quality=info, cached=cached)
+
+    def fetch_vegetation_scene(provider, folder: Path, metadata: dict, request: FetchImageryRequest,
+                               bands: list[str], current: Settings) -> FetchImageryResult:
+        """A crop-health question on one optical scene (AG-04): NDVI on the clear pixels of the area.
+
+        The least cloudy tile is often not the clearest view of a small area (Thoubal, 2026-10-04: tile
+        14.9% cloud, the area 37.7%; the 2026-09-14 scene showed it 91% clear). So when the first scene
+        does not show the area, the next-best dates are judged by the area's own scene classification
+        before any bands are downloaded. There is no radar fallback, because SAR cannot measure NDVI:
+        when no recent scene shows the area, the question is refused with the measured reasons, and no
+        NDVI is estimated in its place.
+        """
+        from satquery.providers.errors import OpticalUnusable
+
+        info, analysed, cached = assess_optical(provider, folder, metadata, current, "vegetation")
+        checked = [SceneCheck(acquired=metadata["acquired"], affected_fraction=info.affected_fraction)]
+        if analysed is None:
+            info, analysed, metadata, cached, more = clearer_scene(provider, folder, metadata, request, bands, current)
+            checked += more
+        if analysed is None:
+            judged = "; ".join(f"{c.acquired}: {c.affected_fraction:.1%}" for c in checked)
+            raise OpticalUnusable(
+                f"None of the {len(checked)} clearest recent Sentinel-2 scene(s) shows enough of this area for crop "
+                f"health. Share of the selected area under cloud, cloud shadow or without data (Sentinel-2 scene "
+                f"classification): {judged}; the limit is {current.optical_max_affected_fraction:.0%}. NDVI needs a "
+                "clear optical view of the ground and radar cannot measure it, so no NDVI was computed or estimated. "
+                "Try a smaller or different area, or ask again after the next clear acquisition.")
+        info.scenes_checked = checked
+        return single_optical_result(analysed, metadata, info, cached, current)
+
+    def clearer_scene(provider, folder: Path, first: dict, request: FetchImageryRequest, bands: list[str],
+                      current: Settings):
+        """The next-best dates after `first`, each judged by the area's scene classification (one cheap
+        band) and only the usable one downloaded. Returns (info, analysed, metadata, cached, checked);
+        `analysed` is None when none is usable. The outcome is recorded beside the first scene, so a
+        repeated question (same area, same day: see `cache_key`) needs no network at all.
+        """
+        from satquery.providers import quality
+        from satquery.providers.copernicus import check_same_grid
+
+        record = folder / "crop-health-scenes.json"
+        if record.is_file():
+            saved = json.loads(record.read_text(encoding="utf-8"))
+            checked = [SceneCheck(**item) for item in saved["checked"]]
+            if saved["chosen"] is None:
+                return None, None, None, True, checked
+            alternative = folder / f"alt-{saved['chosen']}"
+            metadata = json.loads((alternative / "metadata.json").read_text(encoding="utf-8")) | {"cached": True}
+            info, analysed, _ = assess_optical(provider, alternative, metadata, current, "vegetation")
+            return info, analysed, metadata, True, checked
+
+        bbox, checked, chosen = first["bbox_wgs84"], [], None
+        candidates = provider.ranked_scenes(bbox, days_back=request.days_back, max_cloud=request.max_cloud)
+        for scene in candidates:
+            day = str(scene.get("properties", {}).get("datetime", ""))[:10]
+            if day == first["acquired"]:
+                continue
+            if 1 + len(checked) >= current.optical_max_scenes_checked:
+                break
+            alternative = folder / f"alt-{day}"
+            alternative.mkdir(parents=True, exist_ok=True)
+            scl_path = alternative / "scl.tif"
+            if not scl_path.is_file():
+                partial = alternative / "scl.partial.tif"
+                provider.retrieve_scene_classification(bbox, day, partial)
+                partial.replace(scl_path)
+            assessed = quality.assess(scl_path, max_affected_fraction=current.optical_max_affected_fraction,
+                                      min_clear_pixels=current.optical_min_clear_pixels)
+            checked.append(SceneCheck(acquired=day, affected_fraction=assessed.affected_fraction))
+            if assessed.usable:
+                scene_path = alternative / "scene.tif"
+                retrieved = provider.download_scene(bbox, bands, scene, scene_path, alternatives=len(candidates))
+                check_same_grid(scene_path, scl_path, compare_band_count=False)
+                metadata = retrieved.metadata.as_dict()
+                (alternative / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+                chosen = day
+                break
+        record.write_text(json.dumps({"chosen": chosen, "checked": [c.model_dump() for c in checked]}, indent=2),
+                          encoding="utf-8")
+        if chosen is None:
+            return None, None, None, False, checked
+        info, analysed, _ = assess_optical(provider, alternative, metadata, current, "vegetation")
+        return info, analysed, metadata, False, checked
+
+    def fetch_water_scene(provider, folder: Path, metadata: dict, current: Settings) -> FetchImageryResult:
+        """A water question on one optical scene (D-030).
+
+        Sentinel-2 first. Its scene classification, on the same grid, says how much of the SELECTED
+        AREA is cloud, cloud shadow or no data. Usable: the clear pixels are analysed with NDWI (the
+        affected ones become nodata). Not usable: the nearest Sentinel-1 scene is retrieved, only
+        then, and the water map comes from radar. Every file is cached beside the optical scene.
+        """
+        from datetime import date
+
+        from satquery.providers.copernicus import check_same_grid
+        from satquery.providers.errors import NoSarImagery
+
+        bbox, acquired = metadata["bbox_wgs84"], metadata["acquired"]
+        scene_path = folder / "scene.tif"
+        info, analysed, cached = assess_optical(provider, folder, metadata, current, "water")
+        if analysed is not None:
+            return single_optical_result(analysed, metadata, info, cached, current)
 
         # The optical scene cannot answer: the nearest radar scene is retrieved now, and only now.
         sar_path, sar_record = folder / "sar-fallback.tif", folder / "sar-fallback.json"
@@ -730,7 +850,7 @@ def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = ana
             try:
                 sar = provider.retrieve_sar_near(bbox, date.fromisoformat(acquired), sar_path)
             except NoSarImagery as problem:
-                raise NoSarImagery(f"The optical scene of {acquired} cannot be used here: {assessed.reason}. "
+                raise NoSarImagery(f"The optical scene of {acquired} cannot be used here: {info.reason}. "
                                    f"{problem.message}") from problem
             check_same_grid(scene_path, sar.path, compare_band_count=False)
             sar_meta = sar.metadata.as_dict()

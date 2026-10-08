@@ -47,6 +47,19 @@ def overlay(rgb: np.ndarray, masks=(), boxes=()) -> np.ndarray:
     return np.asarray(image)
 
 
+# NDVI vigour classes, lowest to highest (a ColorBrewer BrBG-style ramp: brown for bare, green for dense).
+VIGOUR_COLORS = ((166, 97, 26), (223, 194, 125), (128, 205, 120), (1, 133, 64))
+
+
+def vigour_map(class_map: np.ndarray) -> np.ndarray:
+    """RGB (height, width, 3) of NDVI vigour classes 0..3; -1 (water, cloud, nodata) is black and is
+    meant to be made transparent with `save_png(..., alpha=class_map >= 0)`."""
+    out = np.zeros((*class_map.shape, 3), dtype=np.uint8)
+    for index, color in enumerate(VIGOUR_COLORS):
+        out[class_map == index] = color
+    return out
+
+
 def side_by_side(left: np.ndarray, right: np.ndarray, gap: int = 8) -> np.ndarray:
     height = max(left.shape[0], right.shape[0])
     canvas = np.full((height, left.shape[1] + gap + right.shape[1], 3), 255, dtype=np.uint8)

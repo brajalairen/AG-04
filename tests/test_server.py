@@ -424,15 +424,19 @@ def scene_classification(monkeypatch):
 
     import rasterio
 
-    state = SimpleNamespace(layout=lambda height, width: np.full((height, width), 4, np.uint8), calls=[])
+    state = SimpleNamespace(layout=lambda height, width: np.full((height, width), 4, np.uint8), calls=[],
+                            by_date={})
 
     def retrieve_scene_classification(self, bbox, acquired_date, destination):
         state.calls.append({"bbox": tuple(bbox), "date": acquired_date})
-        with rasterio.open(destination.parent / "scene.tif") as scene:
+        grid = destination.parent / "scene.tif"
+        if not grid.is_file():  # a crop-health alternative is judged before its bands are downloaded
+            grid = destination.parent.parent / "scene.tif"
+        with rasterio.open(grid) as scene:
             profile = {"driver": "GTiff", "width": scene.width, "height": scene.height, "count": 1,
                        "dtype": "uint8", "crs": scene.crs, "transform": scene.transform}
         with rasterio.open(destination, "w", **profile) as out:
-            out.write(state.layout(profile["height"], profile["width"])[None])
+            out.write(state.by_date.get(acquired_date, state.layout)(profile["height"], profile["width"])[None])
         return destination
 
     monkeypatch.setattr("satquery.providers.copernicus.CopernicusSentinelProvider.retrieve_scene_classification",
@@ -1054,7 +1058,8 @@ def water_retrieval(monkeypatch, write_tiff, optical_scene):
     monkeypatch.setenv("COPERNICUS_CLIENT_ID", "id")
     monkeypatch.setenv("COPERNICUS_CLIENT_SECRET", "secret")
     state = SimpleNamespace(source=write_tiff("s2.tif", optical_scene, ["blue", "green", "red", "nir"]),
-                            tile_cloud=3.0, optical=[], near=[], latest=[], near_error=None)
+                            tile_cloud=3.0, optical=[], near=[], latest=[], near_error=None,
+                            candidates=[], ranked=[], downloaded=[])
 
     def sar_raster(destination, grid_from):
         with rasterio.open(grid_from) as grid:
@@ -1098,6 +1103,22 @@ def water_retrieval(monkeypatch, write_tiff, optical_scene):
     monkeypatch.setattr(f"{provider}.retrieve", retrieve)
     monkeypatch.setattr(f"{provider}.retrieve_sar_near", retrieve_sar_near)
     monkeypatch.setattr(f"{provider}.retrieve_sar", retrieve_sar)
+
+    def ranked_scenes(self, bbox, **kwargs):
+        state.ranked.append(tuple(bbox))
+        return [{"id": f"S2_{day}", "properties": {"datetime": f"{day}T04:30:00Z", "eo:cloud_cover": cloud}}
+                for day, cloud in state.candidates]
+
+    def download_scene(self, bbox, bands, scene, destination, *, alternatives):
+        day = scene["properties"]["datetime"][:10]
+        state.downloaded.append(day)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(Path(state.source).read_bytes())
+        return RetrievedScene(path=destination, metadata=_scene_metadata(
+            day, scene["properties"]["eo:cloud_cover"], scene["id"], bbox))
+
+    monkeypatch.setattr(f"{provider}.ranked_scenes", ranked_scenes)
+    monkeypatch.setattr(f"{provider}.download_scene", download_scene)
     return state
 
 
@@ -1236,3 +1257,69 @@ def test_a_radar_question_about_change_over_time_is_refused(client, water_retrie
     response = _fetch(client, "Has the water shrunk over time? Use radar.")
     assert response.status_code == 422 and response.json()["code"] == "sar_temporal_unsupported"
     assert water_retrieval.optical == water_retrieval.latest == []
+
+
+# ------------------------------------------------------------- crop health: NDVI on the clear pixels (AG-04)
+
+CROP_QUESTION = "How healthy is the crop here?"
+
+
+def test_a_crop_health_question_is_cloud_checked_and_answered_by_ndvi(client, water_retrieval, scene_classification):
+    body = _fetch(client, CROP_QUESTION).json()
+    quality = body["optical_quality"]
+    assert body["mode"] == "single" and quality["purpose"] == "vegetation" and quality["usable"]
+    assert len(scene_classification.calls) == 1, "the area's own scene classification was checked"
+    assert water_retrieval.near == [] and water_retrieval.latest == [], "radar cannot measure NDVI"
+    response = _analyse(client, body, CROP_QUESTION)
+    assert response["task"] == "crop_health"
+    assert [s["tool"] for s in response["trace"]["steps"]] == ["optical.vegetation_health"]
+    assert response["answer"].startswith("Mean NDVI 0.71 over the clear land of this area")
+
+
+def test_a_cloudy_area_is_refused_for_crop_health_not_estimated(client, water_retrieval, scene_classification):
+    scene_classification.layout = _cloud(0.42)
+    response = _fetch(client, CROP_QUESTION)
+    assert response.status_code == 422 and response.json()["code"] == "optical_unusable"
+    message = response.json()["message"]
+    assert "None of the 1 clearest recent Sentinel-2 scene(s) shows enough of this area" in message
+    assert "2026-09-19: 42.2%; the limit is 20%" in message and "no NDVI was computed or estimated" in message
+    assert water_retrieval.near == [] and water_retrieval.latest == [], "no radar fallback for NDVI"
+
+
+def test_a_partly_cloudy_area_is_measured_on_its_clear_pixels(client, water_retrieval, scene_classification):
+    scene_classification.layout = _cloud(0.125)  # 8 of 64 rows
+    body = _fetch(client, "What is the NDVI?").json()
+    assert body["optical_quality"]["masked"] is True and body["upload"]["name"].endswith("(cloud-masked)")
+    answer = _analyse(client, body, "What is the NDVI?")["answer"]
+    assert answer.startswith("Mean NDVI 0.71") and "12.5% of the image had no usable data" in answer
+
+
+def test_a_clearer_recent_scene_is_found_by_the_areas_own_cloud(client, water_retrieval, scene_classification):
+    """Thoubal, 2026-10-08: the least cloudy tile hid 37.7% of the area; a scene three ranks down showed it."""
+    water_retrieval.candidates = [("2026-09-19", 3.0), ("2026-09-24", 5.0), ("2026-09-14", 9.0)]
+    scene_classification.by_date = {"2026-09-19": _cloud(0.42), "2026-09-24": _cloud(0.5)}
+    body = _fetch(client, CROP_QUESTION).json()
+    quality = body["optical_quality"]
+    assert body["metadata"]["acquired"] == "2026-09-14" and quality["usable"] and quality["purpose"] == "vegetation"
+    assert [(c["acquired"], c["affected_fraction"]) for c in quality["scenes_checked"]] == [
+        ("2026-09-19", 0.4219), ("2026-09-24", 0.5), ("2026-09-14", 0.0)]
+    assert [c["date"] for c in scene_classification.calls] == ["2026-09-19", "2026-09-24", "2026-09-14"]
+    assert water_retrieval.downloaded == ["2026-09-14"], "bands are downloaded for the usable scene only"
+    response = _analyse(client, body, CROP_QUESTION)
+    assert response["task"] == "crop_health" and response["answer"].startswith("Mean NDVI 0.71")
+
+    again = _fetch(client, CROP_QUESTION).json()
+    assert again["cached"] is True and again["metadata"]["acquired"] == "2026-09-14"
+    assert len(scene_classification.calls) == 3 and len(water_retrieval.ranked) == 1, "no network on a repeat"
+    assert water_retrieval.downloaded == ["2026-09-14"]
+
+
+def test_the_scene_search_is_bounded_and_then_refused(client, water_retrieval, scene_classification):
+    water_retrieval.candidates = [(f"2026-09-{day:02d}", float(day)) for day in (19, 20, 21, 22, 23, 24)]
+    scene_classification.layout = _cloud(0.42)
+    response = _fetch(client, CROP_QUESTION)
+    assert response.status_code == 422 and response.json()["code"] == "optical_unusable"
+    message = response.json()["message"]
+    assert "None of the 4 clearest recent Sentinel-2 scene(s)" in message, "SATQUERY_OPTICAL_MAX_SCENES = 4"
+    assert "2026-09-19: 42.2%; 2026-09-20: 42.2%; 2026-09-21: 42.2%; 2026-09-22: 42.2%;" in message
+    assert len(scene_classification.calls) == 4 and water_retrieval.downloaded == []

@@ -74,6 +74,11 @@ SAR_PROCESSING = ("Sentinel Hub Process API: the selected day only (no multi-dat
                   "as FLOAT32 linear power, no speckle filter, resampled to the same grid as the optical scene")
 
 
+def search_date() -> str:
+    """Today (UTC) as an ISO date: part of every cache key whose search window is "the last N days"."""
+    return datetime.now(timezone.utc).date().isoformat()
+
+
 def bands_for_target(target: str | None) -> list[str]:
     """Which bands a question needs. Unknown targets get the 4-band optical default."""
     return list(BAND_SETS.get(target, BAND_SETS[None]))
@@ -302,14 +307,31 @@ class CopernicusSentinelProvider:
                 "No Sentinel-2 L2A scene matched this area within the search window and cloud "
                 "limit. Try a longer date window, a higher cloud threshold, or a different area.")
 
-        def key(feature: dict):
-            properties = feature.get("properties", {})
-            cloud = properties.get("eo:cloud_cover")
-            return (cloud if isinstance(cloud, (int, float)) else 101.0,
-                    # newer wins on a cloud tie
-                    _negated_timestamp(properties.get("datetime", "")))
+        return sorted(features, key=scene_rank)[0]
 
-        return sorted(features, key=key)[0]
+    def ranked_scenes(self, bbox_wgs84, *, days_back: int | None = None,
+                      max_cloud: float | None = None) -> list[dict]:
+        """Catalogue scenes of the area in `select_scene` order, one per acquisition date.
+
+        The tile's cloud cover says little about a small drawn area, so a crop-health question walks
+        this list, judging each date by the area's own scene classification, until one shows it clearly.
+        """
+        bbox = tuple(float(v) for v in bbox_wgs84)
+        self.validate_area(bbox)
+        ranked, seen = [], set()
+        for feature in sorted(self.search(bbox, days_back=days_back, max_cloud=max_cloud), key=scene_rank):
+            day = str(feature.get("properties", {}).get("datetime", ""))[:10]
+            if day and day not in seen:
+                seen.add(day)
+                ranked.append(feature)
+        return ranked
+
+    def download_scene(self, bbox_wgs84, bands: list[str], scene: dict, destination: Path, *,
+                       alternatives: int) -> RetrievedScene:
+        """Download one catalogue scene chosen by the caller (see `ranked_scenes`) as a GeoTIFF."""
+        bbox = tuple(float(v) for v in bbox_wgs84)
+        self.validate_area(bbox)
+        return self._download(bbox, bands, scene, destination, alternatives=alternatives)
 
     def _process(self, bbox: tuple[float, float, float, float], bands: list[str],
                  acquired_date: str) -> bytes:
@@ -372,8 +394,11 @@ class CopernicusSentinelProvider:
 
     def cache_key(self, bbox, bands: list[str], *, days_back: int | None = None,
                   max_cloud: float | None = None) -> str:
-        """Identity of a request: area, collection, window, cloud limit, resolution, bands."""
+        """Identity of a request: area, collection, window, cloud limit, resolution, bands, and the day
+        it was searched. The window is "the last N days" counted from today, so the same rectangle must
+        not be served yesterday's search: a newer acquisition would never be seen (AG-04 monitoring)."""
         material = json.dumps({
+            "searched_on": search_date(),
             "bbox": [round(float(v), 6) for v in bbox],
             "collection": COLLECTION,
             "days_back": self.days_back if days_back is None else days_back,
@@ -547,6 +572,7 @@ class CopernicusSentinelProvider:
         """Identity of an optical + SAR request. "mode" keeps it apart from single-date and temporal keys."""
         material = json.dumps({
             "mode": "optical_sar",
+            "searched_on": search_date(),  # a "last N days" window moves daily
             "bbox": [round(float(v), 6) for v in bbox],
             "collections": [COLLECTION, S1_COLLECTION],
             "days_back": self.days_back if days_back is None else days_back,
@@ -612,6 +638,7 @@ class CopernicusSentinelProvider:
         """Identity of a radar-only request. "mode" keeps it apart from every other key."""
         material = json.dumps({
             "mode": "sar",
+            "searched_on": search_date(),  # a "last N days" window moves daily
             "bbox": [round(float(v), 6) for v in bbox],
             "collection": S1_COLLECTION,
             "days_back": self.days_back if days_back is None else days_back,
@@ -680,6 +707,13 @@ class CopernicusSentinelProvider:
         except Exception as error:
             raise RasterUnreadable(
                 "The imagery Copernicus returned could not be read as a GeoTIFF.") from error
+
+
+def scene_rank(feature: dict):
+    """Least cloudy first (the catalogue's whole-tile cloud cover), then most recent on a tie."""
+    properties = feature.get("properties", {})
+    cloud = properties.get("eo:cloud_cover")
+    return cloud if isinstance(cloud, (int, float)) else 101.0, _negated_timestamp(properties.get("datetime", ""))
 
 
 def _negated_timestamp(value: str) -> float:

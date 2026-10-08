@@ -40,6 +40,9 @@ TEMPORAL_CUES = re.compile(
     r"|\b(?:before|after)\b\s*(?:and|/|vs|versus|\?|$)"
     r"|\bover time\b|\bsince\b\s+\d{4}|\bbetween\b\s+\d{4}"
     r"|\b(?:increas|decreas|shrink|shrunk|reduc)\w*\b"
+    # Crop condition over time ("has crop health declined?"). Not "improve": "how can farmers improve
+    # crop health?" asks for advice, and "improved varieties" names a seed type.
+    r"|\bdeclin(?:ed|ing)\b|\bdeteriorat\w*|\bworsen\w*"
     r"|expan(?:ded|ding|sion)\b|\bexpand\b(?!\s+(?:the|this|that|my|a|an|it)\b)"
     r"|\b(?:grew|grown)\b"
     r"|\bbi-?temporal\b|\btime series\b|\bhistorical\b|\bdeforestation\b"
@@ -114,6 +117,28 @@ IMAGERY_CUES = re.compile(r"\b(?:images?|imagery|scenes?|satellite|sentinel\S*|s
                           r"what (?:has )?changed|any changes|change detection|highlight|segment\w*)\b", re.I)
 
 
+# Is it a crop-health question (AG-04)? Answered by NDVI computed from the red and NIR bands, never
+# by the VLM's visual guess. Naming NDVI counts on its own; otherwise a health cue needs a vegetation
+# word with it, so "is the lake healthy?" or "the condition of the road" do not count. Pest names
+# that contain colour words ("brown planthopper", "yellow stem borer") are deliberately not cues:
+# NDVI cannot answer a pest question.
+NDVI_TERMS = re.compile(r"\b(?:ndvi|vegetation ind(?:ex|ices)|greenness)\b", re.I)
+HEALTH_CUES = re.compile(r"\b(?:health\w*|unhealthy|stress\w*|vigou?r\w*|wilt\w*|condition)\b", re.I)
+VEGETATION_WORDS = re.compile(r"\b(?:vegetation|vegetated|crops?|farm\w*|agricultur\w*|paddy|paddies|rice|plants?|"
+                              r"fields?|forests?|trees?|grass\w*|orchards?|cultivat\w*)\b", re.I)
+
+
+def needs_crop_health(query: str) -> str | None:
+    """Why `query` is a crop-health question (quoted in the trace), or None."""
+    ndvi = NDVI_TERMS.search(query)
+    if ndvi:
+        return f"NDVI term '{ndvi.group(0)}'"
+    health, vegetation = HEALTH_CUES.search(query), VEGETATION_WORDS.search(query)
+    if health and vegetation:
+        return f"health cue '{health.group(0)}' + vegetation word '{vegetation.group(0)}'"
+    return None
+
+
 def needs_weather(query: str) -> str | None:
     """The phrase that makes `query` a weather question, or None."""
     strong = WEATHER_TERMS.search(query)
@@ -131,6 +156,10 @@ def route_query(query: str) -> tuple[str, str]:
     imagery = IMAGERY_CUES.search(query)
     if imagery:
         return "mixed", f"weather cue '{weather}' and satellite-analysis cue '{imagery.group(0)}'"
+    # "Is the rain stressing the crops?" asks about crop health too, which the forecast cannot answer.
+    crop_health = needs_crop_health(query)
+    if crop_health:
+        return "mixed", f"weather cue '{weather}' and crop-health cue ({crop_health})"
     return "weather", f"weather cue '{weather}' -> weather specialist"
 
 
@@ -170,6 +199,12 @@ def classify(query: str, config: InputConfig) -> Intent:
         rule += (f"; cross-modal cue '{cue}'" if cue else "") + f"; classes {', '.join(cross_modal_classes(query))}"
         return Intent(task="cross_modal_analysis", target=target, matched_rule=rule)
 
+    # Checked before grounding and captions: "show me how healthy the crops are" is answered by NDVI.
+    crop_health = needs_crop_health(query)
+    if crop_health:
+        return Intent(task="crop_health", target="vegetation",
+                      matched_rule=f"crop-health cue ({crop_health}) -> NDVI crop-health analysis")
+
     grounding = GROUNDING_CUES.search(query)
     caption = CAPTION_CUES.search(query)
     if grounding and target:
@@ -182,7 +217,7 @@ def classify(query: str, config: InputConfig) -> Intent:
 
 
 COMPATIBLE_TASKS = {
-    "single_optical": {"vqa", "caption", "grounding"},
+    "single_optical": {"vqa", "caption", "grounding", "crop_health"},
     "single_sar": {"vqa", "caption", "grounding"},
     "pair_bitemporal": {"change_analysis"},
     "pair_cross_modal": {"cross_modal_analysis"},
