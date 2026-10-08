@@ -1,0 +1,24 @@
+{
+  "status": "TO_CONFIRM",
+  "note": "District NAMES only (no boundaries), for navigation. Retrieved from OpenStreetMap (administrative level 5 within Manipur, ODbL) on 2026-10-08: 16 districts. Member B confirms against the official list and supplies verified boundaries separately.",
+  "source": "OpenStreetMap contributors (ODbL), Overpass API, admin_level=5 in IN-MN",
+  "retrieved_on": "2026-10-08",
+  "districts": [
+    {"name": "Bishnupur", "osm_name": "Bishnupur district", "wikidata": "Q938190"},
+    {"name": "Chandel", "osm_name": "Chandel district", "wikidata": "Q2301769"},
+    {"name": "Churachandpur", "osm_name": "Churachandpur district", "wikidata": "Q2577281"},
+    {"name": "Imphal East", "osm_name": "Imphal East", "wikidata": "Q1916666"},
+    {"name": "Imphal West", "osm_name": "Imphal West", "wikidata": "Q1822188"},
+    {"name": "Jiribam", "osm_name": "Jiribam district", "wikidata": "Q28419387"},
+    {"name": "Kakching", "osm_name": "Kakching district", "wikidata": "Q28173825"},
+    {"name": "Kamjong", "osm_name": "Kamjong district", "wikidata": "Q28419390"},
+    {"name": "Kangpokpi", "osm_name": "Kangpokpi district", "wikidata": "Q28419386"},
+    {"name": "Noney", "osm_name": "Noney district", "wikidata": "Q28419389"},
+    {"name": "Pherzawl", "osm_name": "Pherzawl district", "wikidata": "Q28173809"},
+    {"name": "Senapati", "osm_name": "Senapati", "wikidata": "Q2301706"},
+    {"name": "Tamenglong", "osm_name": "Tamenglong district", "wikidata": "Q2301717"},
+    {"name": "Tengnoupal", "osm_name": "Tengnoupal", "wikidata": "Q28419388"},
+    {"name": "Thoubal", "osm_name": "Thoubal district", "wikidata": "Q2086198"},
+    {"name": "Ukhrul", "osm_name": "Ukhrul district", "wikidata": "Q735101"}
+  ]
+}

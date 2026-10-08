@@ -4,7 +4,7 @@
  *  from the server's risk engine; these helpers only decide how they look. */
 
 import type { ExpressionSpecification } from "maplibre-gl";
-import type { AreaSummary, DataState, FactorId, RiskLevel } from "../state/types";
+import type { AreaSummary, DataState, DistrictSummary, FactorId, RiskLevel } from "../state/types";
 
 /** Risk levels are states, so they use the fixed status palette (dataviz reference: good, warning,
  *  serious, critical), identical in light and dark. A level is never shown by colour alone: every
@@ -44,28 +44,29 @@ export const FACTOR_COLOR_VAR: Record<FactorId, string> = {
 
 export const FACTORS: FactorId[] = ["weather_pest", "ndvi_anomaly", "report_pressure"];
 
-export type LevelFilter = "all" | "severe" | "moderate" | "low" | "nodata";
+export type LevelFilter = "all" | "high" | "moderate" | "low";
 
 export const FILTER_OPTIONS: { value: LevelFilter; label: string }[] = [
   { value: "all", label: "All" },
-  { value: "severe", label: "High+" },
+  { value: "high", label: "High" },
   { value: "moderate", label: "Moderate" },
   { value: "low", label: "Low" },
-  { value: "nodata", label: "No data" },
 ];
 
+/** "High" includes Critical: both call for attention first. */
 const FILTER_LEVELS: Record<LevelFilter, RiskLevel[] | null> = {
   all: null,
-  severe: ["CRITICAL", "HIGH"],
+  high: ["CRITICAL", "HIGH"],
   moderate: ["MODERATE"],
   low: ["LOW"],
-  nodata: ["INSUFFICIENT_DATA"],
 };
 
-/** The areas a filter shows, in the server's ranked order (never re-sorted here). */
-export function filterAreas(areas: AreaSummary[], filter: LevelFilter): AreaSummary[] {
+/** The districts a filter shows, in the server's priority order (never re-sorted here). A district's
+ *  level is its highest-priority zone's, as the server reports it; districts without coverage have
+ *  none and appear only under "All". */
+export function filterDistricts(districts: DistrictSummary[], filter: LevelFilter): DistrictSummary[] {
   const levels = FILTER_LEVELS[filter];
-  return levels ? areas.filter((area) => levels.includes(area.level)) : areas;
+  return levels ? districts.filter((d) => d.level !== null && levels.includes(d.level)) : districts;
 }
 
 export function formatScore(score: number | null): string {
@@ -103,6 +104,7 @@ export function pestName(id: string): string {
 export const STATE_LABEL: Record<DataState, string> = {
   LIVE: "Live",
   CACHED: "Cached",
+  SNAPSHOT: "Snapshot",
   SAMPLE: "SAMPLE",
   UNAVAILABLE: "Unavailable",
 };
@@ -111,7 +113,7 @@ export const STATE_LABEL: Record<DataState, string> = {
 export function areaFeatures(
   areas: AreaSummary[],
   view: { selectedId: string | null; hoveredId: string | null; highlightIds: string[] },
-): GeoJSON.FeatureCollection {
+): GeoJSON.FeatureCollection<GeoJSON.Geometry> {
   return {
     type: "FeatureCollection",
     features: areas.map((area) => ({
@@ -141,4 +143,14 @@ export function scoreSegments(points: Record<FactorId, number | null>): { id: Fa
     const value = points[id];
     return value !== null && value !== undefined && value > 0 ? [{ id, points: value }] : [];
   });
+}
+
+/** Verified district outlines only (context, never coloured by risk); none when not loaded. */
+export function districtFeatures(districts: DistrictSummary[], focused: string | null): GeoJSON.FeatureCollection {
+  return {
+    type: "FeatureCollection",
+    features: districts.flatMap((d) =>
+      d.geometry ? [{ type: "Feature" as const, geometry: d.geometry, properties: { name: d.name, focused: d.name === focused } }] : [],
+    ),
+  };
 }

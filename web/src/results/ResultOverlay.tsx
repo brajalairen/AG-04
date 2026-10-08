@@ -36,7 +36,7 @@ export function ResultOverlay() {
 
   return (
     <>
-      <div className="pointer-events-none absolute top-4 right-4 bottom-28 z-20 flex w-[360px] max-w-[calc(100vw-2rem)] flex-col items-end gap-2 max-sm:top-auto max-sm:right-4 max-sm:left-4 max-sm:bottom-32 max-sm:w-auto">
+      <div className="pointer-events-none absolute top-4 right-4 bottom-[15.5rem] z-20 flex w-[360px] max-w-[calc(100vw-2rem)] flex-col items-end gap-2 max-sm:top-auto max-sm:right-4 max-sm:left-4 max-sm:bottom-32 max-sm:w-auto">
         {/* The compass sits top-right, so the card starts below it. */}
         <div className="h-11 shrink-0" aria-hidden="true" />
 
@@ -59,6 +59,11 @@ export function ResultOverlay() {
               <>
                 {/* pre-line: a cross-modal answer puts optical, SAR and fused evidence on lines of their own. */}
                 <p className="text-[13px] leading-relaxed whitespace-pre-line text-ink">{response.answer}</p>
+                {response.task === "crop_health" && (
+                  <p className="mt-2 text-[11px] leading-relaxed text-muted">
+                    Satellite evidence (Sentinel-2 NDVI). It is separate from the agricultural risk score.
+                  </p>
+                )}
                 <AreaLine />
                 {response.confidence && <ConfidenceLine />}
                 {/* Renders only when the imagery was fetched rather than uploaded. */}

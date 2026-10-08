@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { AgriAreaDetail, AgriOverview, AgriQueryResult } from "../state/types";
 import { ApiError } from "../state/api";
 import { useAgriStore } from "./useAgriStore";
-import { summary } from "./testFixtures";
+import { district, summary } from "./testFixtures";
 
 const agriOverview = vi.fn();
 const agriArea = vi.fn();
@@ -38,6 +38,14 @@ function overview(): AgriOverview {
     counts: { CRITICAL: 0, HIGH: 1, MODERATE: 1, LOW: 0, INSUFFICIENT_DATA: 0 },
     examples: [],
     areas: [summary("a"), summary("b", { rank: 2, level: "MODERATE" })],
+    mode: "live",
+    snapshot_saved_at: null,
+    fallback_reason: null,
+    pest_thresholds_status: "PLACEHOLDER",
+    risk_weights_status: "PLACEHOLDER",
+    districts: [district("Bishnupur", { zone_ids: ["a"] }), district("Thoubal", { zone_ids: ["b"], rank: 2 })],
+    district_note: "District names: OpenStreetMap",
+    zone_count: 2,
   };
 }
 
@@ -65,6 +73,7 @@ beforeEach(() => {
   useAgriStore.setState({
     overview: null, status: "idle", error: null, filter: "all", selectedId: null, hoveredId: null,
     highlightIds: [], detail: null, detailStatus: "idle", detailError: null, answer: null,
+    districtName: null, layers: { zones: true, ranks: true, districts: true },
   });
 });
 
@@ -149,5 +158,21 @@ describe("agricultural questions", () => {
     useAgriStore.setState({ answer: answer(), highlightIds: ["a"] });
     useAgriStore.getState().clearAnswer();
     expect(useAgriStore.getState()).toMatchObject({ answer: null, highlightIds: [] });
+  });
+});
+
+describe("district drill-down and map layers", () => {
+  it("opens and closes a district without touching the zone drawer", () => {
+    useAgriStore.getState().setDistrict("Bishnupur");
+    expect(useAgriStore.getState()).toMatchObject({ districtName: "Bishnupur", selectedId: null });
+    useAgriStore.getState().setDistrict(null);
+    expect(useAgriStore.getState().districtName).toBeNull();
+  });
+
+  it("toggles one map layer at a time; nothing else changes", () => {
+    const before = useAgriStore.getState().overview;
+    useAgriStore.getState().toggleLayer("ranks");
+    expect(useAgriStore.getState().layers).toEqual({ zones: true, ranks: false, districts: true });
+    expect(useAgriStore.getState().overview).toBe(before);
   });
 });

@@ -2,7 +2,7 @@
  *  Every number is read from the API; the drawer only lays it out, with each limitation in view. */
 
 import type { ReactNode } from "react";
-import { RotateCw, X } from "lucide-react";
+import { RotateCw, Satellite, X } from "lucide-react";
 import type {
   AgriAreaDetail,
   DayCheck,
@@ -27,6 +27,7 @@ import {
   scoreSegments,
 } from "./format";
 import { useAgriStore } from "./useAgriStore";
+import { useAppStore } from "../state/useAppStore";
 
 export function AreaRiskDrawer() {
   const selectedId = useAgriStore((s) => s.selectedId);
@@ -98,6 +99,7 @@ function Content({ detail }: { detail: AgriAreaDetail }) {
           </p>
         </div>
         <p className="mt-2.5 text-[13px] leading-relaxed text-ink">{a.headline}</p>
+        <CropHealthAction bounds={area.bounds} />
         <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted">
           <span>
             Confidence <strong className="font-semibold text-ink">{a.confidence.level}</strong>
@@ -193,6 +195,35 @@ function Content({ detail }: { detail: AgriAreaDetail }) {
         <p className="mt-1.5 text-[11px] leading-relaxed text-faint">{a.confidence.method}</p>
       </Block>
     </>
+  );
+}
+
+/** Supporting satellite evidence for the zone: the existing Phase 1 crop-health flow (Sentinel-2 NDVI,
+ *  cloud-masked), run on the zone's rectangle. Its result is separate from the risk score above. */
+function CropHealthAction({ bounds }: { bounds: [number, number, number, number] }) {
+  const select = useAgriStore((s) => s.select);
+  const pending = useAppStore((s) => s.pending);
+  const run = () => {
+    const [west, south, east, north] = bounds;
+    const feature: GeoJSON.Feature = {
+      type: "Feature",
+      properties: {},
+      geometry: { type: "Polygon", coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]] },
+    };
+    useAppStore.getState().setAoi({ feature, bounds });
+    select(null); // the drawer makes room for the crop-health result card
+    void useAppStore.getState().runAnalysis("How healthy is the crop here?");
+  };
+  return (
+    <div className="mt-3 flex flex-col gap-1">
+      <Button variant="outline" size="sm" onClick={run} disabled={pending} className="self-start">
+        <Satellite className="h-3.5 w-3.5" strokeWidth={2} /> Check crop health here · Sentinel-2
+      </Button>
+      <p className="text-[11px] leading-relaxed text-faint">
+        Satellite evidence (NDVI from Sentinel-2, cloud-masked) for this zone's rectangle. It is separate from the
+        risk score.
+      </p>
+    </div>
   );
 }
 

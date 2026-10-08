@@ -49,6 +49,7 @@ MIRRORED = {
     "AgriOverview": agri_routes.AgriOverview,
     "AgriAreaDetail": agri_routes.AgriAreaDetail,
     "AgriQueryResult": agri_routes.AgriQueryResult,
+    "DistrictSummary": agri_routes.DistrictSummary,
 }
 
 

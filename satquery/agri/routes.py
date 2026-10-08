@@ -5,7 +5,7 @@ ranks, levels, scores, points, reasons, confidence and provenance are copied fro
 `RiskAssessment`; this module only adds geometry for the map and the dashboard-wide notices
 (placeholder thresholds, SAMPLE data, demo areas vs official boundaries).
 
-  GET  /api/agri/overview          every monitored area, ranked, with level counts and notices
+  GET  /api/agri/overview          every monitored zone, ranked, grouped by district, with notices
   GET  /api/agri/areas/{area_id}   one area's full assessment, for the "Why is this area at risk?" drawer
   POST /api/agri/query             an agricultural question in plain words (read-only: nothing is changed)
 """
@@ -17,7 +17,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from satquery import geo
-from satquery.agri import query as agri_query
+from satquery.agri import districts as agri_districts, query as agri_query
 from satquery.agri.models import (DISCLAIMER, PLACEHOLDER_NOTE, SAMPLE_LABEL, DataState, FactorStatus,
                                   MonitoredArea, RiskAssessment, RiskLevel, ThresholdStatus)
 from satquery.agri.service import AgriUnavailable, AssessmentService, Snapshot
@@ -52,6 +52,28 @@ class AreaSummary(BaseModel):
     thresholds_status: ThresholdStatus
 
 
+class DistrictSummary(BaseModel):
+    """A district as administrative context. It is never scored: `level`, `score` and `confidence` are
+    those of its highest-priority monitored zone (the engine's rank), and None without coverage."""
+
+    name: str
+    listed: bool  # in the district name list (False: a zone names a district that is not listed)
+    rank: int | None  # order among covered districts, by their best zone's engine rank
+    coverage: Literal["monitored", "not_monitored"]
+    zone_count: int
+    zone_ids: list[str]
+    level_counts: dict[str, int]
+    top_zone_id: str | None
+    level: RiskLevel | None
+    score: float | None
+    confidence: Literal["low", "medium", "high"] | None
+    best_zone_rank: int | None
+    has_boundary: bool  # True only when verified district boundaries are loaded
+    boundary_source: str | None
+    geometry: dict | None
+    bounds: tuple[float, float, float, float] | None
+
+
 class AgriOverview(BaseModel):
     computed_at: str
     as_of: str | None
@@ -69,6 +91,15 @@ class AgriOverview(BaseModel):
     counts: dict[str, int]
     examples: list[str]
     areas: list[AreaSummary]
+    # Phase 4 / district context
+    mode: Literal["live", "snapshot"]
+    snapshot_saved_at: str | None  # set when a frozen snapshot is shown
+    fallback_reason: str | None    # why the snapshot is shown instead of live data
+    pest_thresholds_status: ThresholdStatus
+    risk_weights_status: ThresholdStatus
+    districts: list[DistrictSummary]
+    district_note: str
+    zone_count: int
 
 
 class AgriAreaDetail(BaseModel):
@@ -131,14 +162,27 @@ def overview(snapshot: Snapshot) -> AgriOverview:
             max(b[3] for b in bounds)) if bounds else None
     status = snapshot.assessments[0].thresholds_status if snapshot.assessments else "PLACEHOLDER"
     states = sorted({p.state for a in snapshot.assessments for p in a.provenance})
+    boundaries = agri_districts.load_boundaries()
+    districts = agri_districts.summarise(snapshot.assessments, snapshot.areas, boundaries)
+    names = agri_districts.load_names()
+    district_note = (
+        f"District names: {names['source']}, retrieved {names['retrieved_on']} (to be confirmed). "
+        + ("District outlines: verified boundaries loaded. " if boundaries else "District outlines are not loaded yet. ")
+        + "Each zone's district comes from its own properties. A district's level is that of its highest-priority "
+          "monitored zone; it does not mean the whole district is affected.")
     return AgriOverview(
         computed_at=snapshot.computed_at, as_of=snapshot.assessments[0].as_of if snapshot.assessments else None,
         region="Manipur", view_bounds=view, thresholds_status=status,
         thresholds_note=PLACEHOLDER_NOTE if status == "PLACEHOLDER" else None,
         includes_sample_data=any(a.includes_sample_data for a in snapshot.assessments), sample_label=SAMPLE_LABEL,
-        disclaimer=DISCLAIMER, area_note=" ".join(notes), official_boundaries=bool(official), offline=snapshot.offline,
-        data_states=states, counts={level: sum(1 for s in summaries if s.level == level) for level in LEVELS},
-        examples=agri_query.EXAMPLES, areas=summaries)
+        disclaimer=DISCLAIMER, area_note=" ".join(notes), official_boundaries=bool(official or boundaries),
+        offline=snapshot.offline, data_states=states,
+        counts={level: sum(1 for s in summaries if s.level == level) for level in LEVELS},
+        examples=agri_query.EXAMPLES, areas=summaries, mode=snapshot.mode,
+        snapshot_saved_at=snapshot.snapshot_saved_at, fallback_reason=snapshot.fallback_reason,
+        pest_thresholds_status="VERIFIED" if all(p.status == "VERIFIED" for p in snapshot.rules.pests) else "PLACEHOLDER",
+        risk_weights_status=snapshot.model.status, districts=[DistrictSummary(**d) for d in districts],
+        district_note=district_note, zone_count=len(summaries))
 
 
 def _unavailable(error: AgriUnavailable) -> JSONResponse:

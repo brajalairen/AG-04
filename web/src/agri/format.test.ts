@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   areaFeatures,
-  filterAreas,
+  districtFeatures,
+  filterDistricts,
   formatScore,
   formatTime,
   LEVEL_COLOR,
@@ -10,7 +11,7 @@ import {
   levelColorExpression,
   scoreSegments,
 } from "./format";
-import { summary } from "./testFixtures";
+import { district, summary } from "./testFixtures";
 
 
 describe("risk levels", () => {
@@ -30,23 +31,29 @@ describe("risk levels", () => {
   });
 });
 
-describe("the priority list filter", () => {
-  const areas = [
-    summary("a", { level: "CRITICAL" }),
-    summary("b", { level: "HIGH" }),
-    summary("c", { level: "MODERATE" }),
-    summary("d", { level: "INSUFFICIENT_DATA", rank: null, score: null }),
+describe("the priority list filter (districts)", () => {
+  const districts = [
+    district("A", { level: "CRITICAL" }),
+    district("B", { level: "HIGH" }),
+    district("C", { level: "MODERATE" }),
+    district("D", { level: null, coverage: "not_monitored", rank: null, score: null, zone_count: 0 }),
   ];
 
-  it("keeps the server's rank order and never re-sorts", () => {
-    expect(filterAreas(areas, "all").map((a) => a.id)).toEqual(["a", "b", "c", "d"]);
-    expect(filterAreas([...areas].reverse(), "all").map((a) => a.id)).toEqual(["d", "c", "b", "a"]);
+  it("keeps the server's priority order and never re-sorts", () => {
+    expect(filterDistricts(districts, "all").map((d) => d.name)).toEqual(["A", "B", "C", "D"]);
+    expect(filterDistricts([...districts].reverse(), "all").map((d) => d.name)).toEqual(["D", "C", "B", "A"]);
   });
 
-  it("groups High and Critical, and keeps areas without an estimate findable", () => {
-    expect(filterAreas(areas, "severe").map((a) => a.id)).toEqual(["a", "b"]);
-    expect(filterAreas(areas, "nodata").map((a) => a.id)).toEqual(["d"]);
-    expect(filterAreas(areas, "low")).toEqual([]);
+  it("'High' includes Critical; districts without coverage have no level and show only under All", () => {
+    expect(filterDistricts(districts, "high").map((d) => d.name)).toEqual(["A", "B"]);
+    expect(filterDistricts(districts, "moderate").map((d) => d.name)).toEqual(["C"]);
+    expect(filterDistricts(districts, "low")).toEqual([]);
+  });
+
+  it("draws only verified district outlines, never invented ones", () => {
+    const outlined = district("E", { geometry: { type: "Polygon", coordinates: [[[93, 24], [94, 24], [94, 25], [93, 24]]] } });
+    const features = districtFeatures([...districts, outlined], "E").features;
+    expect(features.map((f) => f.properties)).toEqual([{ name: "E", focused: true }]);
   });
 });
 

@@ -329,7 +329,8 @@ export interface RetrievalProblem {
  * risk engine on the server; the dashboard only presents it. */
 
 export type RiskLevel = "LOW" | "MODERATE" | "HIGH" | "CRITICAL" | "INSUFFICIENT_DATA";
-export type DataState = "LIVE" | "CACHED" | "SAMPLE" | "UNAVAILABLE";
+/** SNAPSHOT: from the frozen, known-good assessment file; never shown as live. */
+export type DataState = "LIVE" | "CACHED" | "SNAPSHOT" | "SAMPLE" | "UNAVAILABLE";
 export type ThresholdStatus = "PLACEHOLDER" | "VERIFIED";
 export type FactorStatus = "ok" | "partial" | "unavailable";
 export type FactorId = "weather_pest" | "ndvi_anomaly" | "report_pressure";
@@ -533,6 +534,39 @@ export interface AgriOverview {
   counts: Record<RiskLevel, number>;
   examples: string[];
   areas: AreaSummary[];
+  /** "snapshot" when the frozen snapshot is shown instead of live data. */
+  mode: "live" | "snapshot";
+  snapshot_saved_at: string | null;
+  /** Why the snapshot is shown (snapshot mode, or live data incomplete). */
+  fallback_reason: string | null;
+  pest_thresholds_status: ThresholdStatus;
+  risk_weights_status: ThresholdStatus;
+  /** Districts as administrative context, in the order of their highest-priority zone. */
+  districts: DistrictSummary[];
+  district_note: string;
+  zone_count: number;
+}
+
+/** A district is never scored: its level, score and confidence are those of its highest-priority
+ *  monitored zone, and null when it has no monitoring coverage (which is not "no risk"). */
+export interface DistrictSummary {
+  name: string;
+  listed: boolean;
+  rank: number | null;
+  coverage: "monitored" | "not_monitored";
+  zone_count: number;
+  zone_ids: string[];
+  level_counts: Record<RiskLevel, number>;
+  top_zone_id: string | null;
+  level: RiskLevel | null;
+  score: number | null;
+  confidence: "low" | "medium" | "high" | null;
+  best_zone_rank: number | null;
+  /** True only when verified district boundaries are loaded. */
+  has_boundary: boolean;
+  boundary_source: string | null;
+  geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon | null;
+  bounds: [number, number, number, number] | null;
 }
 
 export interface AgriAreaDetail {

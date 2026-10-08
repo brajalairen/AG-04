@@ -2,7 +2,7 @@
  *  placeholder notice is printed in words beside any colour, so nothing depends on colour alone. */
 
 import { AlertTriangle, FlaskConical } from "lucide-react";
-import type { DataState, RiskLevel } from "../state/types";
+import type { AgriOverview, DataState, RiskLevel } from "../state/types";
 import { cx } from "../ui/primitives";
 import { LEVEL_COLOR, LEVEL_LABEL, STATE_LABEL } from "./format";
 
@@ -23,6 +23,7 @@ export function LevelBadge({ level, className }: { level: RiskLevel; className?:
 const STATE_TONE: Record<DataState, string> = {
   LIVE: "border-ok/40 text-ok",
   CACHED: "border-line-strong text-muted",
+  SNAPSHOT: "border-accent/50 text-accent",
   SAMPLE: "border-warn/50 text-warn",
   UNAVAILABLE: "border-line text-faint",
 };
@@ -89,5 +90,20 @@ export function CompletenessBar({ fraction }: { fraction: number }) {
       </span>
       <span className="text-[11px] text-muted tabular-nums">{Math.round(fraction * 100)}%</span>
     </span>
+  );
+}
+
+/** Threshold status for the dashboard: pest thresholds and risk weighting are stated separately, so
+ *  verified pest rules can never make the team's weighting look scientifically validated. */
+export function ThresholdsNotice({ overview }: { overview: AgriOverview }) {
+  const pestVerified = overview.pest_thresholds_status === "VERIFIED";
+  const weightsVerified = overview.risk_weights_status === "VERIFIED";
+  if (!pestVerified) return <PlaceholderNotice note={overview.thresholds_note ?? "placeholder"} compact />;
+  return (
+    <p role="note" className="rounded-[var(--radius-sm)] border border-line px-3 py-2 text-[11px] leading-relaxed text-ink">
+      <strong className="font-semibold">Pest thresholds: VERIFIED</strong> (sources in each pest rule).{" "}
+      <strong className="font-semibold">Risk weighting: {weightsVerified ? "VERIFIED" : "prototype design"}</strong>.
+      Decision support, not a validated prediction.
+    </p>
   );
 }

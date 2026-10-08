@@ -1,7 +1,9 @@
-/** The risk map: each monitored area filled by the level the risk engine gave it.
+/** The risk map: each monitored agricultural ZONE filled by the level the risk engine gave it.
  *
- *  Demo rectangles are outlined dashed and official district outlines solid, so a demo area is never
- *  mistaken for an administrative boundary. Rank numbers sit on each area; hover shows its level and
+ *  Districts are context only: when verified boundaries are loaded they are drawn as neutral outlines,
+ *  never filled by risk, so one high-risk zone never colours a whole district. Demo zones are outlined
+ *  dashed and official outlines solid, so a demo rectangle is never mistaken for a boundary. The Layers
+ *  control hides or shows each layer (presentation only). Rank numbers sit on each area; hover shows its level and
  *  score, a click opens its drawer. Follows MapView's pattern: everything is re-added whenever a new
  *  style has loaded (a basemap switch drops runtime sources). */
 
@@ -9,7 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import { Marker, type ExpressionSpecification, type GeoJSONSource, type MapLayerMouseEvent } from "maplibre-gl";
 import { useMap, useMapReady } from "../map/MapView";
 import { DemoTag, LevelBadge } from "./badges";
-import { areaFeatures, formatScore, levelColorExpression } from "./format";
+import { areaFeatures, districtFeatures, formatScore, levelColorExpression } from "./format";
 import { useAgriStore } from "./useAgriStore";
 import { useAppStore } from "../state/useAppStore";
 
@@ -17,8 +19,11 @@ const SOURCE = "agri-areas";
 const FILL = "agri-fill";
 const LINE_OFFICIAL = "agri-line-official";
 const LINE_DEMO = "agri-line-demo";
-/** Room for the floating panels when the map frames the areas: sidebar left, legend right, command bar below. */
-const PADDING = { top: 80, bottom: 150, left: 400, right: 260 };
+const DISTRICT_SOURCE = "agri-districts";
+const DISTRICT_LINE = "agri-district-line";
+/** Room for the floating panels when the map frames the areas: sidebar left, status and legend strip
+ *  above, command bar below. */
+const PADDING = { top: 120, bottom: 150, left: 400, right: 80 };
 
 export function RiskLayer() {
   const map = useMap();
@@ -27,6 +32,8 @@ export function RiskLayer() {
   const selectedId = useAgriStore((s) => s.selectedId);
   const hoveredId = useAgriStore((s) => s.hoveredId);
   const highlightIds = useAgriStore((s) => s.highlightIds);
+  const districtName = useAgriStore((s) => s.districtName);
+  const layers = useAgriStore((s) => s.layers);
   const select = useAgriStore((s) => s.select);
   const hover = useAgriStore((s) => s.hover);
   const [tip, setTip] = useState<{ x: number; y: number } | null>(null);
@@ -38,7 +45,23 @@ export function RiskLayer() {
   // --- the areas, re-added after every style load
   useEffect(() => {
     if (!map || !styleReady || !overview) return;
-    const data = areaFeatures(overview.areas, { selectedId, hoveredId, highlightIds });
+    // The open district's zones are emphasised alongside any answer's areas.
+    const focus = overview.districts.find((d) => d.name === districtName)?.zone_ids ?? [];
+    const data = areaFeatures(overview.areas, { selectedId, hoveredId, highlightIds: [...highlightIds, ...focus] });
+    const districts = districtFeatures(overview.districts, districtName);
+    const districtSource = map.getSource(DISTRICT_SOURCE) as GeoJSONSource | undefined;
+    if (districtSource) districtSource.setData(districts);
+    else {
+      // Added first so the zones draw above the district outlines.
+      map.addSource(DISTRICT_SOURCE, { type: "geojson", data: districts });
+      map.addLayer({
+        id: DISTRICT_LINE,
+        type: "line",
+        source: DISTRICT_SOURCE,
+        paint: { "line-color": outline, "line-opacity": 0.7, "line-width": ["case", ["get", "focused"], 2.5, 1] },
+      });
+    }
+    map.setPaintProperty(DISTRICT_LINE, "line-color", outline);
     const color = ["case", ["any", ["get", "selected"], ["get", "highlighted"]], "#2563eb", outline] as ExpressionSpecification;
     const source = map.getSource(SOURCE) as GeoJSONSource | undefined;
     if (source) {
@@ -72,7 +95,24 @@ export function RiskLayer() {
       filter: ["==", ["get", "official"], false],
       paint: { "line-color": color, "line-width": width as ExpressionSpecification, "line-dasharray": [3, 2] },
     });
-  }, [map, styleReady, overview, selectedId, hoveredId, highlightIds, outline]);
+  }, [map, styleReady, overview, selectedId, hoveredId, highlightIds, outline, districtName]);
+
+  // --- layer visibility (Layers control); re-applied after every style load
+  useEffect(() => {
+    if (!map || !styleReady || !map.getLayer(FILL)) return;
+    const show = (on: boolean) => (on ? "visible" : "none");
+    for (const id of [FILL, LINE_OFFICIAL, LINE_DEMO]) map.setLayoutProperty(id, "visibility", show(layers.zones));
+    if (map.getLayer(DISTRICT_LINE)) map.setLayoutProperty(DISTRICT_LINE, "visibility", show(layers.districts));
+  }, [map, styleReady, overview, layers]);
+
+  // --- frame the district opened in the priority panel (its outline if loaded, else its zones)
+  useEffect(() => {
+    if (!map || !overview || !districtName) return;
+    const bounds = overview.districts.find((d) => d.name === districtName)?.bounds;
+    if (!bounds) return; // no coverage and no verified outline: nothing to frame, the panel says so
+    const [west, south, east, north] = bounds;
+    map.fitBounds([[west, south], [east, north]], { padding: PADDING, duration: 700, maxZoom: 11 });
+  }, [map, overview, districtName]);
 
   // --- frame Manipur's monitored areas once, when they first arrive
   useEffect(() => {
@@ -125,7 +165,7 @@ export function RiskLayer() {
 
   // --- rank numbers: DOM markers, so they survive a basemap switch and need no map fonts
   useEffect(() => {
-    if (!map || !overview) return;
+    if (!map || !overview || !layers.ranks) return;
     const markers = overview.areas
       .filter((area) => area.rank !== null)
       .map((area) => {
@@ -142,7 +182,7 @@ export function RiskLayer() {
         return new Marker({ element }).setLngLat(area.label_point).addTo(map);
       });
     return () => markers.forEach((marker) => marker.remove());
-  }, [map, overview, select]);
+  }, [map, overview, select, layers.ranks]);
 
   const hovered = overview?.areas.find((a) => a.id === hoveredId);
   if (!tip || !hovered) return null;
