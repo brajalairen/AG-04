@@ -1,6 +1,6 @@
 {
   "status": "DRAFT",
-  "note": "Latin-script Manipuri agricultural terms. Every form is attested in CompiledDataEnglishToMeitei.xlsx; the evidence rows are quoted verbatim. Which word in a sentence matches the English term was read off the sentence pairs (co-occurrence across many rows, then checked row by row); that alignment is what a fluent speaker must confirm before verified_by/verified_on are filled. Terms not attested in the dataset are left out and listed in MEMBER_A_README.md. cue_words are question and reference words (why, how, which, where, first, this, here, high) with the same evidence; the router (satquery/agent/language.py) reads terms and cue words as concepts to recognise the intent of a Latin Manipuri question. An optional 'concept' field overrides the concept a term's category implies.",
+  "note": "Latin-script Manipuri agricultural terms. Every form is attested in CompiledDataEnglishToMeitei.xlsx; the evidence rows are quoted verbatim. Which word in a sentence matches the English term was read off the sentence pairs (co-occurrence across many rows, then checked row by row); that alignment is what a fluent speaker must confirm before verified_by/verified_on are filled. Terms not attested in the dataset are left out and listed in MEMBER_A_README.md. cue_words are question and reference words (why, how, which, where, first, this, here, high, very, is) with the same evidence; the router (satquery/agent/language.py) reads terms and cue words as concepts to recognise the intent of a Latin Manipuri question. An optional 'concept' field overrides the concept a term's category implies.",
   "terms": [
     {
       "id": "term-crop",
@@ -1737,9 +1737,13 @@
         {
           "script": "Latn",
           "text": "masi"
+        },
+        {
+          "script": "Latn",
+          "text": "asi"
         }
       ],
-      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 59253, 15525, 100486",
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 59253, 15525, 100486, 42370, 42516",
       "evidence": [
         {
           "row": 59253,
@@ -1758,11 +1762,163 @@
           "english": "How is it dangerous?",
           "romanstandard": "masi karamna khudongthiningngāi oibano?",
           "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 42370,
+          "english": "Use this.",
+          "romanstandard": "asi sijinnouwo.",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 42516,
+          "english": "Read this.",
+          "romanstandard": "asi paowo.",
+          "source_document": "en_mni(meitei).xlsx"
         }
       ],
       "verified_by": null,
       "verified_on": null,
-      "notes": "masigi = of this, masina = by this."
+      "notes": "masigi = of this, masina = by this; asi also follows a noun ('mapham asi' = this place)."
+    },
+    {
+      "id": "cue-my",
+      "concept": "here",
+      "english": "my (the asker's own field or area)",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "eigi"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 59294, 4890, 36534",
+      "evidence": [
+        {
+          "row": 59294,
+          "english": "My",
+          "romanstandard": "eigi",
+          "source_document": "wonder.pdf"
+        },
+        {
+          "row": 4890,
+          "english": "my food.",
+          "romanstandard": "eigi chinjāk.",
+          "source_document": "black-beauty-obooko.pdf"
+        },
+        {
+          "row": 36534,
+          "english": "My father grows rice.",
+          "romanstandard": "eigi pānthouna cheng thāi.",
+          "source_document": "en_mni(meitei).xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "cue-how-much",
+      "concept": "how",
+      "english": "how much / how many",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "kayā"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 43813, 36332, 15876",
+      "evidence": [
+        {
+          "row": 43813,
+          "english": "How many died?",
+          "romanstandard": "kayā sikhre.",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 36332,
+          "english": "How much is it?",
+          "romanstandard": "masi kayā pige?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        },
+        {
+          "row": 15876,
+          "english": "What is the temperature?",
+          "romanstandard": "aying asā kayāno?",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Also 'what is the ...' of a quantity: row 15876 'What is the temperature?' = 'aying asā kayāno?'. kayā also means 'many' (row 17513)."
+    },
+    {
+      "id": "cue-very",
+      "concept": "high",
+      "english": "very / much",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "yāmna"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 38338, 11196, 28892",
+      "evidence": [
+        {
+          "row": 38338,
+          "english": "Very good",
+          "romanstandard": "yāmna phaba",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 11196,
+          "english": "“Very well.",
+          "romanstandard": "“yāmna phajakhre.",
+          "source_document": "Delver_Magic_3.pdf"
+        },
+        {
+          "row": 28892,
+          "english": "Rain is so heavy",
+          "romanstandard": "nong yāmna kanli",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": ""
+    },
+    {
+      "id": "cue-is",
+      "concept": "exist",
+      "english": "is / there is",
+      "manipuri": [
+        {
+          "script": "Latn",
+          "text": "lei"
+        }
+      ],
+      "source": "CompiledDataEnglishToMeitei.xlsx (sheet 'compiled', column 'romanstandard'), rows 42789, 42630, 17509",
+      "evidence": [
+        {
+          "row": 42789,
+          "english": "Tom is out.",
+          "romanstandard": "tom mapān lei.",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 42630,
+          "english": "He is here!",
+          "romanstandard": "mā sida lei!",
+          "source_document": "en_mni(meitei).xlsx"
+        },
+        {
+          "row": 17509,
+          "english": "there are several dangerous insects in the jungle .",
+          "romanstandard": "umang asida khudongthiningngāi oiba tin kayā ama lei.",
+          "source_document": "fresh_eng_meit_datasets_AZURE.xlsx"
+        }
+      ],
+      "verified_by": null,
+      "verified_on": null,
+      "notes": "Marks a Manipuri sentence; no intent rule uses it."
     },
     {
       "id": "cue-here",

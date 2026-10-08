@@ -142,6 +142,13 @@ question -> satquery/agent/language.py: words -> concepts -> common intent (+ la
 - **Tests:** `tests/test_language_routing.py` routes every entry of `manipuri_queries.json` and checks that it reaches its labelled intent. New verified queries are covered automatically.
 - **Unverified label:** every Latin Manipuri routing rule says the lexicon is not yet verified, until the file's `status` is `VERIFIED`.
 
+**`manipuri_responses.json`:** Latin Manipuri answers. A question asked in Latin Manipuri is answered in Latin Manipuri; English questions keep their English answers.
+
+- **Why templates:** AG-04's answers are written by code, not by a language model, so `satquery/agri/answer_language.py` fills one template per message with the engine's own values (level, score, confidence, names, counts). The engine's reasons and NDVI figures are inserted verbatim.
+- **Fallback:** a message whose `text` is `null` is shown in English. A template is refused, and English shown instead, if it changes the `{slots}`, drops PLACEHOLDER or SAMPLE from a warning, or claims a confirmed diagnosis or outbreak.
+- **Written so far:** 5 of 24 templates, all taken from sentences Member A gave on 2026-10-08 (DRAFT). The other 19 have their English text in `english`, ready for a fluent speaker to write `text`. Do not machine-translate them.
+- **Path:** override the file with `SATQUERY_MANIPURI_RESPONSES`.
+
 **`advisory.json`:** not read by the application yet. It could feed the area drawer's "what to do" text later.
 
 ## 10. What still needs a person

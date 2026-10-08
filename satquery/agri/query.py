@@ -18,6 +18,7 @@ from dataclasses import dataclass, field
 
 from satquery.agent.intents import IMAGERY_CUES, find_target
 from satquery.agent.language import ENGLISH, INTENTS, LATIN_MANIPURI, NormalizedQuery, normalize
+from satquery.agri import answer_language as mni
 from satquery.agri.models import SAMPLE_LABEL, MonitoredArea, RiskAssessment
 
 INSPECT = re.compile(r"\b(?:inspect\w*|field[- ](?:visit|check|inspection)s?|visit first|go first|look first|"
@@ -175,17 +176,23 @@ def answer(query: str, assessments: list[RiskAssessment], areas: list[MonitoredA
     unranked = [a for a in assessments if a.rank is None]
     caveats = _caveats(assessments)
 
-    def reply(intent, text, area_ids=(), focus=None):
-        return AgriAnswer(intent, rule, text, list(area_ids), focus, found.language if found else ENGLISH,
-                          found.common_intent if found else None)
+    # A Latin Manipuri question is answered in Latin Manipuri (satquery.agri.answer_language): the same
+    # results, inserted as the engine gives them. The English text below is unchanged for English questions.
+    latin = found is not None and found.language == LATIN_MANIPURI
+
+    def reply(intent, text, area_ids=(), focus=None, manipuri=None):
+        return AgriAnswer(intent, rule, manipuri() if latin and manipuri else text, list(area_ids), focus,
+                          found.language if found else ENGLISH, found.common_intent if found else None)
 
     if found is None or found.kind is None:
-        return reply("unmatched", REPHRASE)
+        return reply("unmatched", REPHRASE,
+                     manipuri=lambda: mni.say("rephrase", LATIN_MANIPURI, examples="; ".join(EXAMPLES)))
 
     if found.kind == "inspect":
         if not ranked:
             return reply("inspect", "No monitored area has enough data for a risk estimate, so no inspection "
-                         "order can be suggested.\n" + caveats, [a.area_id for a in unranked])
+                         "order can be suggested.\n" + caveats, [a.area_id for a in unranked],
+                         manipuri=lambda: mni.inspect(assessments, [], unranked, _drivers))
         top = ranked[:3]
         lines = ["Suggested order for field inspection, by risk rank (decision support; the final choice rests with "
                  "the Department):"]
@@ -193,7 +200,8 @@ def answer(query: str, assessments: list[RiskAssessment], areas: list[MonitoredA
                   f"{a.confidence.level}" for i, a in enumerate(top, 1)]
         if unranked:
             lines.append(f"Not ranked for lack of data: {', '.join(a.area_name for a in unranked)}.")
-        return reply("inspect", "\n".join(lines) + "\n" + caveats, [a.area_id for a in top], top[0].area_id)
+        return reply("inspect", "\n".join(lines) + "\n" + caveats, [a.area_id for a in top], top[0].area_id,
+                     manipuri=lambda: mni.inspect(assessments, top, unranked, _drivers))
 
     # A Latin Manipuri question names its place in Manipuri; the area is found from the English name.
     named, phrase = resolve_area(" ".join(found.places) if found.places else query, areas)
@@ -208,17 +216,23 @@ def answer(query: str, assessments: list[RiskAssessment], areas: list[MonitoredA
             if a is not None:
                 rank = f"Rank #{a.rank} of {a.rank_of} assessed areas." if a.rank else "Not ranked: not enough data."
                 reasons = "\n".join(f"- {r}" for r in a.reasons[:5])
-                return reply("explain", f"{a.headline} {rank}\nWhy:\n{reasons}\n{caveats}", [a.area_id], a.area_id)
+                pest = found.common_intent == "PEST_RISK"
+                return reply("explain", f"{a.headline} {rank}\nWhy:\n{reasons}\n{caveats}", [a.area_id], a.area_id,
+                             manipuri=lambda: mni.explain(a, assessments, pest))
         names = ", ".join(area.name for area in areas)
         if len(named) > 1:
             text = (f"'{phrase}' matches several monitored areas: {', '.join(n.name for n in named)}. "
                     "Please name one.")
+            key, slots = "ambiguous_area", {"phrase": phrase, "names": ", ".join(n.name for n in named)}
         elif here:
             text = ("Select one of the monitored areas on the map (or name it) to see why it is flagged. "
                     "Assessing a newly drawn area is planned for a later phase.")
+            key, slots = "select_area", {}
         else:
             text = f"No monitored area matches this question. Monitored areas: {names}."
-        return reply("unmatched", text, [n.id for n in named])
+            key, slots = "no_area_match", {"names": names}
+        return reply("unmatched", text, [n.id for n in named],
+                     manipuri=lambda: mni.say(key, LATIN_MANIPURI, **slots))
 
     severe = [a for a in ranked if a.level in SEVERE]
     counts = {level: sum(1 for a in assessments if a.level == level)
@@ -228,9 +242,11 @@ def answer(query: str, assessments: list[RiskAssessment], areas: list[MonitoredA
     if severe:
         head = (f"Indicators suggest HIGH or CRITICAL risk in {len(severe)} of {len(assessments)} monitored areas:")
         body = "\n".join(_line(a) for a in severe)
-        return reply("rank", f"{head}\n{body}\n{tally}\n{caveats}", [a.area_id for a in severe], severe[0].area_id)
+        return reply("rank", f"{head}\n{body}\n{tally}\n{caveats}", [a.area_id for a in severe], severe[0].area_id,
+                     manipuri=lambda: mni.rank(assessments, ranked, severe))
     if ranked:
         return reply("rank", "No monitored area is at HIGH or CRITICAL risk by the current indicators. "
-                     f"Highest: {_line(ranked[0])}.\n{tally}\n{caveats}", [ranked[0].area_id], ranked[0].area_id)
+                     f"Highest: {_line(ranked[0])}.\n{tally}\n{caveats}", [ranked[0].area_id], ranked[0].area_id,
+                     manipuri=lambda: mni.rank(assessments, ranked, severe))
     return reply("rank", "No monitored area has enough data for a risk estimate.\n" + caveats,
-                 [a.area_id for a in unranked])
+                 [a.area_id for a in unranked], manipuri=lambda: mni.rank(assessments, ranked, severe))

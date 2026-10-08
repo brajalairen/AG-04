@@ -51,7 +51,7 @@ ENGLISH_WORDS = {
     "here": r"here|this|that|it|selected",
     "area": r"areas?|places?|districts?|villages?|regions?|locations?|zones?",
 }
-CONCEPTS = frozenset(ENGLISH_WORDS) | {"weather", "place"}
+CONCEPTS = frozenset(ENGLISH_WORDS) | {"weather", "place", "exist"}  # "exist" (lei): only marks the language
 ENGLISH_PATTERNS = {concept: re.compile(rf"\b(?:{words})\b") for concept, words in ENGLISH_WORDS.items()}
 # English function words: a question built on them is English, even if one word also exists in Manipuri.
 FUNCTION_WORDS = frozenset(
@@ -62,8 +62,9 @@ FUNCTION_WORDS = frozenset(
 # How a Manipuri term's category reads as a concept; a term's own "concept" field overrides it.
 CATEGORY_CONCEPT = {"crop": "crop", "pest": "pest", "disease": "pest", "weather": "weather", "crop_health": "health",
                     "risk": "risk", "inspection": "inspect", "place": "place"}
-# Case and plural endings that may follow a short form (masi -> masigi, phou -> phougi); longer forms match as stems.
-SHORT_FORM_ENDINGS = r"(?:sing|gi|ki|da|ta|dagi|tagi|na|bu|pu|ga|ka|su|di|ti|ni|damak)*"
+# Case, plural and question endings that may follow a short form (masi -> masigi, kayā -> kayāno, lei -> leibrā);
+# longer forms match as stems.
+SHORT_FORM_ENDINGS = r"(?:sing|gi|ki|da|ta|dagi|tagi|na|bu|pu|ga|ka|su|di|ti|ni|damak|no|bano|bra|ra|ge|bage)*"
 
 # First match wins. A rule names the concepts it needs; the words that supplied them are quoted in the trace.
 RULES = (
@@ -110,8 +111,9 @@ def _forms(entry: dict, concept: str | None) -> list[_Form]:
         if form.get("script") != "Latn" or not text.strip() or "<" in text:
             continue
         letters = fold(text).replace(" ", "")
-        # Short forms ("tin") and place names spelled as in English ("jiribam") also occur in English questions.
-        evidence = len(letters) >= 4 and not (place and letters == fold(place).replace(" ", ""))
+        # Two-letter forms and place names spelled as in English ("jiribam") also occur in English questions; a
+        # short form that is also an English word ("tin") is outweighed by the English function words around it.
+        evidence = len(letters) >= 3 and not (place and letters == fold(place).replace(" ", ""))
         forms.append(_Form(concept, text, _pattern(text), place, evidence))
     return forms
 
