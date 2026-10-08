@@ -1,5 +1,13 @@
 # AG-04 Team Tasks
 
+## Repository and Git rules (read first)
+
+- **Authoritative repository:** **AG-04**, https://github.com/brajalairen/AG-04.git. Clone it and work from branch `ag04-prototype`.
+- **Frozen:** **SatQuery-AI** (https://github.com/brajalairen/SatQuery-AI.git) is the original SIH submission. Never push to it, merge into it or change its `main`. In the integration clone its remote is `sih-frozen`, with push disabled.
+- **Your own branch:** create one from `ag04-prototype` (for example `feature/manipuri`, `feature/district-boundaries`, `feature/ui-qa`, `feature/pitch`) and hand it over for review. Only the integration lead merges into `ag04-prototype`, after `git diff`, the tests and the build.
+- **Never commit:** `.env`, credentials or API keys, `runs/` (caches), `.venv`, `node_modules`, `web/dist`, or large datasets.
+- **Status:** Phases 1–3 are complete and committed; the last application commit is `5c966f6`. Phase 4 has not started.
+
 Who owns what while Claude does the main implementation in this repository. Roles are a suggested split: help each other, but each person keeps a clear primary area. Update the **Status** and **Blocker** columns as you go. The master feature list is [AG04_CHECKLIST.md](AG04_CHECKLIST.md).
 
 **Hand-off rule:** put deliverables in `satquery/agri/assets/` (it now exists). The file schemas are enforced by `satquery/agri/config.py` and `satquery/agri/areas.py`. A wrong file fails to load, with a message saying which field is wrong. Check your thresholds file with `python -m satquery.agri thresholds`. Do not commit secrets, real personal data, or unverified "official" information.
@@ -64,10 +72,11 @@ Who owns what while Claude does the main implementation in this repository. Role
 
 | Task | Status |
 |---|---|
-| Phase 1: audit + NDVI foundation | **done**, approved |
+| Repository migration to AG-04 | **done**: `ag04-prototype` pushed to AG-04; the SIH repo is `sih-frozen`, push disabled |
+| Phase 1: audit + NDVI foundation | **done**, approved and committed (`418fe58`) |
 | Phase 2: agricultural data + risk engine | **done**, approved and committed (`082cd27`); thresholds are PLACEHOLDER until Member A verifies them |
-| Phase 3: AG-04 dashboard | **done**, awaiting approval (not committed) |
-| Phase 4: demo hardening (offline snapshot) | not started |
+| Phase 3: AG-04 dashboard | **done**, approved and committed (`5c966f6`) |
+| Phase 4: demo hardening (offline snapshot, warm start) | **not started**; waits for approval |
 | Phase 5: government workflow (login, monitor area, alerts, inspections, audit) | not started |
 | Phase 6: Manipuri (needs Member A's verified sentences) | blocked |
 | Phase 7: optional extras | not started |

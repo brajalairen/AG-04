@@ -7,8 +7,11 @@ The source of truth for what we intend to build. Update it after every phase.
 | **Objective** | Build a working prototype for **AG-04** (AI4SEVA Hackathon 2026, Department of Agriculture, Manipur). It combines crop/satellite, weather, pest and geographical data to find areas at increased risk, and gives agricultural officials an early-warning dashboard. Showcase: Manipur. Engine: works on arbitrary areas. |
 | **Judging** | Technical Trust 35% · Government Relevance 30% · Industry Potential 35%. Reliability > feature count. |
 | **Pitch** | 9 Oct 2026, from 09:30 IST |
-| **Active repo** | `SatQuery-AI` (this repository). SatV2 is reference only; do not modify it. |
-| **Current phase** | **Phase 3: AG-04 dashboard.** Done; awaiting approval for Phase 4 (demo hardening). Not committed. |
+| **Active repo** | **AG-04**, https://github.com/brajalairen/AG-04.git (git remote `origin`). This is the authoritative repository for all AG-04 work. |
+| **Active branch** | `ag04-prototype`, tracking `origin/ag04-prototype`. `main` has not been pushed to AG-04. |
+| **Frozen repos** | **SatQuery-AI** (https://github.com/brajalairen/SatQuery-AI.git) is the frozen SIH submission. Locally its remote is `sih-frozen`: fetch only, push disabled (a test push fails). Never push, merge into it or change its `main` (still at `1433e7d`). SatV2 is a reference copy only; do not modify it. |
+| **Last application commit** | `5c966f6`, Phase 3 (on top of `082cd27` Phase 2 and `418fe58` Phase 1). Later commits are documentation-only unless the change log says otherwise. |
+| **Current phase** | **Phases 1, 2 and 3 are complete, approved and committed.** Phase 4 (demo hardening) has **not** started and waits for approval. |
 | **Overall status** | Phases 1–3 work. Phase 3 adds the government-facing dashboard over the unchanged risk engine (read-only `/api/agri/*`, risk map, priority panel, "Why is this area at risk?" drawer, agri command-bar questions). Tests: backend 720 passed, web 106 passed, typecheck clean, build OK. Checked in Chrome at 1600×900 and 1280×720, light and dark, with no page errors. |
 | **Known blockers** | (1) Trustworthy 16-district boundaries are not yet sourced (Member B). OpenStreetMap already has the current districts; this is a lead to verify. (2) **Pest thresholds are PLACEHOLDERS** (Member A). In Oct 2026 the placeholder blast rule held on every day in every area, so weather does not separate areas until verified values replace it. (3) Advisory text is not yet verified (Member A). (4) No verified Manipuri sentence yet (Member A). |
 | **Demo-critical unfinished** | Verified thresholds (Member A); P0.3 district boundaries (Member B); P0.11 frozen offline snapshot and automatic fallback (Phase 4); advice / whom to consult (P0.9 remainder, needs Member A's advisory text). |
@@ -219,6 +222,10 @@ All areas have 100% data completeness and *low* confidence, because the threshol
 ---
 
 ## Change log
+- **2026-10-08, repository migration** (documentation only):
+  - AG-04 (https://github.com/brajalairen/AG-04.git) is now `origin`, and `ag04-prototype` (Phases 1–3, `5c966f6`) is pushed to it.
+  - The SatQuery-AI SIH repository was renamed locally to `sih-frozen`, with its push URL disabled. Nothing was pushed to it.
+  - Phase 4 not started.
 - **2026-10-08, Phase 1:**
   - Audit.
   - Added the `crop_health` task and the `optical.vegetation_health` tool, with an NDVI class map.
@@ -228,7 +235,7 @@ All areas have 100% data completeness and *low* confidence, because the threshol
   - 43 new tests. Backend 544 passed (baseline 501); web 83 passed; build OK.
   - pytest was installed into `.venv` (`uv pip install pytest`).
   - Created this checklist and TEAM_TASKS.md.
-- **2026-10-08, Phase 3** (not committed):
+- **2026-10-08, Phase 3** (committed as `5c966f6`):
   - Read-only `/api/agri/*` (`satquery/agri/routes.py`, `service.py`, `query.py`) and the agri route in `/api/route`.
   - Dashboard: risk map, legend, priority panel, area drawer, answer card, prototype strip; Manipur default view; the command bar routes every question.
   - 53 new backend tests (API, queries, routing, stale wording, contract types) and 23 new frontend tests.
