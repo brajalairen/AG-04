@@ -7,6 +7,7 @@ import { useAppStore } from "../state/useAppStore";
 import { PlaceholderNotice, SampleLabel } from "./badges";
 import { formatTime } from "./format";
 import { useAgriStore } from "./useAgriStore";
+import { useChatStore } from "../chat/useChatStore";
 
 const INTENT_LABEL = {
   rank: "Risk ranking",
@@ -20,7 +21,9 @@ export function AgriAnswerCard() {
   const clearAnswer = useAgriStore((s) => s.clearAnswer);
   const thresholdsNote = useAgriStore((s) => s.overview?.thresholds_note ?? null);
   const panelOpen = useAppStore((s) => s.sidebarOpen && s.section !== null);
-  if (!answer) return null;
+  // An answer the open conversation already shows is not repeated; command-bar answers still appear here.
+  const inConversation = useChatStore((s) => s.open && s.lastAgri !== null && s.lastAgri === answer);
+  if (!answer || inConversation) return null;
   return (
     <div
       className={cx(
