@@ -1,0 +1,174 @@
+{
+ "status": "VERIFIED",
+ "note": "Latin Manipuri answer templates, one per message of satquery/agri/answer_language.py (MESSAGES). 'english' is the message; 'text' is its Latin Manipuri, keeping every {slot} exactly (code fills them with the engine's own values: levels, scores, confidence, names, counts). A template whose slots differ, that drops PLACEHOLDER or SAMPLE from a warning, or that claims a confirmed diagnosis or outbreak is refused and the English message is shown instead. All 24 were reviewed and verified by Member A (fluent speaker) on 2026-10-08. 5 templates come from Member A's own sentences; the other 19 are AI-assistant drafts (see each 'source'), built only from words attested in the corpus, reviewed and, where needed, corrected by Member A.",
+ "templates": {
+  "area_risk": {
+   "english": "Indicators suggest {level} risk for this area.",
+   "text": "Area asi da risk {level} oirammi.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "area_pest_risk": {
+   "english": "Indicators suggest {level} pest risk for this area.",
+   "text": "Area asi da pest risk {level} oirammi.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "score": {
+   "english": "Risk score: {score}.",
+   "text": "Risk score asi {score} ni.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "confidence": {
+   "english": "Data confidence: {confidence}.",
+   "text": "Data confidence {confidence} ni.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "rank_position": {
+   "english": "Rank #{rank} of {rank_of} assessed areas.",
+   "text": "Assess toukhiba area {rank_of}gi manungda rank #{rank} ni.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "not_ranked": {
+   "english": "Not ranked: not enough data.",
+   "text": "Rank toude: data mapung phāde.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "why": {
+   "english": "Why:",
+   "text": "Maramsing:",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "ranking_head": {
+   "english": "Indicators suggest HIGH or CRITICAL risk in {count} of {total} monitored areas:",
+   "text": "Monitor touriba area {total}gi manungda {count}da indicatorsingna HIGH nattraga CRITICAL risk utli:",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "ranking_none": {
+   "english": "No monitored area is at HIGH or CRITICAL risk by the current indicators. Highest:",
+   "text": "Houjikki indicatorsinggi matung inna monitor touriba area amattada HIGH nattraga CRITICAL risk leite. Khwāidagi wāngba:",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "no_estimate": {
+   "english": "No monitored area has enough data for a risk estimate.",
+   "text": "Risk estimate tounaba data mapung phāba monitor touriba area amatta leite.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "tally": {
+   "english": "Moderate: {moderate}, low: {low}, not enough data: {no_data} of {total} monitored areas.",
+   "text": "Monitor touriba area {total}gi manungda: moderate {moderate}, low {low}, data mapung phādaba {no_data}.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "inspect_head": {
+   "english": "Suggested order for field inspection, by risk rank (decision support; the final choice rests with the Department):",
+   "text": "Risk rank matung inna field inspection tounaba paotāk (decision support khaktani; aroiba wārep adu Department gi mathakta lei):",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "inspect_none": {
+   "english": "No monitored area has enough data for a risk estimate, so no inspection order can be suggested.",
+   "text": "Risk estimate tounaba data mapung phāba monitor touriba area amatta leite, maram aduna inspection paotāk piba ngamde.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "not_ranked_list": {
+   "english": "Not ranked for lack of data: {names}.",
+   "text": "Data mapung phādaba maram oiduna rank toudaba: {names}.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "mainly": {
+   "english": "mainly {drivers}",
+   "text": "maruoina {drivers}",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "caveat_placeholder": {
+   "english": "PLACEHOLDER thresholds: prototype scores, not validated agricultural findings.",
+   "text": "PLACEHOLDER thresholds: prototype scoresingni, validate toukhiba agricultural findingsing natte.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "caveat_sample": {
+   "english": "Pest-report figures are SAMPLE DATA — Prototype Simulation.",
+   "text": "Pest-report figuresing asi SAMPLE DATA — Prototype Simulation ni.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "caveat_decision": {
+   "english": "Decision support only; the final assessment rests with the Department of Agriculture.",
+   "text": "Decision support khaktani; aroiba assessment adu Department of Agriculture gi mathakta lei.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "verify_advice": {
+   "english": "Field inspection and verification by an agricultural expert are recommended.",
+   "text": "Field inspection amasung agricultural expert gi verification toubiyu.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "select_area": {
+   "english": "Select one of the monitored areas on the map (or name it) to see why it is flagged. Assessing a newly drawn area is planned for a later phase.",
+   "text": "Area ama karigi flag toubage hāiba yengnaba map ta monitor touriba area ama khanbiyu (nattraga maming hāibiyu). Nouna yeksanba area assess toubadi matungda phase amada toubagi plan leiri.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "ambiguous_area": {
+   "english": "'{phrase}' matches several monitored areas: {names}. Please name one.",
+   "text": "'{phrase}' asi monitor touriba area kayā amaga match touri: {names}. Ama khak maming hāibiyu.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "no_area_match": {
+   "english": "No monitored area matches this question. Monitored areas: {names}.",
+   "text": "Wāhang asiga match touba monitor touriba area amatta leite. Monitor touriba areasing: {names}.",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "rephrase": {
+   "english": "This question could not be matched with confidence to a crop & pest risk question, so it was not sent to satellite image analysis either. The risk engine answers which areas are at high risk, why a named or selected area is flagged, and which areas to inspect first. For example: {examples}",
+   "text": "Wāhang asi crop & pest risk wāhang ama oina chumna khangba ngamde, maram aduna satellite image analysis dasu thākhide. Risk engine aduna karamba areasingda high risk leibage, maming hāiba nattraga khanba area ama karigi flag toubage, amasung karamba areasing ahānba yengsingadage hāiba wāhangsingda paokhum pi. Khudam oina: {examples}",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  },
+  "crop_health_head": {
+   "english": "Crop health of this area from satellite NDVI (an indicator of vegetation vigour, not a diagnosis):",
+   "text": "Satellite NDVI dagi area asigi crop health (pāmbi-singbigi hakchāng utpa indicator ama ni, diagnosis natte):",
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "verified": true
+  }
+ }
+}

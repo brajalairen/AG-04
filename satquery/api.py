@@ -11,7 +11,9 @@ from satquery.agent.executor import execute
 from satquery.agent.forecast import classify_weather
 from satquery.agent.intents import (COMPATIBLE_TASKS, classify, find_target, needs_multiple_dates,
                                     needs_optical_and_sar, route_query)
+from satquery.agent.language import LATIN_MANIPURI, normalize
 from satquery.agent.planner import build_plan, build_weather_plan
+from satquery.agri import answer_language
 from satquery.evidence import write_reports
 from satquery import geo
 from satquery.imaging import load_image
@@ -184,6 +186,8 @@ def analyze(request: AnalysisRequest, settings: Settings | None = None, vlm: VLM
     ctx = ToolContext(images=images, vlm=vlm or get_vlm(settings))
     trace.steps = execute(trace.plan, ctx)
     status, answer, evidence, confidence = aggregate(intent, ctx, trace.steps, run_dir)
+    if intent.task == "crop_health" and answer and normalize(request.query).language == LATIN_MANIPURI:
+        answer = answer_language.crop_health(answer)  # asked in Latin Manipuri: answered in it, figures unchanged
     return finish(status, answer, intent.task, evidence, confidence)
 
 

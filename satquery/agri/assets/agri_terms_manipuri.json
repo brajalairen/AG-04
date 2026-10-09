@@ -1,0 +1,960 @@
+{
+ "status": "DRAFT",
+ "note": "Latin-script Manipuri agricultural terms for intent routing. Evidence/source rows stripped pending corpus licence resolution (see team notes).",
+ "terms": [
+  {
+   "id": "term-crop",
+   "category": "crop",
+   "english": "crop / crops",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "mahei-marong"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Plural mahei-marongsing. Also written maheimarong / mahei marong. 81 of the 97 rows whose English contains 'crop(s)' contain this form.",
+   "verified": true
+  },
+  {
+   "id": "term-rice",
+   "category": "crop",
+   "english": "rice (the grain)",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "cheng"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Row 17464 gives the distinction: 'Rice in the husk is known as paddy' = 'makuda leiba cheng asi phou hāina khangnei'. Cooked rice is a different word in the dataset (chāk, chagang: rows 2310, 3462); do not use those for the crop.",
+   "verified": true
+  },
+  {
+   "id": "term-paddy",
+   "category": "crop",
+   "english": "paddy / rice plant (rice in the husk)",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "phou"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "phougi = of paddy. Row 88831: 'paddy crop' = 'phougi mahei marong'.",
+   "verified": true
+  },
+  {
+   "id": "term-paddy-field",
+   "category": "crop",
+   "english": "paddy field / rice field",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "phougi loubuk"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "",
+   "verified": true
+  },
+  {
+   "id": "term-field",
+   "category": "crop",
+   "english": "field (farm field)",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "loubuk"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "86 of the 97 rows containing loubuk have 'field(s)' in the English. lampāk is also translated 'field' (rows 99363, 15333) but in the sense of an open ground; loubuk is the farm-field word.",
+   "verified": true
+  },
+  {
+   "id": "term-farming",
+   "category": "crop",
+   "english": "farming / cultivation",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "louu-singu"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Also louu alone. 'farmland' is attested as 'louu-singugi lam' (row 16288).",
+   "verified": true
+  },
+  {
+   "id": "term-farmer",
+   "category": "crop",
+   "english": "farmer",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "loumi"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Plural loumising. 322 of the 339 rows with 'farmer(s)' in the English contain loumi.",
+   "verified": true
+  },
+  {
+   "id": "term-harvest",
+   "category": "crop",
+   "english": "harvest",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "lourok"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "The verb 'to harvest' is attested as lok- (lokpa, loklaba): row 64887 'the harvested crops' = 'loklaba maheimarongsing'.",
+   "verified": true
+  },
+  {
+   "id": "term-seed",
+   "category": "crop",
+   "english": "seed",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "maru"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Plural marusing. Homograph: maru also means 'important / main' (maruoiba), so maru alone is ambiguous outside a farming context.",
+   "verified": true
+  },
+  {
+   "id": "term-soil",
+   "category": "crop",
+   "english": "soil",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "leihao"
+    },
+    {
+     "script": "Latn",
+     "text": "leipāk"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Two words are attested. leihao: soil as material (row 104417 'The soil is sandy here'). leipāk (also leipak): land/soil, used for 'soil conservation' and 'soil health' in news text (rows 72284, 49401); it also means 'land/country'. A fluent speaker should choose the preferred word for agricultural soil.",
+   "verified": true
+  },
+  {
+   "id": "term-plant",
+   "category": "crop",
+   "english": "plant",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "pāmbi"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Plural pāmbising.",
+   "verified": true
+  },
+  {
+   "id": "term-pest",
+   "category": "pest",
+   "english": "pest",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "tin-kāng"
+    },
+    {
+     "script": "Latn",
+     "text": "pesat"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "tin-kāng (also written tin kāng / tinkāng / tin-kang) is the general 'insect / bug' word; row 92419 uses it for 'pest' and row 46675 for pests of an orange crop. pesat is the English loanword, used in 'Integrated Pest Management' (row 64400). 'Infestation' and 'pest outbreak' are NOT attested (see Member_A/README.md).",
+   "verified": true
+  },
+  {
+   "id": "term-insect",
+   "category": "pest",
+   "english": "insect",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "tin"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "tin-kāng is also used for 'insects' (row 31824).",
+   "verified": true
+  },
+  {
+   "id": "term-disease",
+   "category": "disease",
+   "english": "disease",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "lāinā"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Plural lāināsing. Most dataset rows are about human disease; rows 92419 and 46675 use it next to pests in a crop context. 'Crop disease' / 'plant disease' are NOT attested as phrases.",
+   "verified": true
+  },
+  {
+   "id": "term-infection",
+   "category": "disease",
+   "english": "infection",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "eenpheksan"
+    },
+    {
+     "script": "Latn",
+     "text": "inpheksan"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "English loanword. All dataset examples are medical, none agricultural: a speaker should confirm before using it for plant infection.",
+   "verified": true
+  },
+  {
+   "id": "term-rain",
+   "category": "weather",
+   "english": "rain / rainfall",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "nong"
+    },
+    {
+     "script": "Latn",
+     "text": "nong chuba"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "nong = rain; nong chuba = rain falling (rainfall).",
+   "verified": true
+  },
+  {
+   "id": "term-weather",
+   "category": "weather",
+   "english": "weather",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "aying asā"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Also written aying-asā / aing-asā.",
+   "verified": true
+  },
+  {
+   "id": "term-temperature",
+   "category": "weather",
+   "english": "temperature",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "aying asā"
+    },
+    {
+     "script": "Latn",
+     "text": "temparechara"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "aying asā (literally 'cold-hot') is used for both 'weather' and 'temperature' in the dataset; the loanword temparechara is also attested (row 103481).",
+   "verified": true
+  },
+  {
+   "id": "term-humidity",
+   "category": "weather",
+   "english": "relative humidity",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "riletiba hayumiditi"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "English loanword from newspaper weather reports. No native Manipuri word for humidity is attested in the dataset.",
+   "verified": true
+  },
+  {
+   "id": "term-drought",
+   "category": "weather",
+   "english": "drought",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "eekang"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Also written ikang.",
+   "verified": true
+  },
+  {
+   "id": "term-flood",
+   "category": "weather",
+   "english": "flood",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "eesing eechao"
+    },
+    {
+     "script": "Latn",
+     "text": "ising ichāu"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Literally 'water flood'. Both spellings are attested.",
+   "verified": true
+  },
+  {
+   "id": "term-storm",
+   "category": "weather",
+   "english": "storm",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "nonglei-nungsit"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Row 13984: 'All crop was ruined in storm'.",
+   "verified": true
+  },
+  {
+   "id": "term-damage",
+   "category": "crop_health",
+   "english": "damage / loss",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "amāng-atā"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Noun. Dataset examples are about objects and buildings, not crops. For crops see term-ruined.",
+   "verified": true
+  },
+  {
+   "id": "term-ruined",
+   "category": "crop_health",
+   "english": "be ruined / destroyed (verb stem, used of crops)",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "mānghan"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Rows 13984 and 67509 use it for crops ruined by storm and hailstorm. A noun phrase for 'damaged crop' is NOT attested.",
+   "verified": true
+  },
+  {
+   "id": "term-soil-health",
+   "category": "crop_health",
+   "english": "soil health",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "leipakki phibam"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "From Poknampham news text (romanised without macrons). phibam = condition/state. 'Crop health', 'healthy crop', 'vegetation', 'vegetation stress', 'crop stress' and 'water stress' are NOT attested.",
+   "verified": true
+  },
+  {
+   "id": "term-risk",
+   "category": "risk",
+   "english": "risk / danger",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "khudongthiningngāi"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "One word for both 'risk' and 'danger'. 'khudongthiningngāi oiba' = risky / dangerous; 'khudongthiningngāi oire' = is at risk (row 98175). The loanword risak appears in news and finance text.",
+   "verified": true
+  },
+  {
+   "id": "term-low-risk",
+   "category": "risk",
+   "english": "low risk",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "khudongthiningngāi nemba"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Single attestation (row 80425). 'High risk' and 'moderate risk' are NOT attested.",
+   "verified": true
+  },
+  {
+   "id": "term-safe",
+   "category": "risk",
+   "concept": "safe",
+   "english": "safe",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "sāphaba"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "The opposite of risk: 'Is this a safe area?' = 'masi sāphaba mapham ama oibrā?' (row 15525).",
+   "verified": true
+  },
+  {
+   "id": "term-warning",
+   "category": "risk",
+   "english": "warning",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "cheksinwā"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "In 151 of the 230 rows with 'warn*' in the English. 'cheksinwā pikhi' = warned. 'Early warning' is NOT attested.",
+   "verified": true
+  },
+  {
+   "id": "term-affected-area",
+   "category": "risk",
+   "english": "affected / affected area",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "sokhallaba"
+    },
+    {
+     "script": "Latn",
+     "text": "sokhallaba mapham"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Row 75948: 'flood-affected areas' = 'eesing eechaona sokhallaba ... maphamsing'. Row 99907: 'Which crops are affected?' = 'karamba mahei-marongsingda sokhallibano?'.",
+   "verified": true
+  },
+  {
+   "id": "term-inspection",
+   "category": "inspection",
+   "english": "inspection / to inspect",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "yengsinba"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Past tense: row 102771 'We inspected the place.' = 'eikhoina mapham adu yengsinkhi.'. The loanword insapeksan is also attested (row 82820). 'Field inspection' is NOT attested.",
+   "verified": true
+  },
+  {
+   "id": "term-priority",
+   "category": "inspection",
+   "english": "priority",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "parāioriti"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Only the English loanword is attested (also spelled paraioriti). Row 66779: 'top priority' = 'ahānba parāioriti' (ahānba = first).",
+   "verified": true
+  },
+  {
+   "id": "term-area",
+   "category": "place",
+   "concept": "area",
+   "english": "area / place",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "mapham"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Plural maphamsing.",
+   "verified": true
+  },
+  {
+   "id": "term-district",
+   "category": "place",
+   "concept": "area",
+   "english": "district",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "jila"
+    },
+    {
+     "script": "Latn",
+     "text": "jilā"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "",
+   "verified": true
+  },
+  {
+   "id": "place-manipur",
+   "category": "place",
+   "english": "Manipur",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "manipura"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Case endings attach: manipuragi (of), manipurada (in).",
+   "verified": true
+  },
+  {
+   "id": "place-bishnupur",
+   "category": "place",
+   "english": "Bishnupur",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "bisanupura"
+    },
+    {
+     "script": "Latn",
+     "text": "bishnupur"
+    }
+   ],
+   "verified_by": null,
+   "verified_on": null,
+   "notes": "Also bishnupur; bisanupurada = in Bishnupur. The spelling bishnupur (as in Member A's mni-009 and mni-010) added 2026-10-08, rows 31726, 31729.",
+   "verified": false
+  },
+  {
+   "id": "place-thoubal",
+   "category": "place",
+   "english": "Thoubal",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "thoubāl"
+    },
+    {
+     "script": "Latn",
+     "text": "thoubal"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "",
+   "verified": true
+  },
+  {
+   "id": "place-kakching",
+   "category": "place",
+   "english": "Kakching",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "kākching"
+    },
+    {
+     "script": "Latn",
+     "text": "kakching"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "",
+   "verified": true
+  },
+  {
+   "id": "place-imphal",
+   "category": "place",
+   "english": "Imphal",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "imphāl"
+    },
+    {
+     "script": "Latn",
+     "text": "imphal"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "'Imphal West' is attested as 'imphal wesat' (row 18143, with locative -ta).",
+   "verified": true
+  },
+  {
+   "id": "place-jiribam",
+   "category": "place",
+   "english": "Jiribam",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "jiribam"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "",
+   "verified": true
+  },
+  {
+   "id": "place-churachandpur",
+   "category": "place",
+   "english": "Churachandpur",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "churāchandapura"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Also churachandapura.",
+   "verified": true
+  },
+  {
+   "id": "term-cloud",
+   "category": "weather",
+   "english": "cloud / clouds",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "leichil"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Plural leichilsing. 'Cloudy weather' as a phrase is not attested; this is the word for cloud.",
+   "verified": true
+  },
+  {
+   "id": "term-vegetation",
+   "category": "crop",
+   "english": "vegetation",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "pāmbi-singbi"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Literally plants (pāmbi, see term-plant) and greenery; also written pambi-singbi. 'Vegetation stress' is not attested.",
+   "verified": true
+  },
+  {
+   "id": "term-condition",
+   "category": "crop_health",
+   "english": "condition / situation",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "phibam"
+    }
+   ],
+   "verified": false,
+   "verified_by": null,
+   "verified_on": null,
+   "notes": "Also phibham; typed fibam (Member A's mni-008 'cropki fibam' = crop condition). Added 2026-10-08 after Member A's review."
+  }
+ ],
+ "cue_words": [
+  {
+   "id": "cue-why",
+   "concept": "why",
+   "english": "why",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "karigi"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "",
+   "verified": true
+  },
+  {
+   "id": "cue-how",
+   "concept": "how",
+   "english": "how / in what way",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "karamna"
+    },
+    {
+     "script": "Latn",
+     "text": "kamai"
+    }
+   ],
+   "verified_by": null,
+   "verified_on": null,
+   "notes": " kamai (as in Member A's mni-008 'kamai touri?') added 2026-10-08, rows 39484, 39747, 35046.",
+   "verified": false
+  },
+  {
+   "id": "cue-which",
+   "concept": "which",
+   "english": "which",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "karamba"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "",
+   "verified": true
+  },
+  {
+   "id": "cue-any",
+   "concept": "which",
+   "english": "any / anyone",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "kanāgumba"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Means any / anyone / no one (1,119 rows), not 'which'. The router treats it as a selector over areas: 'is any area at high risk?' asks for the same ranking as 'which areas are at high risk?'.",
+   "verified": true
+  },
+  {
+   "id": "cue-where",
+   "concept": "where",
+   "english": "where",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "kadāi"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Case endings attach: kadāida (where), kadāidagi (from where).",
+   "verified": true
+  },
+  {
+   "id": "cue-begin",
+   "concept": "begin",
+   "english": "begin / start",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "houga"
+    },
+    {
+     "script": "Latn",
+     "text": "hourak"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Verb stem hou- with endings: hougadage (should begin), hourakkhi (began). The bare stem hou- is not used: it also starts unrelated words (houjik = now, houi = grows).",
+   "verified": true
+  },
+  {
+   "id": "cue-first",
+   "concept": "first",
+   "english": "first",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "ahānba"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "",
+   "verified": true
+  },
+  {
+   "id": "cue-this",
+   "concept": "here",
+   "english": "this",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "masi"
+    },
+    {
+     "script": "Latn",
+     "text": "asi"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "masigi = of this, masina = by this; asi also follows a noun ('mapham asi' = this place).",
+   "verified": true
+  },
+  {
+   "id": "cue-my",
+   "concept": "here",
+   "english": "my (the asker's own field or area)",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "eigi"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "",
+   "verified": true
+  },
+  {
+   "id": "cue-how-much",
+   "concept": "how",
+   "english": "how much / how many",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "kayā"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Also 'what is the ...' of a quantity: row 15876 'What is the temperature?' = 'aying asā kayāno?'. kayā also means 'many' (row 17513).",
+   "verified": true
+  },
+  {
+   "id": "cue-very",
+   "concept": "high",
+   "english": "very / much",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "yāmna"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "",
+   "verified": true
+  },
+  {
+   "id": "cue-is",
+   "concept": "exist",
+   "english": "is / there is",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "lei"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Marks a Manipuri sentence; no intent rule uses it.",
+   "verified": true
+  },
+  {
+   "id": "cue-here",
+   "concept": "here",
+   "english": "here",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "mapham asida"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "Literally 'in this place'.",
+   "verified": true
+  },
+  {
+   "id": "cue-high",
+   "concept": "high",
+   "english": "high",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "wāngba"
+    },
+    {
+     "script": "Latn",
+     "text": "awāngba"
+    }
+   ],
+   "verified_by": "Member A",
+   "verified_on": "2026-10-08",
+   "notes": "khwāidagi wāngba = highest (rows 103610, 74627).",
+   "verified": true
+  },
+  {
+   "id": "cue-that",
+   "concept": "marker",
+   "english": "that / the (determiner)",
+   "manipuri": [
+    {
+     "script": "Latn",
+     "text": "adu"
+    }
+   ],
+   "verified": false,
+   "verified_by": null,
+   "verified_on": null,
+   "notes": "Marks a question as Manipuri only; no intent rule reads it (e.g. mni-009 'Bishnupur da risk adu eingonda utlo.'). Added 2026-10-08 after Member A's review."
+  }
+ ]
+}
