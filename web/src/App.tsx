@@ -19,7 +19,6 @@ import { AreaRiskDrawer } from "./agri/AreaRiskDrawer";
 import { AgriAnswerCard } from "./agri/AgriAnswerCard";
 import { StatusStrip } from "./agri/StatusStrip";
 import { useAgriStore } from "./agri/useAgriStore";
-import { ConversationLaunchers, ConversationPanel } from "./chat/ConversationPanel";
 
 export default function App() {
   const theme = useAppStore((s) => s.theme);
@@ -55,7 +54,6 @@ export default function App() {
           <ImageCanvas />
           <ResultOverlay />
           <AgriAnswerCard />
-          <ConversationPanel />
           <AICommandBar />
           <AreaRiskDrawer />
 
@@ -66,7 +64,6 @@ export default function App() {
                 Demo model - answers are placeholders
               </Surface>
             )}
-            <ConversationLaunchers />
             <Surface className="p-1">
               <IconButton
                 label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}

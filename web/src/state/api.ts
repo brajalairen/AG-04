@@ -6,8 +6,6 @@ import type {
   AgriOverview,
   AgriQueryResult,
   AnalyzeResult,
-  ChatContext,
-  ChatResolveResult,
   Example,
   FetchImageryResult,
   Health,
@@ -120,16 +118,6 @@ export const api = {
       signal,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query, selected_area_id: selectedAreaId }),
-    }),
-
-  /** Conversation mode: a follow-up ("Why?", "What about Thoubal?") read as a complete question, using what the
-   *  previous answer was about. Nothing is answered here; the question is then asked as if it had been typed. */
-  chatResolve: (message: string, context: ChatContext, signal?: AbortSignal) =>
-    request<ChatResolveResult>("/api/chat/resolve", {
-      method: "POST",
-      signal,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, context }),
     }),
 
   /** Which specialist a question is for, decided on the server from the wording alone. Asked first,
