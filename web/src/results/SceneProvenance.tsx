@@ -97,7 +97,7 @@ function OpticalCheck() {
         </>
       )}{" "}
       <span className="text-faint">
-        ({water ? "Radar" : "Cloud"} limit: {limit} of the area, a SatQuery heuristic.)
+        ({water ? "Radar" : "Cloud"} limit: {limit} of the area, a LouNgak heuristic.)
       </span>
     </p>
   );

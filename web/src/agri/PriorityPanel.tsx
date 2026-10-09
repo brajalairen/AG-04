@@ -9,7 +9,7 @@ import { ArrowLeft, MapPinned, RotateCw } from "lucide-react";
 import { EmptyState } from "../sidebar/Sidebar";
 import type { AgriOverview, AreaSummary, DistrictSummary } from "../state/types";
 import { Button, cx, Segmented, Spinner } from "../ui/primitives";
-import { CompletenessBar, DemoTag, LevelBadge, SampleLabel, StateChip, ThresholdsNotice } from "./badges";
+import { CompletenessBar, DemoTag, LevelBadge, StateChip } from "./badges";
 import { filterDistricts, FILTER_OPTIONS, formatScore, formatTime, LEVEL_COLOR, LEVEL_LABEL, LEVELS } from "./format";
 import { useAgriStore } from "./useAgriStore";
 
@@ -67,6 +67,26 @@ function DataLine({ overview }: { overview: AgriOverview }) {
   );
 }
 
+/** One compact line of what makes this a prototype: never silent, never loud. Each clause is read
+ *  from the same server fields the fuller per-zone notices use, so if pest thresholds or pest data
+ *  are ever VERIFIED/real, the clause naming them drops on its own rather than staying stale. */
+function PrototypeNotice({ overview }: { overview: AgriOverview }) {
+  const unvalidated = overview.pest_thresholds_status !== "VERIFIED";
+  const clauses = [
+    "Prototype assessment",
+    overview.includes_sample_data ? "Synthetic pest reports" : null,
+    unvalidated ? "Unvalidated thresholds" : null,
+  ].filter(Boolean);
+  return (
+    <p
+      title="Decision support only: scores are not validated agricultural findings and do not confirm any outbreak."
+      className="text-[11px] tracking-wide text-faint uppercase"
+    >
+      {clauses.join(" · ")}
+    </p>
+  );
+}
+
 function DistrictList({ overview }: { overview: AgriOverview }) {
   const filter = useAgriStore((s) => s.filter);
   const setFilter = useAgriStore((s) => s.setFilter);
@@ -97,12 +117,7 @@ function DistrictList({ overview }: { overview: AgriOverview }) {
       </div>
 
       <DataLine overview={overview} />
-      <ThresholdsNotice overview={overview} />
-      {overview.includes_sample_data && (
-        <p className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted">
-          <SampleLabel text={overview.sample_label} /> pest reports are synthetic
-        </p>
-      )}
+      <PrototypeNotice overview={overview} />
 
       <Segmented value={filter} options={FILTER_OPTIONS} onChange={setFilter} />
 

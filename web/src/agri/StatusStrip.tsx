@@ -2,7 +2,6 @@
  *  frozen snapshot), the threshold status and SAMPLE notice, and the map legend. Top-centre, so it
  *  never covers eastern Manipur at projector sizes. */
 
-import { AlertTriangle } from "lucide-react";
 import { Surface } from "../ui/primitives";
 import { formatTime, LEVEL_COLOR, LEVEL_LABEL, LEVELS } from "./format";
 import { useAgriStore } from "./useAgriStore";
@@ -31,9 +30,11 @@ export function StatusStrip() {
             </span>
           )}
           {notices.length > 0 && (
-            <span className="flex items-center gap-1 border-l border-line pl-2 font-medium text-warn">
-              <AlertTriangle className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
-              Prototype · {notices.join(" · ")}
+            <span
+              title={notices.join(" · ")}
+              className="rounded-full border border-line px-2 py-0.5 text-[10px] font-semibold tracking-wide text-muted uppercase"
+            >
+              Prototype data
             </span>
           )}
         </p>

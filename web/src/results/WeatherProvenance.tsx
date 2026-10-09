@@ -53,7 +53,7 @@ export function WeatherProvenance() {
         <a href={weather.attribution_url} target="_blank" rel="noopener" className="underline underline-offset-2">
           {weather.attribution}
         </a>
-        {" · "}Weather is an optional SatQuery capability, separate from the satellite analysis.
+        {" · "}Weather is an optional LouNgak capability, separate from the satellite analysis.
       </p>
     </section>
   );
