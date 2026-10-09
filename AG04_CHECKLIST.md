@@ -11,9 +11,9 @@ The source of truth for what we intend to build. Update it after every phase.
 | **Active branch** | `ag04-prototype`, tracking `origin/ag04-prototype`. `main` has not been pushed to AG-04. |
 | **Frozen repos** | **SatQuery-AI** (https://github.com/brajalairen/SatQuery-AI.git) is the frozen SIH submission. Locally its remote is `sih-frozen`: fetch only, push disabled (a test push fails). Never push, merge into it or change its `main` (still at `1433e7d`). SatV2 is a reference copy only; do not modify it. |
 | **Last application commit** | `5c966f6`, Phase 3 (on top of `082cd27` Phase 2 and `418fe58` Phase 1). Later commits are documentation-only unless the change log says otherwise. |
-| **Current phase** | **Phases 1–3 complete. Phase 4 reliability and the district → zone dashboard are implemented** (8 Oct). Teammate data (thresholds, boundaries, Manipuri) not yet integrated. |
+| **Current phase** | **Phases 1–3 complete. Phase 4 reliability and the district → zone dashboard are implemented** (8 Oct). **Pest/disease data investigation and risk-engine validation done** (8 Oct, evening; see [Pest/disease data notes](#pestdisease-data-and-risk-engine-validation-8-oct-evening)). Teammate data (thresholds, boundaries, Manipuri) not yet integrated. |
 | **Overall status** | Phases 1–3 work. Phase 3 adds the government-facing dashboard over the unchanged risk engine (read-only `/api/agri/*`, risk map, priority panel, "Why is this area at risk?" drawer, agri command-bar questions). Tests: backend 720 passed, web 106 passed, typecheck clean, build OK. Checked in Chrome at 1600×900 and 1280×720, light and dark, with no page errors. |
-| **Known blockers** | (1) Trustworthy 16-district boundaries are not yet sourced (Member B). OpenStreetMap already has the current districts; this is a lead to verify. (2) **Pest thresholds are PLACEHOLDERS** (Member A). In Oct 2026 the placeholder blast rule held on every day in every area, so weather does not separate areas until verified values replace it. (3) Advisory text is not yet verified (Member A). (4) No verified Manipuri sentence yet (Member A). |
+| **Known blockers** | (1) Trustworthy 16-district boundaries are not yet sourced (Member B). OpenStreetMap already has the current districts; this is a lead to verify. (2) **Pest thresholds are PLACEHOLDERS** (Member A). In Oct 2026 the placeholder blast rule held on every day in every area, so weather does not separate areas until verified values replace it. (3) Advisory text is not yet verified (Member A). (4) No verified Manipuri sentence yet (Member A). (5) **No public, machine-readable pest/disease observation dataset for Manipur exists** (`data/agri/SOURCES.md`). Observations stay SAMPLE until the Department of Agriculture or NPSS shares records. |
 | **Demo-critical unfinished** | Verified thresholds (Member A); verified district boundaries (Member B); advice / whom to consult (Member A); 9 Oct morning: run the pre-demo routine (below). |
 | **Known-good demo rectangle** | Thoubal–Kakching farmland, W 93.95, S 24.45, E 94.03, N 24.52. As of 2026-10-08, the 2026-09-14 Sentinel-2 scene is 91% clear over it. |
 
@@ -57,7 +57,13 @@ Status legend: `done` · `in progress` · `not started` · `blocked` · `dropped
     - A window counts only if at least 30% of the area was observed clear; otherwise it carries a reason and no value.
     - Past-year windows are cached for good; the current window is refreshed daily. Resolution adapts to stay under 100k pixels.
     - Cost measured at about 0.37 processing units per window for 60 km².
-  - **SAMPLE reports** (`agri/reports.py`, `assets/sample_scenario.json`): seeded and deterministic. Every record is `source: SAMPLE`, `synthetic: true` and labelled "SAMPLE DATA — Prototype Simulation". `SampleReportSource` is swappable for a real feed.
+  - **SAMPLE reports** (`agri/reports.py`, `assets/sample_scenario.json`): seeded and deterministic. Every record is `status: SAMPLE`, `source: SAMPLE`, `synthetic: true` and labelled "SAMPLE DATA — PROTOTYPE SIMULATION".
+  - **Real observations** (`agri/observations.py`, 8 Oct): a dataset file named in `SATQUERY_AGRI_OBSERVATIONS` (JSON, or CSV plus `.dataset.json` metadata; template in `data/agri/`) replaces the SAMPLE generator.
+    - The loader refuses: REAL records without a named source; SAMPLE and REAL mixed in one file; coordinates on district- or block-level records; records with no measure; duplicate ids.
+    - District-level records match the zones of their district, weighted 0.5.
+    - Records older than the 14-day look-back are counted as historical, never as current evidence.
+    - No records is "no evidence" only where the dataset states that it surveys that district and pest.
+    - `python -m satquery.agri observations FILE` prints a data-quality report.
   - `--offline` serves cached data only (0.5 s for 7 areas).
   - Files: `satquery/agri/{weather,ndvi,reports,cache,areas,context}.py`, `providers/copernicus.py` (`statistics()`).
 - [x] **P0.5 Explainable risk engine.** Status: **done with PLACEHOLDER thresholds** (Phase 2). The final demo needs Member A's verified values.
@@ -75,6 +81,28 @@ Status legend: `done` · `in progress` · `not started` · `blocked` · `dropped
   - **Ranking:** by level, then score, then name. Areas with no estimate are listed last without a rank number.
   - **Wording:** "Indicators suggest HIGH risk (67/100) …", never "detected" or "outbreak". The disclaimer is on every assessment.
   - **No ML model, fake or otherwise.**
+  - **Method changes, 8 Oct evening** (risk-engine validation; weights, bands and thresholds unchanged):
+    - **Per pest:** each pest with a weather rule or field observations is scored on its own weather days, the shared NDVI and its own observations (`pest_risks`). The area takes its highest pest (`driver_pest`). Blast reports no longer add to planthopper risk.
+    - **Missing data never raises a score** (`missing_inputs: lower_bound` in `risk_model.json`). A missing factor adds no points but keeps its weight. The Phase 2 renormalisation is still available as `renormalise`. It had lifted every zone from MODERATE to HIGH when NDVI was unavailable.
+    - **`score_range` is the band the real evidence allows:** real points alone, up to that plus every unavailable or SAMPLE input at full weight. A grid test checks that dropping any input never raises a score and that the band always contains the full-data score.
+    - **No observations available ≠ no pest observed:** `details.evidence_state` on the field-observation factor takes one of these values:
+      - NO_SOURCE
+      - NOT_COVERED
+      - NOT_SURVEYED
+      - COVERAGE_UNKNOWN
+      - HISTORICAL_ONLY
+      - NONE_OBSERVED (REAL surveillance that covers the area and pest)
+      - SAMPLE_NONE
+      - OBSERVED
+
+      Only NONE_OBSERVED and OBSERVED from a REAL source count as data.
+    - **Pests not assessed:** known rice pests with no weather rule and no field evidence are listed in `pests_not_assessed`, with a reason and no score.
+    - **`calibration: UNCALIBRATED`** on every assessment (from `risk_model.json`). It stays even when the thresholds become VERIFIED; VALIDATED needs cited validation evidence.
+    - **Inspectable weather index:** `details.calculation` holds the favourable past and forecast days, `full_score_days`, the uncapped ratio, the capped index, the `saturated` flag and the forecast share. A reason line says when the cap hides differences.
+    - **Data completeness counts real data only.** SAMPLE evidence is scored and labelled but is not data, so it cannot by itself produce a level. Critical needs two independent *real* indicators.
+    - **SAMPLE sensitivity:** `score_without_sample` / `level_without_sample`, plus a reason line ("the HIGH level depends on synthetic data"). This also appears in command-bar answers.
+    - **ETLs for reading field counts** (`assets/observation_rules.json`), transcribed from the IPM Package for Rice (2014, Table 3.1.2). PLACEHOLDER until Member A verifies them.
+    - **NDVI reasons** now say "supporting evidence of a change in vegetation condition, not pest or disease detection".
   - CLI: `python -m satquery.agri assess [--offline] [--areas FILE] [--json OUT]` and `python -m satquery.agri thresholds`.
 - [x] **P0.6 Risk map (choropleth).** Status: **done** (Phase 3).
   - Each area is filled by its engine-given level (status palette: Low, Moderate, High, Critical, Not enough data) with a legend; the level is never shown by colour alone.
@@ -101,7 +129,7 @@ Status legend: `done` · `in progress` · `not started` · `blocked` · `dropped
   - Remaining: a pest-risk assessment for a newly drawn area (P1.2) and advice (Member A).
 - [x] **P0.10 Explainability / provenance / responsible AI.** Status: **done** (backend and UI).
   - An always-visible strip reads "Prototype · PLACEHOLDER thresholds · SAMPLE pest reports".
-  - PLACEHOLDER notices appear in the panel, drawer and answers; "SAMPLE DATA — Prototype Simulation" labels appear wherever synthetic reports do; data-state chips appear on every source.
+  - PLACEHOLDER notices appear in the panel, drawer and answers; "SAMPLE DATA — PROTOTYPE SIMULATION" labels appear wherever synthetic reports do; data-state chips appear on every source.
   - Wording stays "Indicators suggest…", never "detected" or "outbreak"; tests check this.
   - Phase 3 also fixed one Phase 2 wording bug: an old weather copy in offline mode used to say "the provider could not be reached". It now states its real reason. Methodology and thresholds are unchanged.
 - [x] **P0.11 Offline demo snapshot.** Status: **done** (Phase 4).
@@ -147,7 +175,7 @@ Status legend: `done` · `in progress` · `not started` · `blocked` · `dropped
 - [ ] P3.2 Hands-free voice conversation and TTS (the voice *input* that exists is `web/src/command/VoiceInput.tsx`).
 - [ ] P3.3 A learned risk model trained on **verified inspection outcomes**, never fabricated labels, with SHAP explanations.
 - [ ] P3.4 SMS / WhatsApp notifications.
-- [ ] P3.5 National pest-surveillance integration, once the source and API are verified.
+- [ ] P3.5 National pest-surveillance integration, once the source and API are verified. **Investigated 8 Oct:** NPSS (DPPQ&S / ICAR-NRIIPM) has no public download or API. Access needs a data-sharing request. The ingestion path (`observations.py`) is ready.
 
 ---
 
@@ -190,6 +218,52 @@ Status legend: `done` · `in progress` · `not started` · `blocked` · `dropped
 4. The single-scene cache key had no date, so a cached scene was reused indefinitely for the same rectangle. That is stale for monitoring.
 5. Mean NDVI was averaged over every pixel, water included, so a lake dragged "crop health" down.
 6. Crop-change wording ("declined", "worsened", "deteriorating") was not recognised as needing two dates.
+
+## Pest/disease data and risk-engine validation (8 Oct, evening)
+
+**Sources** (full assessment in [data/agri/SOURCES.md](data/agri/SOURCES.md)):
+- **Investigated:** NPSS; ICAR-NRIIPM e-pest surveillance, including the Tripura Boro-rice programme; NICRA Bulletin 39; the ICAR-CRIDA CropPest DSS; AICRP-Rice Production Oriented Survey 2025; the IPM Package for Rice (ETLs); data.gov.in; Manipur GKMS advisories and institutions; GBIF; image datasets.
+- **Result:** authoritative sources exist, but machine-readable public observations for Manipur were not found.
+  - NPSS and the Tripura data are not published.
+  - POS 2025 has no Northeast state.
+  - GBIF has 0 Manipur records.
+  - data.gov.in has crop statistics only.
+- **Strategy 3** follows: real weather and NDVI, cited rules kept PLACEHOLDER, and SAMPLE observations labelled at every layer.
+
+**Saturation found** (live run, 2026-10-08 17:03 UTC, Open-Meteo; no Copernicus credentials in this environment, so NDVI was unavailable):
+
+| Check | Finding | Cause | Action |
+|---|---|---|---|
+| Every area the same weather score | Yes: weather index 1.0 in all 7 zones | Placeholder blast rule (≥ 8 h at RH ≥ 90%, mean 20–28 °C) held on 8–10 of 10 days in 6 zones. `full_score_days` = 5, so 5 favourable days already saturate. The BPH rule held only in Jiribam (valley means 22–23 °C are below its 25 °C floor). | Not tuned. Reported to Member A |
+| Every area HIGH | Yes, before the change: all 7 HIGH (71–100) | Renormalisation over available factors filled the missing NDVI with the average of the others (50 → 71.4 weather points) | Fixed: lower-bound policy |
+| Missing data raising risk | Yes, before the change | Same | Fixed and tested (Scenario E) |
+| SAMPLE data dominating | Yes: the only thing separating zones; Bishnupur's HIGH comes from the hand-set "high" SAMPLE scenario | Weather saturated; NDVI unavailable | Disclosed: `level_without_sample` and a reason line. The scenario file is unchanged (Member A's demo design) |
+| Cloudy imagery making fake values | No | SCL masking and the 30% clear minimum | Tested (Scenario F) |
+| NDVI without influence | Not testable live here (no credentials) | — | Tests show it moves the score |
+
+**Live result after the change** (LIVE Open-Meteo fetch at 2026-10-08 18:28 UTC; PLACEHOLDER thresholds; SAMPLE observations; real-evidence band):
+
+| # | Zone | Level | Score | Real-evidence band | Without SAMPLE | Driver | Weather (uncapped ratio) | NDVI | Observations (SAMPLE) |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | Bishnupur near Keinou Thongkha | HIGH | 63.3 | 50–100 | MODERATE 50 | rice blast | 50 (2.0) | n/a | 13.3 |
+| 2 | Kakching near Khangshim | MODERATE | 51.7 | 50–100 | MODERATE 50 | rice blast | 50 (1.6) | n/a | 1.7 |
+| 3 | Thoubal near Chaobok | MODERATE | 51.7 | 50–100 | MODERATE 50 | rice blast | 50 (2.0) | n/a | 1.7 |
+| 4–6 | Churachandpur, Imphal East, Imphal West | MODERATE | 50 | 50–100 | MODERATE 50 | rice blast | 50 (2.0, 2.0, 1.8) | n/a | 0 (SAMPLE_NONE) |
+| 7 | Jiribam near Kamaranga | MODERATE | 50 | 50–100 | MODERATE 50 | brown planthopper (tied with blast; name order) | 50 (2.0) | n/a | 0 (SAMPLE_NONE) |
+
+Uncapped weather ratios of 1.6–2.0 all become index 1.0: the cap (`full_score_days` = 5, PLACEHOLDER) erases the real differences between zones.
+
+All zones show 50% data completeness and *low* confidence: only weather is real, and the thresholds are placeholders.
+
+**Pre-demo note:** with Copernicus credentials, NDVI adds its points and completeness rises to 80%. The Bishnupur HIGH stays labelled as resting on SAMPLE data. Present it as a *demonstration of the mechanism*, not a finding.
+
+**Highest-ranked zone, arithmetic** (Bishnupur, 2026-10-08 18:28 UTC):
+- **Weather (rice blast, PLACEHOLDER rule):** favourable on 7 of 7 past days and 3 of 3 forecast days. Index = min(1, 10 / 5) = 1.0, × 0.5 = **50 points**.
+- **NDVI:** unavailable (no credentials), so **0 points**, never estimated.
+- **Field observations (SAMPLE, rice blast):** 2 moderate + 1 high = 1 + 1 + 2 = 4 of 6 for full pressure, so 0.667 × 0.2 = **13.3 points**.
+- **Total: 63.3 → HIGH** (≥ 60).
+- **Without SAMPLE: 50 → MODERATE.** The real-evidence band is 50–100: NDVI and real observations, 50% of the weight, are not backed by data.
+- Confidence is *low* (PLACEHOLDER thresholds); data completeness is 50%; the score is UNCALIBRATED.
 
 ## Phase 4 / dashboard notes (8 Oct)
 
@@ -251,6 +325,40 @@ All areas have 100% data completeness and *low* confidence, because the threshol
 ---
 
 ## Change log
+- **2026-10-09, Phase 3 backend/API readiness** (backend only; dashboard untouched):
+  - **Read-only endpoints:** `/api/agri/areas`, `/areas/{id}/summary`, `/areas/{id}/explanation`, `/areas/{id}/history`, `/priorities`, `/vocabulary`. They carry trust labels (origin / synthetic / freshness / verification / calibration) and coded limitations. See [docs/AG04_API.md](docs/AG04_API.md).
+  - **History:** live assessments are appended to `runs/agri/history.jsonl` (`SATQUERY_AGRI_HISTORY`). No backfill; snapshots and offline runs are not recorded.
+  - **Escalation readiness:** facts only; no policy. Only VERIFIED_OBSERVATION is assigned, and only as a fact.
+  - **Field inspection:** the `InspectionRecord` contract and verification state machine (no workflow, store or write API).
+  - **Interfaces:** `PestObservationProvider` for future NPSS / Department / KVK / inspection evidence.
+  - **Ranking:** ties are broken by data completeness.
+  - **Unchanged:** weights, bands and thresholds.
+  - Confirmed: NDVI reuses SatQueryAI's `CopernicusSentinelProvider`.
+  - **Tests:** backend 874 passed (35 new Phase 3 tests plus 31 contract entries). Web tests, typecheck and build not run (no Node.js); Git unavailable.
+- **2026-10-09 (overnight), risk-engine correctness, second pass:**
+  - `score_range` is now the real-evidence band; a grid test proves missing evidence never raises a score.
+  - `details.evidence_state` keeps "no observations available" apart from "no pest observed" (HISTORICAL_ONLY included).
+  - `pests_not_assessed` lists known pests with no rule or evidence.
+  - `calibration` (UNCALIBRATED) added to assessments and to `risk_model.json`.
+  - The weather `details.calculation` exposes the saturation.
+  - API: `RiskAssessment` gains `pests_not_assessed` and `calibration`, plus the new `PestNotAssessed` type; `types.ts` mirrors them.
+  - SOURCES.md second pass:
+    - official NPSS portal URL
+    - NRIIPM monitoring system broken; pest alerts end Jan 2023
+    - NISPM not found
+    - Imphal blast study lead
+    - access/authentication table
+    - status vocabulary
+  - Tests: backend 808 passed (69 new since the 739 baseline). The live Open-Meteo test passed; the live NDVI test was skipped (no credentials). Web tests, typecheck and build not run (no Node.js). Git unavailable in this environment (no `git`, no `.git`).
+- **2026-10-08 (evening), pest/disease data investigation + risk-engine validation:**
+  - `data/agri/SOURCES.md`: source assessment, graded A–D. No accessible Manipur observation dataset; Strategy 3.
+  - `observations.py`: observation schema, dataset metadata, loader (JSON/CSV), area matching, ETL reading, coverage and historical handling, quality report, `observations` CLI command. `assets/observation_rules.json`: ETLs from the IPM Package for Rice (PLACEHOLDER).
+  - `risk.py`: per-pest assessment; lower-bound handling of missing inputs (`missing_inputs`); completeness from real data only; SAMPLE sensitivity; Critical needs real indicators; NDVI caveat. `risk_model.json` gained `missing_inputs` and `reports.district_match_weight` (PLACEHOLDER). Weights, bands and pest thresholds unchanged.
+  - SAMPLE label is now "SAMPLE DATA — PROTOTYPE SIMULATION".
+  - Web types mirror the new fields. The drawer badge shows the record's own REAL/SAMPLE status, and the factor label is "Field observations".
+  - `.gitignore`: `data/agri/` (docs and templates only) is no longer ignored.
+  - Tests: backend 793 passed (was 739; 54 new: observations, Step 15 scenarios A–G, per-pest, saturation, determinism, ranking). The live Open-Meteo test passed; the live NDVI test was skipped (no credentials).
+  - Web tests, typecheck and build were **not run**: Node.js is not installed on this machine.
 - **2026-10-08, Phase 4 reliability + district dashboard:**
   - Warm-up at server start; frozen snapshot with live-first fallback and SNAPSHOT labelling; `warm` CLI; stable SAMPLE seed.
   - District context API; district → zone priority panel; Layers control; crop-health action; separate threshold statuses; legend moved to the top strip.

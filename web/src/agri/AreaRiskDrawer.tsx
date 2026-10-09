@@ -472,8 +472,10 @@ function ReportsSection({ factor, label }: { factor?: FactorResult; label: strin
             <li key={r.id} className="flex items-center gap-2 py-1">
               <span className="w-[74px] shrink-0 text-muted tabular-nums">{r.observed_on}</span>
               <span className="flex-1 text-ink capitalize">{pestName(r.pest)}</span>
-              <span className="text-muted">{r.severity}</span>
-              <span className="rounded-[4px] border border-warn/50 px-1 text-[9px] font-semibold text-warn">SAMPLE</span>
+              <span className="text-muted">{r.severity ?? "not scored"}</span>
+              <span className="rounded-[4px] border border-warn/50 px-1 text-[9px] font-semibold text-warn">
+                {r.status === "REAL" ? "REAL" : "SAMPLE"}
+              </span>
             </li>
           ))}
         </ul>

@@ -19,6 +19,12 @@ Use **exactly the schema of** `satquery/agri/assets/pest_rules.json` (start from
 - Record each threshold's applicability and limits (crop stage, region, season) in `SOURCES.md`.
 - Optional `verified_risk_model.json` follows `satquery/agri/assets/risk_model.json` (weights, level cut-points). Change it only with a cited reason.
 
+### 1b. Verify the ETLs for reading field observations
+
+`satquery/agri/assets/observation_rules.json` holds economic threshold levels (ETLs) transcribed from the national IPM Package for Rice (NCIPM / DPPQ&S, 2014, Table 3.1.2, p. 9). Examples: BPH 10–15 hoppers/hill at tillering; foliar blast 3–5 lesions/leaf; stem borer 10% dead heart.
+
+They are cited but **PLACEHOLDER**: confirm each value and its applicability to Manipur. Send a reviewed copy as `verified_observation_rules.json`, with `verified_by` and `verified_on` on every source. Also review `severity_from_etl`, the engineering mapping of an ETL range to low/moderate/high. The source assessment and candidate weather-rule sources are in `data/agri/SOURCES.md`.
+
 ## 2. `manipuri_queries.json`: start with 5–10 reliable queries
 
 ```json

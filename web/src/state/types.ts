@@ -344,19 +344,37 @@ export interface AgriProvenance {
   note: string | null;
 }
 
+/** A pest or disease field observation: REAL (named source) or SAMPLE (synthetic, labelled).
+ *  Mirrors PestObservation; in a factor's `details.reports` it also carries `match` and
+ *  `severity_basis`, and `severity` is the one the engine weighted (null: not readable). */
 export interface PestReport {
   id: string;
   area_id: string | null;
-  latitude: number;
-  longitude: number;
   observed_on: string;
+  district: string | null;
+  block: string | null;
+  village: string | null;
+  /** Only for point / village records the source locates; never invented. */
+  latitude: number | null;
+  longitude: number | null;
+  spatial_resolution: "point" | "village" | "block" | "district";
   crop: string;
   pest: string;
-  severity: "low" | "moderate" | "high";
-  source: "SAMPLE";
-  synthetic: boolean;
+  crop_stage: string | null;
+  observation_type: string;
+  metric: string | null;
+  value: number | null;
+  unit: string | null;
+  severity: "low" | "moderate" | "high" | null;
+  prevalence_pct: number | null;
+  source: string;
+  source_url: string | null;
+  source_date: string | null;
   verified: boolean;
-  label: string;
+  status: "REAL" | "SAMPLE";
+  synthetic: boolean;
+  label: string | null;
+  notes: string | null;
 }
 
 export interface DayCheck {
@@ -460,6 +478,22 @@ export interface FactorResult {
   sample_data: boolean;
 }
 
+/** One pest or disease in one area, scored on its own evidence; the area takes its highest pest. */
+export interface PestRiskAssessment {
+  pest_id: string;
+  name: string;
+  crop: string;
+  score: number | null;
+  score_range: [number, number] | null;
+  level: RiskLevel;
+  factors: FactorResult[];
+  data_completeness: number;
+  includes_sample_data: boolean;
+  has_weather_rule: boolean;
+  observation_count: number;
+  summary: string;
+}
+
 export interface RiskConfidence {
   level: "low" | "medium" | "high";
   data_completeness: number;
@@ -488,6 +522,25 @@ export interface RiskAssessment {
   rank: number | null;
   rank_of: number | null;
   district_context: Record<string, string | null> | null;
+  /** Every pest's own assessment; `factors` above are those of `driver_pest`. */
+  pest_risks: PestRiskAssessment[];
+  driver_pest: string | null;
+  /** The band real evidence allows: real points alone, up to that plus every unavailable or SAMPLE
+   *  input at full weight. Null when every input is real. */
+  score_range: [number, number] | null;
+  /** The figures with the SAMPLE evidence removed (null when there is none). */
+  score_without_sample: number | null;
+  level_without_sample: RiskLevel | null;
+  /** Known pests with neither a weather rule nor field evidence: listed, never scored. */
+  pests_not_assessed: PestNotAssessed[];
+  /** UNCALIBRATED until weights and bands are validated against field outcomes. */
+  calibration: "UNCALIBRATED" | "VALIDATED";
+}
+
+export interface PestNotAssessed {
+  pest_id: string;
+  name: string;
+  reason: string;
 }
 
 export interface AreaSummary {
@@ -587,4 +640,394 @@ export interface AgriQueryResult {
   thresholds_status: ThresholdStatus;
   includes_sample_data: boolean;
   disclaimer: string;
+}
+
+/* ------------------------------------------------ AG-04 Phase 3 decision-support views
+ * Mirrors satquery/agri/views.py, escalation.py and history.py (read-only endpoints:
+ * /api/agri/areas, /areas/{id}/summary, /areas/{id}/explanation, /areas/{id}/history,
+ * /api/agri/priorities, /api/agri/vocabulary). Codes are stable; text is English. */
+
+export type AgriOrigin = "REAL" | "SAMPLE" | "UNAVAILABLE";
+export type AgriFreshness = "LIVE" | "CACHED" | "STALE" | "SNAPSHOT" | "SAMPLE" | "UNAVAILABLE";
+export type AgriVerification = "VERIFIED" | "UNVERIFIED" | "NOT_APPLICABLE";
+export type AgriCalibration = "UNCALIBRATED" | "VALIDATED";
+export type AgriEscalationStage = "WATCH" | "PRIORITIZE" | "FIELD_INSPECTION_RECOMMENDED" | "VERIFIED_OBSERVATION";
+
+/** Origin, freshness and verification are separate: real weather is REAL but NOT_APPLICABLE for
+ *  verification; SAMPLE evidence is never VERIFIED. */
+export interface AgriTrustLabels {
+  origin: AgriOrigin;
+  synthetic: boolean;
+  freshness: AgriFreshness;
+  verification: AgriVerification;
+  labels: string[];
+}
+
+export interface AgriInputStatus {
+  input: "weather" | "ndvi" | "pest_observations";
+  status: FactorStatus;
+  trust: AgriTrustLabels;
+  source: string | null;
+  retrieved_at: string | null;
+  covers: string | null;
+  unavailable_reason: string | null;
+}
+
+export interface AgriRulesStatus {
+  weather_rules: ThresholdStatus;
+  weather_rules_version: string;
+  observation_rules: ThresholdStatus | null;
+  observation_rules_version: string | null;
+  risk_model: ThresholdStatus;
+  risk_model_version: string;
+  calibration: AgriCalibration;
+  missing_inputs_policy: string;
+}
+
+export interface AgriBoundaryStatus {
+  kind: "district" | "custom" | "demo";
+  official: boolean;
+  status: "OFFICIAL_SOURCED" | "DEMO_NOT_OFFICIAL" | "USER_DRAWN_NOT_OFFICIAL";
+  source: string;
+  note: string;
+}
+
+/** A stable `code` (translate by code) with English text. */
+export interface AgriLimitation {
+  code: string;
+  severity: "info" | "caution" | "warning";
+  message: string;
+}
+
+export interface AgriAreaStatus {
+  id: string;
+  name: string;
+  district: string | null;
+  state: string | null;
+  boundary: AgriBoundaryStatus;
+  label_point: [number, number];
+  bounds: [number, number, number, number];
+  rank: number | null;
+  rank_of: number | null;
+  level: RiskLevel;
+  score: number | null;
+  score_range: [number, number] | null;
+  score_without_sample: number | null;
+  level_without_sample: RiskLevel | null;
+  confidence: "low" | "medium" | "high";
+  data_completeness: number;
+  assessed_at: string;
+  computed_at: string;
+  mode: "live" | "snapshot";
+  freshness: AgriFreshness;
+  driver_pest: string | null;
+  includes_sample_data: boolean;
+  calibration: AgriCalibration;
+  thresholds_status: ThresholdStatus;
+  inputs: AgriInputStatus[];
+  labels: string[];
+  summary: string;
+  limitations: AgriLimitation[];
+}
+
+export interface AgriAreaList {
+  computed_at: string;
+  mode: "live" | "snapshot";
+  offline: boolean;
+  snapshot_saved_at: string | null;
+  fallback_reason: string | null;
+  region: string;
+  rules: AgriRulesStatus;
+  sample_label: string;
+  disclaimer: string;
+  language: string;
+  areas: AgriAreaStatus[];
+}
+
+export interface AgriFactorPoints {
+  weather: number | null;
+  ndvi: number | null;
+  pest_observations: number | null;
+}
+
+export interface AgriPersistence {
+  history_enabled: boolean;
+  recorded_assessments: number | null;
+  elevated_streak: number | null;
+  elevated_since: string | null;
+  first_recorded_at: string | null;
+}
+
+export interface AgriEscalationFacts {
+  elevated_now: boolean;
+  level: string;
+  persistence: AgriPersistence;
+  independent_real_indicators: string[];
+  indicator_cut: number;
+  indicator_cut_status: string;
+  evidence_types: Record<string, AgriOrigin>;
+  verified_observations: number;
+  unverified_real_observations: number;
+  sample_observations: number;
+  data_completeness: number;
+  freshness: string;
+}
+
+/** No escalation policy is configured: `stage` is null unless a verified observation exists. */
+export interface AgriAttentionStatus {
+  stage: AgriEscalationStage | null;
+  policy: "NOT_CONFIGURED" | "CONFIGURED";
+  policy_note: string;
+  facts: AgriEscalationFacts;
+}
+
+export interface AgriPriorityItem {
+  rank: number | null;
+  rank_of: number | null;
+  area_id: string;
+  area_name: string;
+  district: string | null;
+  official_boundary: boolean;
+  level: RiskLevel;
+  score: number | null;
+  score_range: [number, number] | null;
+  confidence: "low" | "medium" | "high";
+  data_completeness: number;
+  driver_pest: string | null;
+  contributions: AgriFactorPoints;
+  evidence_summary: string;
+  labels: string[];
+  attention: AgriAttentionStatus;
+}
+
+export interface AgriPriorityList {
+  computed_at: string;
+  mode: "live" | "snapshot";
+  ranking_basis: string;
+  note: string;
+  disclaimer: string;
+  items: AgriPriorityItem[];
+}
+
+export interface AgriAreaRef {
+  id: string;
+  name: string;
+  district: string | null;
+  state: string | null;
+  boundary: AgriBoundaryStatus;
+  label_point: [number, number];
+  bounds: [number, number, number, number];
+}
+
+export interface AgriOverallView {
+  level: RiskLevel;
+  score: number | null;
+  score_range: [number, number] | null;
+  score_without_sample: number | null;
+  level_without_sample: RiskLevel | null;
+  rank: number | null;
+  rank_of: number | null;
+  confidence: "low" | "medium" | "high";
+  confidence_method: string;
+  confidence_notes: string[];
+  data_completeness: number;
+  assessed_at: string;
+  computed_at: string;
+  mode: "live" | "snapshot";
+  freshness: AgriFreshness;
+  calibration: AgriCalibration;
+  thresholds_status: ThresholdStatus;
+  driver_pest: string | null;
+  headline: string;
+  summary: string;
+}
+
+export interface AgriWeatherDay {
+  date: string;
+  period: "past" | "forecast";
+  /** Past days are weather-model analyses, not station observations. */
+  data_kind: "MODEL_ANALYSIS" | "FORECAST";
+  favourable: boolean | null;
+  values: Record<string, number | null>;
+  unmet: string[];
+}
+
+export interface AgriWeatherPest {
+  pest_id: string;
+  name: string;
+  rule_status: ThresholdStatus;
+  conditions: string[];
+  index: number | null;
+  calculation: Record<string, unknown>;
+  days: AgriWeatherDay[];
+}
+
+export interface AgriWeatherView {
+  status: FactorStatus;
+  points: number | null;
+  weight: number;
+  trust: AgriTrustLabels;
+  unavailable_reason: string | null;
+  grid_point: Record<string, number> | null;
+  summary: { past_7_days: WeatherFigures; next_7_days: WeatherFigures } | null;
+  data_note: string;
+  pests: AgriWeatherPest[];
+  provenance: AgriProvenance[];
+}
+
+export interface AgriNdviView {
+  status: FactorStatus;
+  points: number | null;
+  weight: number;
+  trust: AgriTrustLabels;
+  unavailable_reason: string | null;
+  current: NdviWindow | null;
+  baseline: NdviWindow[];
+  baseline_mean: number | null;
+  baseline_range: [number, number] | null;
+  relative_change: number | null;
+  absolute_change: number | null;
+  within_baseline_range: boolean | null;
+  method: string | null;
+  caveat: string;
+  provenance: AgriProvenance[];
+}
+
+export interface AgriObservationView {
+  id: string;
+  pest: string;
+  observed_on: string;
+  status: "REAL" | "SAMPLE";
+  synthetic: boolean;
+  verification: "VERIFIED" | "UNVERIFIED";
+  severity: string | null;
+  severity_basis: string | null;
+  metric: string | null;
+  value: number | null;
+  unit: string | null;
+  match: string | null;
+  spatial_resolution: string | null;
+  district: string | null;
+  source: string;
+  source_url: string | null;
+  label: string | null;
+}
+
+export interface AgriPestView {
+  pest_id: string;
+  name: string;
+  crop: string;
+  assessment: "ASSESSED" | "INSUFFICIENT_DATA";
+  level: RiskLevel;
+  score: number | null;
+  score_range: [number, number] | null;
+  data_completeness: number;
+  has_weather_rule: boolean;
+  weather_rule_status: ThresholdStatus | null;
+  contributions: AgriFactorPoints;
+  evidence_state: string | null;
+  evidence: string | null;
+  observation_trust: AgriTrustLabels;
+  observations: AgriObservationView[];
+  historical_count: number;
+  summary: string;
+}
+
+export interface AgriNotAssessed {
+  pest_id: string;
+  name: string;
+  assessment: "NOT_ASSESSED";
+  reason: string;
+}
+
+export interface AgriPestsView {
+  assessed: AgriPestView[];
+  not_assessed: AgriNotAssessed[];
+}
+
+export interface AgriRuleSource {
+  kind: "weather_rule" | "etl";
+  pest_id: string;
+  status: ThresholdStatus;
+  sources: Record<string, string | null>[];
+}
+
+export interface AgriFieldVerification {
+  status: "NO_INSPECTION_WORKFLOW";
+  verified_observations: number;
+  unverified_real_observations: number;
+  sample_observations: number;
+  note: string;
+}
+
+export interface AgriProvenanceView {
+  inputs: AgriInputStatus[];
+  sources: AgriProvenance[];
+  rules: AgriRulesStatus;
+  rule_sources: AgriRuleSource[];
+}
+
+export interface AgriAreaExplanation {
+  area: AgriAreaRef;
+  overall: AgriOverallView;
+  weather: AgriWeatherView;
+  ndvi: AgriNdviView;
+  pests: AgriPestsView;
+  attention: AgriAttentionStatus;
+  field_verification: AgriFieldVerification;
+  provenance: AgriProvenanceView;
+  limitations: AgriLimitation[];
+  reasons: string[];
+  disclaimer: string;
+  sample_label: string;
+  language: string;
+}
+
+export interface AgriPestLevel {
+  pest_id: string;
+  level: RiskLevel;
+  score: number | null;
+}
+
+export interface AgriHistoryEntry {
+  version: number;
+  computed_at: string;
+  assessed_at: string;
+  area_id: string;
+  area_name: string;
+  level: RiskLevel;
+  score: number | null;
+  score_range: [number, number] | null;
+  score_without_sample: number | null;
+  level_without_sample: RiskLevel | null;
+  confidence: string;
+  data_completeness: number;
+  driver_pest: string | null;
+  pests: AgriPestLevel[];
+  inputs: Record<string, string>;
+  includes_sample_data: boolean;
+  thresholds_status: string;
+  calibration: string;
+  config: Record<string, string>;
+  /** Reserved for a later verified inspection outcome; null until that workflow exists. */
+  field_outcome: Record<string, unknown> | null;
+}
+
+/** Recorded live assessments, oldest first. Nothing is backfilled; `enabled: false` is not "no history". */
+export interface AgriAreaHistory {
+  area_id: string;
+  enabled: boolean;
+  entries: AgriHistoryEntry[];
+  note: string;
+}
+
+export interface AgriVocabulary {
+  language: string;
+  trust_labels: Record<string, string>;
+  evidence_states: Record<string, string>;
+  verification_statuses: Record<string, string>;
+  escalation_stages: Record<string, string>;
+  limitations: Record<string, string>;
+  pest_assessment: Record<string, string>;
+  risk_levels: Record<string, string>;
 }

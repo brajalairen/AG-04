@@ -81,14 +81,16 @@ def _caveats(assessments: list[RiskAssessment]) -> str:
     if any(a.thresholds_status == "PLACEHOLDER" for a in assessments):
         lines.append("PLACEHOLDER thresholds: prototype scores, not validated agricultural findings.")
     if any(a.includes_sample_data for a in assessments):
-        lines.append(f"Pest-report figures are {SAMPLE_LABEL}.")
+        lines.append(f"Field-observation figures are {SAMPLE_LABEL}.")
     lines.append("Decision support only; the final assessment rests with the Department of Agriculture.")
     return "\n".join(lines)
 
 
 def _line(a: RiskAssessment) -> str:
     score = f"{a.score:.0f}/100" if a.score is not None else "no score"
-    return f"#{a.rank} {a.area_name}: {a.level}, {score} (confidence {a.confidence.level})"
+    sample = (f"; {a.level_without_sample} without the SAMPLE data" if a.level_without_sample
+              and a.level_without_sample != a.level else "")
+    return f"#{a.rank} {a.area_name}: {a.level}, {score} (confidence {a.confidence.level}{sample})"
 
 
 def _drivers(a: RiskAssessment) -> str:
@@ -111,7 +113,9 @@ def answer(query: str, assessments: list[RiskAssessment], areas: list[MonitoredA
         lines = ["Suggested order for field inspection, by risk rank (decision support; the final choice rests with "
                  "the Department):"]
         lines += [f"{i}. {a.area_name}: {a.level}, {a.score:.0f}/100, mainly {_drivers(a)}; confidence "
-                  f"{a.confidence.level}" for i, a in enumerate(top, 1)]
+                  f"{a.confidence.level}" + (f"; {a.level_without_sample} without the SAMPLE data"
+                                             if a.level_without_sample and a.level_without_sample != a.level else "")
+                  for i, a in enumerate(top, 1)]
         if unranked:
             lines.append(f"Not ranked for lack of data: {', '.join(a.area_name for a in unranked)}.")
         return AgriAnswer("inspect", rule, "\n".join(lines) + "\n" + caveats, [a.area_id for a in top],

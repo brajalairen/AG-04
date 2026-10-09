@@ -19,7 +19,8 @@ def test_every_report_and_the_set_are_labelled_sample():
     assert report_set.reports, "the 'high' scenario area has reports"
     for report in report_set.reports:
         assert report.source == "SAMPLE" and report.synthetic is True and report.verified is False
-        assert report.label == SAMPLE_LABEL == "SAMPLE DATA — Prototype Simulation"
+        assert report.status == "SAMPLE" and report.observation_type == "sample_simulation"
+        assert report.label == SAMPLE_LABEL == "SAMPLE DATA — PROTOTYPE SIMULATION"
         assert report.id.startswith("sample-")
     assert report_set.label == SAMPLE_LABEL and report_set.provenance.state == "SAMPLE"
     assert "not real government or field observations" in report_set.provenance.note

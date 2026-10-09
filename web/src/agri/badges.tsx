@@ -43,7 +43,7 @@ export function StateChip({ state, title }: { state: DataState; title?: string }
 }
 
 /** The sample-data label, verbatim wherever synthetic pest reports appear. */
-export function SampleLabel({ text = "SAMPLE DATA — Prototype Simulation" }: { text?: string }) {
+export function SampleLabel({ text = "SAMPLE DATA — PROTOTYPE SIMULATION" }: { text?: string }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-[4px] border border-warn/50 bg-warn/10 px-1.5 py-px text-[10px] font-semibold tracking-wide text-warn uppercase">
       <FlaskConical className="h-3 w-3" strokeWidth={2} aria-hidden="true" />

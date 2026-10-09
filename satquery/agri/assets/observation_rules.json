@@ -1,0 +1,180 @@
+{
+  "version": "0.1-candidate",
+  "status": "PLACEHOLDER",
+  "note": "How FIELD OBSERVATIONS (counts, % damage) are read: economic threshold levels (ETL) transcribed from the national IPM Package for Rice (NCIPM / DPPQ&S, 2014, Table 3.1.2, p. 9). Transcribed by the integration lead on 2026-10-08 and NOT yet verified by Member A, so every rule stays PLACEHOLDER. These are not weather rules (those are pest_rules.json, Member A) and not observations (those come from an observation source). An ETL is the level at which management action is advised; it is not a probability of outbreak. Multi-part ETLs that need two measurements together (brown spot, sheath blight, sheath rot, tungro) are left out rather than simplified.",
+  "severity_from_etl": {
+    "status": "PLACEHOLDER",
+    "note": "Engineering mapping, not an agronomic finding: a value below the ETL's low end counts as low severity, inside the ETL range as moderate, at or above its high end as high. Only used when a record gives a measured value but no severity of its own.",
+    "below": "low",
+    "within": "moderate",
+    "at_or_above": "high"
+  },
+  "pests": [
+    {
+      "id": "brown_planthopper",
+      "name": "Brown planthopper / white-backed planthopper",
+      "crop": "rice",
+      "kind": "insect_pest",
+      "status": "PLACEHOLDER",
+      "sources": [
+        {
+          "title": "Integrated Pest Management Package for Rice (NCIPM / DPPQ&S, 2014), Table 3.1.2 Economic Threshold Level (ETL) of major pests of rice crop stage wise",
+          "url": "https://niphm.gov.in/IPMPackages/Rice.pdf",
+          "note": "Package p. 9 (PDF p. 18): 'Brown planthopper/WBPH 10-15 hoppers/hill' (early to late tillering); 'BPH/WBPH 15-20 hoppers/hill' (panicle initiation to booting). Transcribed 2026-10-08; awaiting Member A verification.",
+          "verified_by": null,
+          "verified_on": null
+        }
+      ],
+      "applicability": "National package for India; not calibrated or validated for Manipur varieties, crop calendar or valley/hill conditions.",
+      "etl": [
+        {"metric": "hoppers_per_hill", "unit": "hoppers/hill", "crop_stages": ["tillering"], "between": [10, 15],
+         "label": "10-15 hoppers/hill (early to late tillering)"},
+        {"metric": "hoppers_per_hill", "unit": "hoppers/hill", "crop_stages": ["panicle_initiation_to_booting"],
+         "between": [15, 20], "label": "15-20 hoppers/hill (panicle initiation to booting)"}
+      ]
+    },
+    {
+      "id": "rice_blast",
+      "name": "Rice blast (leaf / neck)",
+      "crop": "rice",
+      "kind": "disease",
+      "status": "PLACEHOLDER",
+      "sources": [
+        {
+          "title": "Integrated Pest Management Package for Rice (NCIPM / DPPQ&S, 2014), Table 3.1.2 Economic Threshold Level (ETL) of major pests of rice crop stage wise",
+          "url": "https://niphm.gov.in/IPMPackages/Rice.pdf",
+          "note": "Package p. 9 (PDF p. 18): 'Foliar blast 3-5 lesions/leaf' (early to late tillering); 'Neck blast 2-5 neck infected plants/m2' (panicle initiation to booting). Transcribed 2026-10-08; awaiting Member A verification.",
+          "verified_by": null,
+          "verified_on": null
+        }
+      ],
+      "applicability": "National package for India; not calibrated or validated for Manipur.",
+      "etl": [
+        {"metric": "lesions_per_leaf", "unit": "lesions/leaf", "crop_stages": ["tillering"], "between": [3, 5],
+         "label": "foliar blast 3-5 lesions/leaf (early to late tillering)"},
+        {"metric": "neck_infected_plants_per_m2", "unit": "plants/m2", "crop_stages": ["panicle_initiation_to_booting"],
+         "between": [2, 5], "label": "neck blast 2-5 neck-infected plants/m2 (panicle initiation to booting)"}
+      ]
+    },
+    {
+      "id": "yellow_stem_borer",
+      "name": "Yellow stem borer",
+      "crop": "rice",
+      "kind": "insect_pest",
+      "status": "PLACEHOLDER",
+      "sources": [
+        {
+          "title": "Integrated Pest Management Package for Rice (NCIPM / DPPQ&S, 2014), Table 3.1.2 Economic Threshold Level (ETL) of major pests of rice crop stage wise",
+          "url": "https://niphm.gov.in/IPMPackages/Rice.pdf",
+          "note": "Package p. 9 (PDF p. 18): nursery '1 egg-mass/m2'; tillering 'Stem borer 2 egg-mass/m2 or 10% dead heart or 1 moth/m2 or 25 moths/trap/week'; panicle initiation to booting 'Stem borers 2 egg-mass/m2 or 1 moth/m2 or 25 moths / trap / week'. The 'or' criteria are kept as separate metrics. Transcribed 2026-10-08; awaiting Member A verification.",
+          "verified_by": null,
+          "verified_on": null
+        }
+      ],
+      "applicability": "National package for India; not calibrated or validated for Manipur.",
+      "etl": [
+        {"metric": "egg_masses_per_m2", "unit": "egg masses/m2", "crop_stages": ["nursery"], "between": [1, 1],
+         "label": "1 egg mass/m2 (nursery)"},
+        {"metric": "egg_masses_per_m2", "unit": "egg masses/m2",
+         "crop_stages": ["tillering", "panicle_initiation_to_booting"], "between": [2, 2],
+         "label": "2 egg masses/m2 (tillering to booting)"},
+        {"metric": "percent_dead_heart", "unit": "%", "crop_stages": ["tillering"], "between": [10, 10],
+         "label": "10% dead heart (tillering)"},
+        {"metric": "moths_per_m2", "unit": "moths/m2", "crop_stages": ["tillering", "panicle_initiation_to_booting"],
+         "between": [1, 1], "label": "1 moth/m2 (tillering to booting)"},
+        {"metric": "moths_per_trap_per_week", "unit": "moths/trap/week",
+         "crop_stages": ["tillering", "panicle_initiation_to_booting"], "between": [25, 25],
+         "label": "25 moths/trap/week (tillering to booting)"}
+      ]
+    },
+    {
+      "id": "leaf_folder",
+      "name": "Rice leaf folder",
+      "crop": "rice",
+      "kind": "insect_pest",
+      "status": "PLACEHOLDER",
+      "sources": [
+        {
+          "title": "Integrated Pest Management Package for Rice (NCIPM / DPPQ&S, 2014), Table 3.1.2 Economic Threshold Level (ETL) of major pests of rice crop stage wise",
+          "url": "https://niphm.gov.in/IPMPackages/Rice.pdf",
+          "note": "Package p. 9 (PDF p. 18): 'Leaf-folder 2 Fully damaged leaves (FDL) with larva/hill' (tillering); 'Leaf-folders 2 FDL/hill' (panicle initiation to booting). Transcribed 2026-10-08; awaiting Member A verification.",
+          "verified_by": null,
+          "verified_on": null
+        }
+      ],
+      "applicability": "National package for India; not calibrated or validated for Manipur.",
+      "etl": [
+        {"metric": "damaged_leaves_per_hill", "unit": "fully damaged leaves/hill",
+         "crop_stages": ["tillering", "panicle_initiation_to_booting"], "between": [2, 2],
+         "label": "2 fully damaged leaves/hill (tillering to booting)"}
+      ]
+    },
+    {
+      "id": "gall_midge",
+      "name": "Rice gall midge",
+      "crop": "rice",
+      "kind": "insect_pest",
+      "status": "PLACEHOLDER",
+      "sources": [
+        {
+          "title": "Integrated Pest Management Package for Rice (NCIPM / DPPQ&S, 2014), Table 3.1.2 Economic Threshold Level (ETL) of major pests of rice crop stage wise",
+          "url": "https://niphm.gov.in/IPMPackages/Rice.pdf",
+          "note": "Package p. 9 (PDF p. 18): 'Gall midge 1 gall/m2 or 10% Silver shoot' (early to late tillering). Transcribed 2026-10-08; awaiting Member A verification.",
+          "verified_by": null,
+          "verified_on": null
+        }
+      ],
+      "applicability": "National package for India; not calibrated or validated for Manipur.",
+      "etl": [
+        {"metric": "galls_per_m2", "unit": "galls/m2", "crop_stages": ["tillering"], "between": [1, 1],
+         "label": "1 gall/m2 (tillering)"},
+        {"metric": "percent_silver_shoot", "unit": "%", "crop_stages": ["tillering"], "between": [10, 10],
+         "label": "10% silver shoot (tillering)"}
+      ]
+    },
+    {
+      "id": "bacterial_leaf_blight",
+      "name": "Bacterial leaf blight",
+      "crop": "rice",
+      "kind": "disease",
+      "status": "PLACEHOLDER",
+      "sources": [
+        {
+          "title": "Integrated Pest Management Package for Rice (NCIPM / DPPQ&S, 2014), Table 3.1.2 Economic Threshold Level (ETL) of major pests of rice crop stage wise",
+          "url": "https://niphm.gov.in/IPMPackages/Rice.pdf",
+          "note": "Package p. 9 (PDF p. 18): nursery 'BLB: Kresek Phase 2-3 plants/m2'; tillering 'BLB 2-3 infected leaves/m2'. Transcribed 2026-10-08; awaiting Member A verification.",
+          "verified_by": null,
+          "verified_on": null
+        }
+      ],
+      "applicability": "National package for India; not calibrated or validated for Manipur.",
+      "etl": [
+        {"metric": "kresek_plants_per_m2", "unit": "plants/m2", "crop_stages": ["nursery"], "between": [2, 3],
+         "label": "kresek phase 2-3 plants/m2 (nursery)"},
+        {"metric": "infected_leaves_per_m2", "unit": "infected leaves/m2", "crop_stages": ["tillering"],
+         "between": [2, 3], "label": "2-3 infected leaves/m2 (tillering)"}
+      ]
+    },
+    {
+      "id": "gundhi_bug",
+      "name": "Rice gundhi (ear head) bug",
+      "crop": "rice",
+      "kind": "insect_pest",
+      "status": "PLACEHOLDER",
+      "sources": [
+        {
+          "title": "Integrated Pest Management Package for Rice (NCIPM / DPPQ&S, 2014), Table 3.1.2 Economic Threshold Level (ETL) of major pests of rice crop stage wise",
+          "url": "https://niphm.gov.in/IPMPackages/Rice.pdf",
+          "note": "Package p. 9 (PDF p. 18): 'Gundhi bug 2 bugs/hill' (flowering to milky grain). Transcribed 2026-10-08; awaiting Member A verification.",
+          "verified_by": null,
+          "verified_on": null
+        }
+      ],
+      "applicability": "National package for India; not calibrated or validated for Manipur.",
+      "etl": [
+        {"metric": "bugs_per_hill", "unit": "bugs/hill", "crop_stages": ["flowering_to_milky_grain"], "between": [2, 2],
+         "label": "2 bugs/hill (flowering to milky grain)"}
+      ]
+    }
+  ]
+}

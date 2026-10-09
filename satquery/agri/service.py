@@ -12,6 +12,9 @@ Demo reliability (Phase 4):
   `agri_mode` is "snapshot", or automatically when the live assessment is missing inputs the snapshot
   has (lower data completeness), for example when the venue network is down. Snapshot data is always
   labelled SNAPSHOT with its time and the reason it is shown; it is never presented as live.
+
+History: every live assessment that is served is appended to runs/agri/history.jsonl
+(`history.py`); snapshots and offline re-scores are not, so the record holds only real points in time.
 """
 
 import json
@@ -23,7 +26,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from satquery.agri.areas import demo_areas, load_areas
-from satquery.agri.config import PestRulesConfig, RiskModelConfig, load_pest_rules, load_risk_model
+from satquery.agri.config import PestRulesConfig, RiskModelConfig, load_observation_rules, load_pest_rules, \
+    load_risk_model
+from satquery.agri.history import AssessmentHistory
 from satquery.agri.models import MonitoredArea, RiskAssessment
 from satquery.agri.pipeline import Sources, assess_areas, default_sources
 from satquery.settings import Settings, load_settings
@@ -101,7 +106,8 @@ def read_snapshot(path: Path, rules: PestRulesConfig, model: RiskModelConfig, re
 
 class AssessmentService:
     def __init__(self, settings: Settings | None = None, *, sources: Sources | None = None,
-                 areas: list[MonitoredArea] | None = None, clock=time.monotonic):
+                 areas: list[MonitoredArea] | None = None, clock=time.monotonic,
+                 history: AssessmentHistory | None = None):
         self._settings = settings
         self._sources = sources
         self._areas = areas
@@ -109,9 +115,32 @@ class AssessmentService:
         self._lock = threading.Lock()
         self._snapshot: Snapshot | None = None
         self._computed = 0.0
+        self._history = history
 
     def _settings_now(self) -> Settings:
         return self._settings or load_settings()
+
+    def history(self) -> AssessmentHistory:
+        """The assessment history store (disabled when SATQUERY_AGRI_HISTORY is off)."""
+        if self._history is None:
+            settings = self._settings_now()
+            self._history = AssessmentHistory(settings.runs_dir / "agri" / "history.jsonl"
+                                              if settings.agri_history else None)
+        return self._history
+
+    def _record(self, live: Snapshot) -> None:
+        """Append a served live assessment to the history; a failure is logged, never fatal."""
+        try:
+            config = {"pest_rules": f"{live.rules.version} ({live.rules.status})",
+                      "risk_model": f"{live.model.version} ({live.model.status}, {live.model.calibration.status})"}
+            try:
+                observation_rules = load_observation_rules()
+                config["observation_rules"] = f"{observation_rules.version} ({observation_rules.status})"
+            except (OSError, ValueError):
+                config["observation_rules"] = "unavailable"
+            self.history().record(live.assessments, live.computed_at, config)
+        except OSError as error:
+            log.warning("agri history not recorded: %s", error)
 
     def snapshot_path(self) -> Path:
         settings = self._settings_now()
@@ -172,6 +201,8 @@ class AssessmentService:
                 return replace(frozen, fallback_reason=(
                     f"Live data is incomplete (mean data completeness {live_c:.0%}, snapshot {frozen_c:.0%}), "
                     "for example a provider could not be reached; showing the frozen snapshot."))
+        if not settings.agri_offline:  # an offline run re-scores old cached inputs: not a new point in time
+            self._record(live)
         return live
 
     def snapshot(self) -> Snapshot:

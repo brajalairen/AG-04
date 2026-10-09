@@ -50,7 +50,7 @@ def test_the_overview_ranks_every_monitored_area_with_its_notices(client):
     assert [a["rank"] for a in body["areas"]] == list(range(1, 8))
     assert sum(body["counts"].values()) == 7
     assert body["thresholds_status"] == "PLACEHOLDER" and "PLACEHOLDERS" in body["thresholds_note"]
-    assert body["includes_sample_data"] and body["sample_label"] == "SAMPLE DATA — Prototype Simulation"
+    assert body["includes_sample_data"] and body["sample_label"] == "SAMPLE DATA — PROTOTYPE SIMULATION"
     assert body["disclaimer"].startswith("Decision support only")
     assert body["official_boundaries"] is False
     assert "not administrative boundaries" in body["area_note"] and "not loaded yet" in body["area_note"]
@@ -106,7 +106,7 @@ def test_the_detail_is_the_full_assessment_with_its_notes(client):
     detail = client.get("/api/agri/areas/demo-bishnupur-nambol").json()
     assert detail["area"]["id"] == detail["assessment"]["area_id"] == "demo-bishnupur-nambol"
     assert detail["boundary_note"] == "Demo monitoring rectangle drawn by the team: not an administrative boundary."
-    assert detail["thresholds_note"] and detail["sample_label"] == "SAMPLE DATA — Prototype Simulation"
+    assert detail["thresholds_note"] and detail["sample_label"] == "SAMPLE DATA — PROTOTYPE SIMULATION"
     factors = {f["id"]: f for f in detail["assessment"]["factors"]}
     assert set(factors) == {"weather_pest", "ndvi_anomaly", "report_pressure"}
     assert factors["report_pressure"]["sample_data"] is True
@@ -134,7 +134,9 @@ def test_a_weather_outage_reaches_the_dashboard_as_unavailable(tmp_path, monkeyp
     kakching = next(a for a in client.get("/api/agri/overview").json()["areas"]
                     if a["id"] == "demo-kakching-khangshim")
     assert kakching["factor_status"]["weather_pest"] == "unavailable"
-    assert kakching["factor_points"]["weather_pest"] is None and kakching["data_completeness"] == 0.5
+    # Only NDVI (30%) is real: NDVI is supporting evidence and SAMPLE observations are not data, so no level.
+    assert kakching["factor_points"]["weather_pest"] is None and kakching["data_completeness"] == 0.3
+    assert kakching["level"] == "INSUFFICIENT_DATA" and kakching["rank"] is None
 
 
 def test_cloudy_ndvi_reaches_the_dashboard_as_unavailable(tmp_path, monkeypatch):
@@ -203,7 +205,7 @@ def test_answers_keep_the_caveats_and_never_claim_detection(client, query):
     assert not FORBIDDEN.search(found["answer"]), found["answer"]
     if found["intent"] != "unmatched":
         assert "PLACEHOLDER thresholds" in found["answer"]
-        assert "SAMPLE DATA — Prototype Simulation" in found["answer"]
+        assert "SAMPLE DATA — PROTOTYPE SIMULATION" in found["answer"]
         assert "Decision support only" in found["answer"]
     assert found["thresholds_status"] == "PLACEHOLDER" and found["includes_sample_data"]
 

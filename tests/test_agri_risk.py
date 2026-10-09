@@ -5,10 +5,10 @@ from datetime import date, timedelta
 
 import pytest
 
-from agri_helpers import TODAY, FakeStatsProvider, area, humid_day, rect, stats_response, verified_model, \
-    verified_rules, weather
+from agri_helpers import TODAY, FakeStatsProvider, area, humid_day, rect, risk_model_dict, stats_response, \
+    verified_model, verified_rules, weather
 from satquery.agri import risk
-from satquery.agri.config import load_pest_rules, load_risk_model
+from satquery.agri.config import RiskModelConfig, load_pest_rules, load_risk_model
 from satquery.agri.models import DISCLAIMER, PLACEHOLDER_NOTE, SAMPLE_LABEL, FactorResult, PestReport, Provenance
 from satquery.agri.ndvi import NdviClient
 from satquery.agri.rules import evaluate
@@ -48,16 +48,43 @@ def test_a_missing_factor_is_named_left_out_and_lowers_completeness():
     result = assess(0.8, None, 0.25)
     ndvi = next(f for f in result.factors if f.id == "ndvi_anomaly")
     assert ndvi.score is None and ndvi.points is None and ndvi.status == "unavailable"
-    assert result.score == pytest.approx(64.3, abs=0.05), "(0.5 x 0.8 + 0.2 x 0.25) / 0.7"
+    assert result.score == 45.0, "lower bound: (0.5 x 0.8 + 0.2 x 0.25) / 1.0; missing NDVI adds nothing"
+    assert result.score_range == (45.0, 75.0), "the upper end treats the missing NDVI as fully adverse"
     assert result.confidence.data_completeness == 0.7
-    assert any("is unavailable: test reason. It is left out of the score, not estimated." in r for r in result.reasons)
+    assert any("is unavailable: test reason. It adds no points and is not estimated." in r for r in result.reasons)
+    assert ("Not backed by real data: vegetation condition vs earlier years (ndvi) (unavailable). Real evidence alone "
+            "gives 45/100; if the missing input were fully adverse the score could reach 75/100 (HIGH). Missing data "
+            "never raises the score.") in result.reasons
+
+
+def test_losing_an_input_never_raises_the_score():
+    """The Phase 2 renormalisation filled a missing factor with the average of the others; a cloudy
+    NDVI then lifted a 50/100 area to 71/100. Losing data must never raise a score."""
+    complete = assess(1.0, 0.0, 0.0)
+    cloudy = assess(1.0, None, 0.0)
+    assert complete.score == 50.0 and cloudy.score == 50.0 and cloudy.level == complete.level == "MODERATE"
+    legacy = risk_model_dict() | {"missing_inputs": "renormalise"}
+    renormalised = assess(1.0, None, 0.0, model=RiskModelConfig.model_validate(legacy))
+    assert renormalised.score == pytest.approx(71.4, abs=0.05) and renormalised.level == "HIGH"
+    assert renormalised.score_range is None
 
 
 def test_too_little_data_gives_no_level_and_no_score():
     result = assess(None, None, 0.9)
     assert result.level == "INSUFFICIENT_DATA" and result.score is None
     assert result.headline.startswith("Not enough data to estimate risk for Test area")
-    assert "Only 20% of the model's inputs are available (minimum 50%)" in result.reasons[0]
+    assert "Only 20% of the model's inputs are backed by real data (minimum 50%)" in result.reasons[0]
+
+
+def test_sample_evidence_is_scored_but_never_counted_as_data():
+    result = assess(0.6, 0.0, 1.0, sample=True)
+    assert result.score == 50.0 and result.level == "MODERATE"
+    assert result.confidence.data_completeness == 0.8, "the SAMPLE factor's 20% weight is not real data"
+    assert (result.score_without_sample, result.level_without_sample) == (30.0, "LOW")
+    assert any("Without the SAMPLE field observations this area would be LOW (30/100): the MODERATE level depends "
+               "on synthetic data." in r for r in result.reasons)
+    real = assess(0.6, 0.0, 1.0)
+    assert real.score_without_sample is None and real.level_without_sample is None
 
 
 @pytest.mark.parametrize("score, level", [(0.0, "LOW"), (0.34, "LOW"), (0.35, "MODERATE"), (0.59, "MODERATE"),
@@ -67,9 +94,20 @@ def test_level_cut_points(score, level):
 
 
 def test_critical_needs_two_independent_indicators():
-    single = assess(1.0, None, 0.5)  # score 0.857, but only the weather indicator is strong
-    assert single.level == "HIGH" and single.score == pytest.approx(85.7, abs=0.05)
-    assert "Critical needs at least 2 independent indicators" in single.reasons[0]
+    weights = {"weather_pest": 0.8, "ndvi_anomaly": 0.1, "report_pressure": 0.1}
+    factors = [factor(fid, score, weight=weights[fid])
+               for fid, score in (("weather_pest", 1.0), ("ndvi_anomaly", 0.5), ("report_pressure", 0.5))]
+    single = risk.combine(area(), factors, [], RULES, verified_model(weights=weights), AS_OF)
+    # score 0.9, but only the weather indicator is strong
+    assert single.level == "HIGH" and single.score == 90.0
+    assert "Critical needs at least 2 independent real indicators" in single.reasons[0]
+
+
+def test_sample_evidence_is_never_an_independent_indicator_for_critical():
+    result = assess(0.9, 0.5, 1.0, sample=True)  # critical band, but the second strong factor is SAMPLE
+    assert result.score == 80.0 and result.level == "HIGH"
+    assert "Critical needs at least 2 independent real indicators" in result.reasons[0]
+    assert result.confidence.data_completeness == 0.8
 
 
 def test_critical_also_needs_near_complete_data():
@@ -95,7 +133,7 @@ def test_confidence_follows_completeness_and_is_capped_by_sample_data_and_placeh
 def test_placeholder_and_sample_status_are_stated_in_the_reasons():
     result = assess(0.5, 0.5, 0.5, sample=True)
     assert result.thresholds_status == "PLACEHOLDER" and result.reasons[-1] == PLACEHOLDER_NOTE
-    assert f"Includes {SAMPLE_LABEL}: the report figures are synthetic." in result.reasons
+    assert f"Includes {SAMPLE_LABEL}: the field-observation figures are synthetic." in result.reasons
     assert result.includes_sample_data
     assert any("PLACEHOLDERS" in note for note in result.confidence.notes)
 
@@ -211,10 +249,11 @@ def test_report_pressure_weights_severity_and_is_labelled_sample():
     result = risk.report_factor([report("high"), report("moderate", "brown_planthopper"), report("low")],
                                 SAMPLE_PROVENANCE, MODEL, TODAY)
     assert result.score == pytest.approx(3.5 / 6, abs=0.001) and result.sample_data
-    assert result.reasons[0] == ("3 SAMPLE pest report(s) in the last 14 days inside the area (brown planthopper x1, "
-                                 "rice blast x2; 1 high severity). SAMPLE DATA — Prototype Simulation: synthetic "
-                                 "reports, not real observations.")
+    assert result.reasons[0] == ("3 SAMPLE pest/disease observation(s) in the last 14 days in the area (brown "
+                                 "planthopper x1, rice blast x2; 1 high severity). SAMPLE DATA — PROTOTYPE SIMULATION: "
+                                 "synthetic, not real field observations.")
     assert result.details["by_severity"] == {"low": 1, "moderate": 1, "high": 1}
+    assert result.name == "Pest/disease field observations (SAMPLE)"
 
 
 def test_report_pressure_saturates_at_full_score():
@@ -224,13 +263,13 @@ def test_report_pressure_saturates_at_full_score():
 
 def test_no_sample_reports_is_a_zero_still_labelled_sample():
     result = risk.report_factor([], SAMPLE_PROVENANCE, MODEL, TODAY)
-    assert result.score == 0.0 and result.sample_data and "No SAMPLE pest reports" in result.reasons[0]
-    assert SAMPLE_LABEL in result.reasons[0]
+    assert result.score == 0.0 and result.sample_data
+    assert "No SAMPLE pest/disease observations" in result.reasons[0] and SAMPLE_LABEL in result.reasons[0]
 
 
 def test_no_report_source_is_unavailable():
     result = risk.report_factor(None, None, MODEL, TODAY)
-    assert result.status == "unavailable" and result.unavailable_reason == "no pest-report source is connected"
+    assert result.status == "unavailable" and result.unavailable_reason == "no pest-observation source is connected"
 
 
 # ----------------------------------------------------------------------------------- ranking

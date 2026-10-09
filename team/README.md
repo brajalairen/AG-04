@@ -37,6 +37,6 @@ Then tell the integration lead. Nobody merges into `ag04-prototype` except the i
 ## Rules for everyone
 
 - **Never invent** thresholds, Manipuri text, district boundaries, government contacts or helplines, outbreak statistics or scientific sources. If something cannot be verified, leave it out or mark it PLACEHOLDER/DRAFT.
-- **Synthetic data stays labelled** "SAMPLE DATA — Prototype Simulation". Placeholder thresholds stay labelled PLACEHOLDER until replaced by verified ones.
+- **Synthetic data stays labelled** "SAMPLE DATA — PROTOTYPE SIMULATION". Placeholder thresholds stay labelled PLACEHOLDER until replaced by verified ones.
 - **Never commit** `.env`, keys, `runs/`, `.venv`, `node_modules`, `web/dist`, or large datasets and videos.
 - **The original SatQuery-AI repository is frozen.** Never push to it.

@@ -34,10 +34,14 @@ def test_every_demo_area_is_assessed_ranked_and_explained():
     for assessment in ranked:
         assert assessment.as_of == "2026-10-08T06:00:00+00:00" and assessment.score is not None
         assert {f.id for f in assessment.factors} == {"weather_pest", "ndvi_anomaly", "report_pressure"}
-        assert assessment.confidence.data_completeness == 1.0 and assessment.confidence.level == "low"
+        # Weather and NDVI are real (80% of the weight); SAMPLE observations are scored but are not data.
+        assert assessment.confidence.data_completeness == 0.8 and assessment.confidence.level == "low"
         assert assessment.thresholds_status == "PLACEHOLDER" and assessment.includes_sample_data
         assert assessment.district_context["state"] == "Manipur"
         assert {p.state for p in assessment.provenance} == {"LIVE", "SAMPLE"}
+        assert [p.pest_id for p in assessment.pest_risks][0] == assessment.driver_pest
+        assert {p.pest_id for p in assessment.pest_risks} == {"rice_blast", "brown_planthopper"}
+        assert assessment.level_without_sample is not None, "how far the level rests on SAMPLE data is shown"
     first = ranked[0]
     assert first.area_id == "demo-bishnupur-nambol", "the 'high' SAMPLE scenario area leads when weather is equal"
     assert sum(f.points or 0 for f in first.factors) == pytest.approx(first.score, abs=0.2)
@@ -59,8 +63,11 @@ def test_a_weather_outage_is_visible_and_the_other_factors_still_report():
     hit = next(a for a in ranked if a.area_id == failing.id)
     weather = next(f for f in hit.factors if f.id == "weather_pest")
     assert weather.status == "unavailable" and weather.unavailable_reason == "The weather provider could not be reached."
-    assert hit.confidence.data_completeness == 0.5 and hit.level != "INSUFFICIENT_DATA"
+    # NDVI (30%) is the only real input left: supporting evidence alone gives no pest-risk level.
+    assert hit.confidence.data_completeness == 0.3 and hit.level == "INSUFFICIENT_DATA"
     assert hit.pests == [] and any("is unavailable" in r for r in hit.reasons)
+    others = [a for a in ranked if a.area_id != failing.id]
+    assert all(a.level != "INSUFFICIENT_DATA" for a in others), "the other areas still report"
 
 
 def test_without_copernicus_credentials_ndvi_is_unavailable_not_estimated():

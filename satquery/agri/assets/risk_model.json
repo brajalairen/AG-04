@@ -36,11 +36,18 @@
       "moderate": 1.0,
       "high": 2.0
     },
-    "weighted_count_for_full_score": 6.0
+    "weighted_count_for_full_score": 6.0,
+    "district_match_weight": 0.5
   },
   "confidence": {
     "high_min_completeness": 0.9,
     "medium_min_completeness": 0.6
   },
-  "weather_point_span_km": 10.0
+  "weather_point_span_km": 10.0,
+  "missing_inputs": "lower_bound",
+  "calibration": {
+    "status": "UNCALIBRATED",
+    "note": "The weights, level bands and scoring breakpoints are engineering choices. They have not been validated against field outcomes (verified inspections or surveillance), so a score is a rule-based indication, not a calibrated risk or probability.",
+    "evidence": []
+  }
 }

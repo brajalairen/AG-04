@@ -29,7 +29,7 @@ function overview(): AgriOverview {
     thresholds_status: "PLACEHOLDER",
     thresholds_note: "Thresholds are PLACEHOLDERS for development.",
     includes_sample_data: true,
-    sample_label: "SAMPLE DATA — Prototype Simulation",
+    sample_label: "SAMPLE DATA — PROTOTYPE SIMULATION",
     disclaimer: "Decision support only.",
     area_note: "7 demo monitoring rectangle(s)",
     official_boundaries: false,

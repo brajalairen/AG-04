@@ -7,7 +7,8 @@ from pathlib import Path
 import pytest
 
 from satquery import schemas, server
-from satquery.agri import models as agri_models, routes as agri_routes
+from satquery.agri import escalation as agri_escalation, history as agri_history, models as agri_models, \
+    routes as agri_routes, views as agri_views
 
 TYPES_TS = Path(__file__).resolve().parent.parent / "web" / "src" / "state" / "types.ts"
 
@@ -43,6 +44,8 @@ MIRRORED = {
     "NdviWindow": agri_models.NdviWindow,
     "NdviAnomaly": agri_models.NdviAnomaly,
     "FactorResult": agri_models.FactorResult,
+    "PestRiskAssessment": agri_models.PestRiskAssessment,
+    "PestNotAssessed": agri_models.PestNotAssessed,
     "RiskConfidence": agri_models.RiskConfidence,
     "RiskAssessment": agri_models.RiskAssessment,
     "AreaSummary": agri_routes.AreaSummary,
@@ -50,6 +53,38 @@ MIRRORED = {
     "AgriAreaDetail": agri_routes.AgriAreaDetail,
     "AgriQueryResult": agri_routes.AgriQueryResult,
     "DistrictSummary": agri_routes.DistrictSummary,
+    # AG-04 Phase 3 decision-support views
+    "AgriTrustLabels": agri_views.TrustLabels,
+    "AgriInputStatus": agri_views.InputStatus,
+    "AgriRulesStatus": agri_views.RulesStatus,
+    "AgriBoundaryStatus": agri_views.BoundaryStatus,
+    "AgriLimitation": agri_views.Limitation,
+    "AgriAreaStatus": agri_views.AreaStatus,
+    "AgriAreaList": agri_views.AreaList,
+    "AgriFactorPoints": agri_views.FactorPoints,
+    "AgriPersistence": agri_escalation.Persistence,
+    "AgriEscalationFacts": agri_escalation.EscalationFacts,
+    "AgriAttentionStatus": agri_escalation.AttentionStatus,
+    "AgriPriorityItem": agri_views.PriorityItem,
+    "AgriPriorityList": agri_views.PriorityList,
+    "AgriAreaRef": agri_views.AreaRef,
+    "AgriOverallView": agri_views.OverallView,
+    "AgriWeatherDay": agri_views.WeatherDay,
+    "AgriWeatherPest": agri_views.WeatherPest,
+    "AgriWeatherView": agri_views.WeatherView,
+    "AgriNdviView": agri_views.NdviView,
+    "AgriObservationView": agri_views.ObservationView,
+    "AgriPestView": agri_views.PestView,
+    "AgriNotAssessed": agri_views.NotAssessedView,
+    "AgriPestsView": agri_views.PestsView,
+    "AgriRuleSource": agri_views.RuleSource,
+    "AgriFieldVerification": agri_views.FieldVerification,
+    "AgriProvenanceView": agri_views.ProvenanceView,
+    "AgriAreaExplanation": agri_views.AreaExplanation,
+    "AgriPestLevel": agri_history.PestLevel,
+    "AgriHistoryEntry": agri_history.HistoryEntry,
+    "AgriAreaHistory": agri_views.AreaHistory,
+    "AgriVocabulary": agri_views.Vocabulary,
 }
 
 

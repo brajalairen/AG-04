@@ -8,16 +8,25 @@ ranks, levels, scores, points, reasons, confidence and provenance are copied fro
   GET  /api/agri/overview          every monitored zone, ranked, grouped by district, with notices
   GET  /api/agri/areas/{area_id}   one area's full assessment, for the "Why is this area at risk?" drawer
   POST /api/agri/query             an agricultural question in plain words (read-only: nothing is changed)
+
+Phase 3 decision-support views (`views.py`; read-only, built from the same assessments):
+
+  GET  /api/agri/areas                         every area's status with trust labels and limitations
+  GET  /api/agri/areas/{area_id}/summary       one area's status
+  GET  /api/agri/areas/{area_id}/explanation   overall, weather, NDVI, per-pest evidence, provenance, limitations
+  GET  /api/agri/areas/{area_id}/history       recorded live assessments, oldest first (no backfill)
+  GET  /api/agri/priorities                    areas in engine rank order with escalation-readiness facts
+  GET  /api/agri/vocabulary                    stable codes and their meanings (labels, states, limitations)
 """
 
 from typing import Literal
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from satquery import geo
-from satquery.agri import districts as agri_districts, query as agri_query
+from satquery.agri import districts as agri_districts, query as agri_query, views
 from satquery.agri.models import (DISCLAIMER, PLACEHOLDER_NOTE, SAMPLE_LABEL, DataState, FactorStatus,
                                   MonitoredArea, RiskAssessment, RiskLevel, ThresholdStatus)
 from satquery.agri.service import AgriUnavailable, AssessmentService, Snapshot
@@ -189,8 +198,52 @@ def _unavailable(error: AgriUnavailable) -> JSONResponse:
     return JSONResponse(status_code=503, content={"code": "agri_unavailable", "message": str(error)})
 
 
+def _unknown(area_id: str) -> JSONResponse:
+    return JSONResponse(status_code=404, content={"code": "unknown_area",
+                                                  "message": f"No monitored area has the id '{area_id}'."})
+
+
 def agri_router(service: AssessmentService) -> APIRouter:
     router = APIRouter(prefix="/api/agri", tags=["agri"])
+
+    def with_area(area_id: str, build):
+        """Run `build(snapshot, assessment)` for a known area, or the API's usual 503 / 404."""
+        try:
+            snapshot = service.snapshot()
+        except AgriUnavailable as error:
+            return _unavailable(error)
+        found = snapshot.assessment(area_id)
+        return _unknown(area_id) if found is None else build(snapshot, found)
+
+    @router.get("/areas", response_model=views.AreaList)
+    def list_areas():
+        try:
+            return views.area_list(service.snapshot())
+        except AgriUnavailable as error:
+            return _unavailable(error)
+
+    @router.get("/areas/{area_id}/summary", response_model=views.AreaStatus)
+    def area_summary(area_id: str):
+        return with_area(area_id, views.area_status)
+
+    @router.get("/areas/{area_id}/explanation", response_model=views.AreaExplanation)
+    def area_explanation(area_id: str):
+        return with_area(area_id, lambda snapshot, a: views.explanation(snapshot, a, service.history()))
+
+    @router.get("/areas/{area_id}/history", response_model=views.AreaHistory)
+    def area_history(area_id: str, limit: int | None = Query(None, ge=1, le=5000)):
+        return with_area(area_id, lambda snapshot, a: views.area_history(service.history(), area_id, limit))
+
+    @router.get("/priorities", response_model=views.PriorityList)
+    def priorities():
+        try:
+            return views.priorities(service.snapshot(), service.history())
+        except AgriUnavailable as error:
+            return _unavailable(error)
+
+    @router.get("/vocabulary", response_model=views.Vocabulary)
+    def vocabulary():
+        return views.vocabulary()
 
     @router.get("/overview", response_model=AgriOverview)
     def get_overview():
@@ -207,8 +260,7 @@ def agri_router(service: AssessmentService) -> APIRouter:
             return _unavailable(error)
         found = snapshot.assessment(area_id)
         if found is None:
-            return JSONResponse(status_code=404, content={"code": "unknown_area",
-                                                          "message": f"No monitored area has the id '{area_id}'."})
+            return _unknown(area_id)
         area = snapshot.areas[area_id]
         return AgriAreaDetail(area=summarise(area, found), assessment=found, boundary_note=boundary_note(area),
                               thresholds_note=PLACEHOLDER_NOTE if found.thresholds_status == "PLACEHOLDER" else None,

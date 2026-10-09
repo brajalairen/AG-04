@@ -1,0 +1,18 @@
+{
+  "dataset": {
+    "id": "<short id, e.g. manipur-doa-rice-2026-kharif>",
+    "title": "<dataset title as the publisher names it>",
+    "publisher": "<organisation that collected the observations>",
+    "source_url": "<where the data or its description is published, or null>",
+    "licence": "<licence or written permission; never assume one>",
+    "access_date": "<YYYY-MM-DD the data was obtained>",
+    "status": "<REAL or SAMPLE: this placeholder is deliberately invalid so the template cannot load unfilled>",
+    "geographic_coverage": "<e.g. Manipur valley districts>",
+    "temporal_coverage": "<e.g. weekly, kharif 2026>",
+    "spatial_resolution": "<point, village, block or district: the coarsest in the file>",
+    "observation_method": "<e.g. weekly pest-scout survey, 10 hills per field, ETL-based counts>",
+    "limitations": "<known gaps, sampling effort, missing weeks>",
+    "coverage_districts": ["<districts actually surveyed; null if the publisher does not say>"],
+    "pests_surveyed": ["<pest ids actually surveyed, e.g. brown_planthopper; null if not stated>"]
+  }
+}

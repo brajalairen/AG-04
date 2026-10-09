@@ -1,9 +1,11 @@
 """SAMPLE pest reports for the prototype: synthetic, seeded, and labelled so they cannot be mistaken.
 
-No operational pest-report feed is connected yet, so the report-pressure factor runs on reports made
-up by this generator from `assets/sample_scenario.json`. Every report says `source: "SAMPLE"`,
-`synthetic: true` and carries the label "SAMPLE DATA — Prototype Simulation"; the set's provenance
+No public, machine-readable pest/disease observation feed for Manipur exists (data/agri/SOURCES.md),
+so the field-observation factor runs on reports made up by this generator from
+`assets/sample_scenario.json`. Every report says `status: "SAMPLE"`, `source: "SAMPLE"`,
+`synthetic: true` and carries the label "SAMPLE DATA — PROTOTYPE SIMULATION"; the set's provenance
 state is SAMPLE. They are never real government or field observations and must not be shown as such.
+A real dataset replaces this generator through `observations.ObservationFileSource`.
 
 Deterministic and stable from day to day: an area's reports are seeded by the scenario and the area
 alone, and their dates are kept as days before the window's end. The same area therefore gets the
@@ -17,8 +19,9 @@ from datetime import date, timedelta
 from pathlib import Path
 
 from satquery.agri import areas as geometry
-from satquery.agri.config import ASSETS
+from satquery.agri.config import ASSETS, ObservationRulesConfig
 from satquery.agri.models import MonitoredArea, PestReport, Provenance, SampleReportSet
+from satquery.agri.observations import AreaObservation, AreaObservations
 
 SOURCE = "SatQuery sample-report generator (seeded, deterministic)"
 NOTE = "SYNTHETIC reports for prototype demonstration only; not real government or field observations."
@@ -58,7 +61,7 @@ def generate(areas: list[MonitoredArea], end: date, scenario: dict | None = None
         for n in range(rng.randint(low, high)):
             lon, lat = _point_inside(rng, area)
             observed = end - timedelta(days=rng.randrange(scenario["window_days"]))
-            reports.append(PestReport(id=f"sample-{area.id}-{n + 1}", area_id=area.id,
+            reports.append(PestReport(id=f"sample-{area.id}-{n + 1}", area_id=area.id, district=area.district,
                                       latitude=round(lat, 5), longitude=round(lon, 5),
                                       observed_on=observed.isoformat(), crop=scenario["crop"],
                                       pest=_pick(rng, scenario["pests"]), severity=_pick(rng, level["severity"])))
@@ -86,3 +89,14 @@ class SampleReportSource:
     def for_area(self, area: MonitoredArea, end: date, lookback_days: int) -> tuple[list[PestReport], Provenance]:
         report_set = generate([area], end, self.scenario)
         return in_area(report_set, area, end, lookback_days), report_set.provenance
+
+    def observations(self, area: MonitoredArea, end: date, lookback_days: int,
+                     rules: ObservationRulesConfig | None = None) -> AreaObservations:
+        """The same SAMPLE reports in the shape a real observation source returns. The generator
+        simulates every area, so an area without reports is 'covered' (still SAMPLE, never evidence)."""
+        reports, provenance = self.for_area(area, end, lookback_days)
+        items = [AreaObservation(observation=r, match="inside_area", severity=r.severity,
+                                 severity_basis="SAMPLE severity drawn by the generator") for r in reports]
+        return AreaObservations(items=items, provenance=provenance, sample=True, coverage="covered",
+                                coverage_note="SAMPLE generator: every monitored area is simulated.",
+                                lookback_days=lookback_days, pests_surveyed=sorted(self.scenario["pests"]))

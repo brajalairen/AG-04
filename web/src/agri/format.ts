@@ -31,7 +31,7 @@ export const LEVELS: RiskLevel[] = ["CRITICAL", "HIGH", "MODERATE", "LOW", "INSU
 export const FACTOR_LABEL: Record<FactorId, string> = {
   weather_pest: "Weather",
   ndvi_anomaly: "NDVI vs baseline",
-  report_pressure: "Pest reports (SAMPLE)",
+  report_pressure: "Field observations", // the SAMPLE label is shown beside it while the data is synthetic
 };
 
 /** Factor identity in the score breakdown: the first three categorical slots, validated all-pairs

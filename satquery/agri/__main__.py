@@ -4,6 +4,7 @@
   python -m satquery.agri assess --offline       cached data only, no network
   python -m satquery.agri assess --areas X.geojson --json out.json
   python -m satquery.agri thresholds             show whether thresholds are PLACEHOLDER or VERIFIED
+  python -m satquery.agri observations FILE      check a pest/disease observation dataset (schema, quality)
   python -m satquery.agri warm --save-snapshot --crop-health
                                                  before a demo: fetch today's data live, freeze it as the
                                                  fallback snapshot, and warm the crop-health imagery cache
@@ -16,19 +17,23 @@ from datetime import datetime
 from pathlib import Path
 
 from satquery.agri.areas import demo_areas, load_areas
-from satquery.agri.config import load_pest_rules, load_risk_model, thresholds_status
+from satquery.agri.config import load_observation_rules, load_pest_rules, load_risk_model, thresholds_status
 from satquery.agri.pipeline import assess_areas, default_sources
 from satquery.settings import load_settings
 
 
 def _table(assessments) -> str:
-    rows = [f"{'#':>3}  {'Area':48} {'Level':17} {'Score':>5}  {'Conf':6} {'Data':>4}  Factors (points)"]
+    rows = [f"{'#':>3}  {'Area':42} {'Level':17} {'Score':>5} {'Range':>7}  {'Conf':6} {'Data':>4}  "
+            f"{'Driver':18} {'w/o SAMPLE':16} Factors (points)"]
     for a in assessments:
         factors = ", ".join(f"{f.id.split('_')[0]} {f.points:g}" if f.points is not None else f"{f.id.split('_')[0]} n/a"
                             for f in a.factors)
-        rows.append(f"{a.rank or '-':>3}  {a.area_name[:48]:48} {a.level:17} "
-                    f"{(f'{a.score:.0f}' if a.score is not None else '-'):>5}  {a.confidence.level:6} "
-                    f"{a.confidence.data_completeness:>4.0%}  {factors}")
+        span = f"{a.score_range[0]:.0f}-{a.score_range[1]:.0f}" if a.score_range else ""
+        without = f"{a.level_without_sample} {a.score_without_sample:.0f}" if a.level_without_sample and \
+            a.score_without_sample is not None else "-"
+        rows.append(f"{a.rank or '-':>3}  {a.area_name[:42]:42} {a.level:17} "
+                    f"{(f'{a.score:.0f}' if a.score is not None else '-'):>5} {span:>7}  {a.confidence.level:6} "
+                    f"{a.confidence.data_completeness:>4.0%}  {(a.driver_pest or '-')[:18]:18} {without:16} {factors}")
     return "\n".join(rows)
 
 
@@ -43,6 +48,8 @@ def main(argv=None) -> int:
     run.add_argument("--geocode", action="store_true", help="look up district context with OpenStreetMap")
     run.add_argument("--json", type=Path, help="write the full assessments here (default: runs/agri/...)")
     sub.add_parser("thresholds", help="show threshold status and sources")
+    observed = sub.add_parser("observations", help="check a pest/disease observation dataset (schema and quality)")
+    observed.add_argument("file", type=Path, help="JSON, or CSV with a <name>.dataset.json metadata sidecar")
     warm = sub.add_parser("warm", help="fetch today's data live for the dashboard (run before a demo)")
     warm.add_argument("--save-snapshot", action="store_true",
                       help="freeze the live assessment as the fallback snapshot (runs/agri/snapshot.json)")
@@ -51,14 +58,24 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     if args.command == "warm":
         return _warm(args)
+    if args.command == "observations":
+        return _observations(args)
 
     rules, model = load_pest_rules(), load_risk_model()
     if args.command == "thresholds":
         print(f"Overall: {thresholds_status(rules, model)}")
-        print(f"risk_model.json v{model.version}: {model.status}")
+        print(f"risk_model.json v{model.version}: {model.status} (missing inputs: {model.missing_inputs}; score "
+              f"calibration: {model.calibration.status})")
         for pest in rules.pests:
             print(f"  {pest.id}: {pest.status}; sources: {len(pest.sources)}; conditions: "
                   + "; ".join(c.label for c in pest.conditions))
+        observation_rules = load_observation_rules()
+        print(f"observation_rules.json v{observation_rules.version}: {observation_rules.status} "
+              f"(ETL severity mapping {observation_rules.severity_from_etl.status})")
+        for rule in observation_rules.pests:
+            verified = sum(1 for s in rule.sources if s.verified_by)
+            print(f"  {rule.id}: {rule.status}; sources: {len(rule.sources)} ({verified} verified); ETLs: "
+                  + "; ".join(c.label for c in rule.etl))
         return 0
 
     settings = load_settings()
@@ -73,6 +90,30 @@ def main(argv=None) -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps([a.model_dump() for a in assessments], indent=1, ensure_ascii=False), encoding="utf-8")
     print(f"Full assessments: {out}")
+    return 0
+
+
+def _observations(args) -> int:
+    """Validate an observation dataset with the engine's own loader and print its quality report."""
+    from datetime import date
+
+    from satquery.agri.observations import ObservationFileError, load_observations, quality_report
+
+    try:
+        obs_set = load_observations(args.file)
+    except ObservationFileError as error:
+        print(f"REJECTED: {error}")
+        return 1
+    report = quality_report(obs_set, date.today(), load_risk_model().reports.lookback_days, load_observation_rules())
+    dataset = report["dataset"]
+    print(f"{dataset['title']} ({dataset['publisher']}), {dataset['status']}; licence: {dataset['licence']}; "
+          f"obtained {dataset['access_date']}")
+    print(f"  {report['records']} record(s), {report['first_observed']} to {report['last_observed']}; "
+          f"{report['current_records']} in the last {report['lookback_days']} days; resolution "
+          f"{report['spatial_resolution']}; pests {', '.join(report['pests']) or '-'}")
+    print(f"  missing values: {report['missing']}; scorable: {report['scorable_records']}")
+    for warning in report["warnings"]:
+        print(f"  WARNING: {warning}")
     return 0
 
 

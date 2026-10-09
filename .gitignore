@@ -15,7 +15,9 @@ venv/
 runs/
 uploads/
 models/
-data/
+data/*
+# ...except the pest/disease source documentation and templates (no datasets are kept here)
+!data/agri/
 .gradio/
 
 # Web client

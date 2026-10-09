@@ -147,11 +147,36 @@ class ReportConfig(Strict):
     lookback_days: int = Field(14, ge=1, le=90)
     severity_weights: dict[Literal["low", "moderate", "high"], float]
     weighted_count_for_full_score: float = Field(6.0, gt=0)
+    # A district-level record only says the pest was seen somewhere in the zone's district, which is
+    # weaker evidence for the zone than a record located inside it: its severity weight is scaled by this.
+    district_match_weight: float = Field(0.5, ge=0, le=1)
 
 
 class ConfidenceConfig(Strict):
     high_min_completeness: float = Field(0.9, ge=0, le=1)
     medium_min_completeness: float = Field(0.6, ge=0, le=1)
+
+
+CALIBRATION_NOTE = ("The weights, level bands and scoring breakpoints are engineering choices. They have not been "
+                    "validated against field outcomes (verified inspections or surveillance), so a score is a "
+                    "rule-based indication, not a calibrated risk or probability.")
+
+
+class CalibrationConfig(Strict):
+    """Whether the score as a whole has been validated against outcomes. This is separate from the
+    thresholds' VERIFIED status: verified thresholds do not make the weights or bands validated."""
+
+    status: Literal["UNCALIBRATED", "VALIDATED"] = "UNCALIBRATED"
+    note: str = CALIBRATION_NOTE
+    evidence: list[Source] = Field(default_factory=list)  # the validation study / outcome data, when VALIDATED
+
+    @model_validator(mode="after")
+    def _validated(self):
+        if self.status == "VALIDATED":
+            if not self.evidence:
+                raise ValueError("risk_model calibration is marked VALIDATED but names no validation evidence")
+            _require_verified_sources("VERIFIED", self.evidence, "risk_model calibration")
+        return self
 
 
 class RiskModelConfig(Strict):
@@ -167,6 +192,12 @@ class RiskModelConfig(Strict):
     reports: ReportConfig
     confidence: ConfidenceConfig
     weather_point_span_km: float = Field(10.0, gt=0)
+    # How a missing input enters the score. "lower_bound": it adds no points and keeps its weight, so
+    # missing data can never raise a score; the upper end of the range is reported. "renormalise" (the
+    # Phase 2 method): the score is the weighted mean of the inputs present, which in effect fills a
+    # missing input with the average of the others and can raise the score when data is lost.
+    missing_inputs: Literal["lower_bound", "renormalise"] = "lower_bound"
+    calibration: CalibrationConfig = Field(default_factory=CalibrationConfig)
 
     @model_validator(mode="after")
     def _valid(self):
@@ -176,6 +207,76 @@ class RiskModelConfig(Strict):
             raise ValueError("weights must be non-negative and not all zero")
         _require_verified_sources(self.status, self.sources, "risk_model")
         return self
+
+
+CropStage = Literal["nursery", "tillering", "panicle_initiation_to_booting", "flowering_to_milky_grain"]
+
+
+class EtlCriterion(Strict):
+    """An economic threshold level (ETL) for one measurement of one pest at given crop stages, as the
+    source states it. `between` is the source's range (low = high for a single value)."""
+
+    metric: str
+    unit: str
+    crop_stages: list[CropStage] = Field(min_length=1)
+    between: tuple[float, float]
+    label: str
+
+    @model_validator(mode="after")
+    def _ordered(self):
+        if not 0 <= self.between[0] <= self.between[1]:
+            raise ValueError(f"'{self.label}': between must be [low, high] with 0 <= low <= high")
+        return self
+
+
+class ObservationRule(Strict):
+    """How field observations of one pest or disease are read: its ETLs, with their source."""
+
+    id: str
+    name: str
+    crop: str
+    kind: Literal["insect_pest", "disease"]
+    status: ThresholdStatus
+    sources: list[Source] = Field(default_factory=list)
+    applicability: str
+    etl: list[EtlCriterion] = Field(default_factory=list)
+    notes: str | None = None
+
+    @model_validator(mode="after")
+    def _verified(self):
+        _require_verified_sources(self.status, self.sources, f"observation rule '{self.id}'")
+        return self
+
+
+class EtlSeverityMapping(Strict):
+    """Engineering mapping from an ETL to the low / moderate / high severity the engine weights: below
+    the ETL's low end, inside its range, at or above its high end. Not an agronomic finding."""
+
+    status: ThresholdStatus
+    note: str
+    below: Literal["low", "moderate", "high"] = "low"
+    within: Literal["low", "moderate", "high"] = "moderate"
+    at_or_above: Literal["low", "moderate", "high"] = "high"
+
+
+class ObservationRulesConfig(Strict):
+    version: str
+    status: ThresholdStatus
+    note: str
+    severity_from_etl: EtlSeverityMapping
+    pests: list[ObservationRule]
+
+    @model_validator(mode="after")
+    def _consistent(self):
+        ids = [p.id for p in self.pests]
+        if len(ids) != len(set(ids)):
+            raise ValueError("observation rule ids must be unique")
+        if self.status == "VERIFIED" and any(p.status != "VERIFIED" for p in self.pests):
+            raise ValueError("observation_rules is marked VERIFIED but some rules are still PLACEHOLDER")
+        return self
+
+    def rule(self, pest_id: str) -> ObservationRule | None:
+        return next((p for p in self.pests if p.id == pest_id), None)
 
 
 def _load(path: Path, model):
@@ -188,6 +289,11 @@ def load_pest_rules(path: str | Path | None = None) -> PestRulesConfig:
 
 def load_risk_model(path: str | Path | None = None) -> RiskModelConfig:
     return _load(path or os.environ.get("SATQUERY_AGRI_RISK_MODEL") or ASSETS / "risk_model.json", RiskModelConfig)
+
+
+def load_observation_rules(path: str | Path | None = None) -> ObservationRulesConfig:
+    return _load(path or os.environ.get("SATQUERY_AGRI_OBSERVATION_RULES") or ASSETS / "observation_rules.json",
+                 ObservationRulesConfig)
 
 
 def thresholds_status(rules: PestRulesConfig, model: RiskModelConfig) -> ThresholdStatus:

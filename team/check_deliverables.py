@@ -66,7 +66,7 @@ def _verified_entry(entry: dict, where: str, report: Report, file_status: str) -
 
 
 def check_member_a(report: Report, folder: Path = TEAM / "member-a-agronomy") -> None:
-    from satquery.agri.config import load_pest_rules, load_risk_model
+    from satquery.agri.config import load_observation_rules, load_pest_rules, load_risk_model
 
     report.info("Member A: Manipuri and agronomy")
     rules = folder / "verified_pest_rules.json"
@@ -87,6 +87,14 @@ def check_member_a(report: Report, folder: Path = TEAM / "member-a-agronomy") ->
             report.ok(f"verified_risk_model.json loads: {load_risk_model(model).status}")
         except Exception as error:
             report.error(f"verified_risk_model.json is rejected by the engine's loader: {error}")
+    etls = folder / "verified_observation_rules.json"
+    if etls.is_file():
+        try:
+            loaded = load_observation_rules(etls)
+            report.ok(f"verified_observation_rules.json loads: file {loaded.status}; "
+                      + ", ".join(f"{p.id}={p.status}" for p in loaded.pests))
+        except Exception as error:
+            report.error(f"verified_observation_rules.json is rejected by the engine's loader: {error}")
 
     queries = folder / "manipuri_queries.json"
     if queries.is_file():
