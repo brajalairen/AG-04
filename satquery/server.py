@@ -518,6 +518,7 @@ def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = ana
     `agri_service` serves the AG-04 dashboard's risk assessments; tests inject one with fake sources."""
     from satquery.agri import query as agri_query
     from satquery.agri.routes import agri_router
+    from satquery.agri.conversation import chat_router
     from satquery.agri.service import AssessmentService
 
     settings = load_settings()
@@ -1029,6 +1030,7 @@ def create_app(run_analysis: Callable[[AnalysisRequest], AnalysisResponse] = ana
         return FileResponse(path, media_type=media.get(path.suffix.lower(), "application/octet-stream"))
 
     app.include_router(agri_router(agri))  # before the static mount, which would otherwise shadow it
+    app.include_router(chat_router(agri))  # Conversation mode: follow-ups rewritten into complete questions
 
     if WEB_DIST.is_dir():  # production: one origin serves the API and the built client
         app.mount("/", StaticFiles(directory=WEB_DIST, html=True), name="web")
